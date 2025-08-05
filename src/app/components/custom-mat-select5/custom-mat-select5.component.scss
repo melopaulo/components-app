@@ -1,0 +1,156 @@
+/* Estilos para o componente de seleção customizado */
+/* Utiliza apenas classes Tailwind CSS para manter consistência visual */
+
+/* Container principal do select customizado */
+/* Garante que o componente ocupe toda a largura disponível */
+.custom-select-container {
+  @apply w-full;
+}
+
+/* Estilização da opção de busca dentro do dropdown */
+/* Remove comportamentos padrão e aplica espaçamento adequado */
+.search-option {
+  @apply pointer-events-none p-0 min-h-0;
+  
+  /* Container da busca com padding interno para melhor usabilidade */
+  .search-container {
+    @apply p-3 w-full;
+  }
+
+  /* Campo de busca com largura total e eventos habilitados */
+  /* Permite interação do usuário mesmo dentro de uma opção desabilitada */
+  .search-field {
+    @apply w-full pointer-events-auto;
+  }
+
+  /* Ícone de busca com cor neutra para indicar funcionalidade */
+  .search-icon {
+    @apply text-gray-500 dark:text-gray-400;
+  }
+
+  /* Botão para limpar busca com hover interativo */
+  /* Melhora a experiência do usuário ao resetar filtros */
+  .clear-search-btn {
+    @apply hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors;
+  }
+
+  /* Ícone customizado de limpeza com cor de destaque */
+  .custom-clear-icon {
+    @apply text-gray-600 dark:text-gray-300;
+  }
+
+  /* Spinner de carregamento durante busca */
+  /* Indica ao usuário que uma operação está em andamento */
+  .search-spinner {
+    @apply text-blue-500;
+  }
+}
+
+/* Opção que exibe informações de paginação */
+/* Fornece contexto sobre quantos itens estão visíveis */
+.pagination-info-option {
+  @apply pointer-events-none;
+
+  /* Container das informações de paginação com layout flexível */
+  .pagination-info {
+    @apply flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 p-2;
+  }
+
+  /* Ícone informativo da paginação */
+  .pagination-icon {
+    @apply text-blue-500 text-base;
+  }
+
+  /* Texto da paginação com fonte menor */
+  .pagination-text {
+    @apply text-xs;
+  }
+}
+
+/* Opção de carregamento para scroll infinito */
+/* Indica que mais dados estão sendo buscados */
+.loading-option {
+  @apply pointer-events-none;
+
+  /* Layout do conteúdo de carregamento */
+  .loading-content {
+    @apply flex items-center gap-3 p-3 justify-center;
+  }
+
+  /* Texto explicativo durante carregamento */
+  .loading-text {
+    @apply text-sm text-gray-600 dark:text-gray-400;
+  }
+}
+
+/* Opções informativas gerais (sem resultados, fim da lista) */
+/* Comunicam status importantes ao usuário */
+.info-option {
+  @apply pointer-events-none;
+
+  /* Layout do conteúdo informativo */
+  .info-content {
+    @apply flex items-center gap-2 p-3 justify-center text-sm text-gray-500 dark:text-gray-400;
+  }
+
+  /* Ícone informativo com cor de sucesso ou neutro */
+  .info-icon {
+    @apply text-green-500 text-base;
+  }
+
+  /* Texto informativo com tamanho reduzido */
+  .info-text {
+    @apply text-xs;
+  }
+}
+
+/* Informações de paginação externa ao dropdown */
+/* Exibe estatísticas fora do select para melhor visibilidade */
+.external-pagination-info {
+  @apply mt-2 text-right;
+}
+
+/* Customizações específicas para o tema escuro */
+/* Garante boa legibilidade em ambos os temas */
+:host-context(.dark) {
+  /* Ajustes de cor para elementos específicos no tema escuro */
+  .search-option .search-field {
+    @apply bg-gray-800;
+  }
+  
+  /* Bordas mais visíveis no tema escuro */
+  .pagination-info-option,
+  .loading-option,
+  .info-option {
+    @apply border-gray-700;
+  }
+}
+
+/* Responsividade para dispositivos móveis */
+/* Ajusta tamanhos e espaçamentos em telas menores */
+@media (max-width: 640px) {
+  .search-container {
+    @apply p-2;
+  }
+  
+  .pagination-info,
+  .loading-content,
+  .info-content {
+    @apply p-2 text-xs;
+  }
+  
+  .pagination-icon,
+  .info-icon {
+    @apply text-sm;
+  }
+}
+
+/* Estados de foco para acessibilidade */
+/* Melhora a navegação por teclado */
+.search-field input:focus {
+  @apply ring-2 ring-blue-500 ring-opacity-50;
+}
+
+.clear-search-btn:focus {
+  @apply ring-2 ring-blue-500 ring-opacity-50 outline-none;
+}

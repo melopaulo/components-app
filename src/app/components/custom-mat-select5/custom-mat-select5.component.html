@@ -1,0 +1,150 @@
+<!-- Container principal do componente de seleção customizado -->
+<!-- Responsável por encapsular todo o select com funcionalidades avançadas -->
+<div class="custom-select-container">
+  
+  <!-- Campo de formulário Material Design com largura total -->
+  <!-- Permite ao usuário selecionar uma ou múltiplas opções de uma lista -->
+  <mat-form-field [appearance]="appearance()" class="w-full">
+    
+    <!-- Rótulo do campo que descreve o que o usuário deve selecionar -->
+    <mat-label>{{ label() }}</mat-label>
+
+    <!-- Componente select principal com todas as configurações de negócio -->
+    <!-- Suporta seleção única/múltipla, busca, paginação e scroll infinito -->
+    <mat-select
+      [formControl]="control"
+      [multiple]="multiple()"
+      [disabled]="disabled()"
+      [required]="required()"
+      [placeholder]="placeholder()"
+      (selectionChange)="onSelectionChange($event)"
+      (openedChange)="onOpenedChange($event)">
+
+      <!-- Opção especial que contém o campo de busca nativo -->
+      <!-- Permite ao usuário filtrar as opções disponíveis em tempo real -->
+      <mat-option class="search-option" disabled>
+        <div class="search-container">
+          
+          <!-- Campo de entrada para busca com aparência preenchida -->
+          <!-- Usuário digita aqui para filtrar as opções do select -->
+          <mat-form-field appearance="fill" class="search-field">
+            <mat-label>{{ searchPlaceholder() }}</mat-label>
+            <input
+              matInput
+              #searchInput
+              [formControl]="searchControl"
+              (click)="$event.stopPropagation()"
+              (keydown)="onSearchKeydown($event)"
+              autocomplete="off">
+
+            <!-- Ícone de busca que indica a funcionalidade de pesquisa -->
+            <mat-icon matPrefix class="search-icon">search</mat-icon>
+
+            <!-- Botão para limpar a busca quando há texto digitado -->
+            <!-- Permite ao usuário resetar rapidamente o filtro aplicado -->
+            @if (searchControl.value) {
+              <button
+                mat-icon-button
+                matSuffix
+                class="clear-search-btn"
+                (click)="clearSearch($event)"
+                type="button">
+                <mat-icon class="custom-clear-icon">{{ customClearIcon() }}</mat-icon>
+              </button>
+            }
+
+            <!-- Indicador visual de que uma busca está sendo processada -->
+            <!-- Informa ao usuário que o sistema está buscando resultados -->
+            @if (isSearching()) {
+              <mat-spinner matSuffix
+                diameter="20"
+                class="search-spinner" />
+            }
+          </mat-form-field>
+        </div>
+      </mat-option>
+
+      <!-- Informações de paginação exibidas dentro do dropdown -->
+      <!-- Mostra ao usuário quantos itens estão sendo exibidos do total -->
+      @if (showPaginationInfo() && allOptions().length > 0) {
+        <mat-option
+          disabled
+          class="pagination-info-option">
+          <div class="pagination-info">
+            <mat-icon class="pagination-icon">info</mat-icon>
+            <span class="pagination-text">{{ paginationText() }}</span>
+          </div>
+        </mat-option>
+      }
+
+      <!-- Lista de opções disponíveis para seleção -->
+      <!-- Cada item representa uma escolha que o usuário pode fazer -->
+      @for (option of filteredOptions(); track trackByValue($index, option)) {
+        <mat-option
+          [value]="option.value"
+          [disabled]="option.disabled">
+          {{ option.label }}
+        </mat-option>
+      }
+
+      <!-- Indicador de carregamento para scroll infinito -->
+      <!-- Aparece quando mais dados estão sendo carregados da API -->
+      @if (isLoadingMore()) {
+        <mat-option
+          disabled
+          class="loading-option">
+          <div class="loading-content">
+            <mat-spinner diameter="20" />
+            <span class="loading-text">{{ loadingMoreLabel() }}</span>
+          </div>
+        </mat-option>
+      }
+
+      <!-- Mensagem informativa quando todos os itens foram carregados -->
+      <!-- Informa ao usuário que não há mais dados para carregar -->
+      @if (!hasMoreItems() && allOptions().length > 0 && !isSearching()) {
+        <mat-option
+          disabled
+          class="info-option">
+          <div class="info-content">
+            <mat-icon class="info-icon">check_circle</mat-icon>
+            <span class="info-text">{{ noMoreItemsLabel() }}</span>
+          </div>
+        </mat-option>
+      }
+
+      <!-- Mensagem quando nenhum resultado é encontrado -->
+      <!-- Aparece quando a busca não retorna nenhum item -->
+      @if (filteredOptions().length === 0 && !isSearching() && !isLoadingMore()) {
+        <mat-option
+          disabled
+          class="info-option">
+          <div class="info-content">
+            <mat-icon class="info-icon">search_off</mat-icon>
+            <span class="info-text">{{ noResultsLabel() }}</span>
+          </div>
+        </mat-option>
+      }
+
+    </mat-select>
+
+    <!-- Exibição de mensagens de erro de validação -->
+    <!-- Informa ao usuário sobre problemas com a seleção atual -->
+    @for (error of getErrorMessages(); track error) {
+      <mat-error>
+        {{ error }}
+      </mat-error>
+    }
+
+  </mat-form-field>
+
+  <!-- Informações de paginação externa (opcional) -->
+  <!-- Exibe estatísticas de paginação fora do dropdown -->
+  @if (showPaginationInfo() && allOptions().length > 0) {
+    <div class="external-pagination-info">
+      <small class="text-gray-600 dark:text-gray-400">
+        {{ paginationText() }}
+      </small>
+    </div>
+  }
+</div>
