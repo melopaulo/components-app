@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -17,6 +17,10 @@ import { CustomMatSelectComponent, CustomMatSelectOption } from './custom-mat-se
     MatDividerModule,
     CustomMatSelectComponent,
   ],
+  // Estratégia de detecção de mudança otimizada para performance
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  // Encapsulamento de view desabilitado para permitir estilos globais
+  encapsulation: ViewEncapsulation.None,
   template: `
     <div class="demo-container">
       <mat-card class="demo-card">

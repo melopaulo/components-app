@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit, forwardRef, signal, computed, input, output } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit, forwardRef, signal, computed, input, output, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
 
 import { FormControl, ReactiveFormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
@@ -68,6 +68,10 @@ export interface ApiResponse {
       multi: true
     }
   ],
+  // Estratégia de detecção de mudança otimizada para performance
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  // Encapsulamento de view desabilitado para permitir estilos globais
+  encapsulation: ViewEncapsulation.None,
   template: `
     <div class="custom-select-container">
       <mat-form-field [appearance]="appearance()" class="w-full">

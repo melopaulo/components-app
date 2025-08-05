@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
 
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -25,6 +25,10 @@ import { MockApiService } from '../../services/mock-api.service';
     MatExpansionModule,
     CustomMatSelect3Component
 ],
+  // Estratégia de detecção de mudança otimizada para performance
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  // Encapsulamento de view desabilitado para permitir estilos globais
+  encapsulation: ViewEncapsulation.None,
   template: `
     <div class="container mx-auto p-6 space-y-8">
     

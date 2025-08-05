@@ -1,14 +1,14 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, forwardRef, signal, computed, ElementRef, input, output, viewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, computed, ElementRef, forwardRef, input, OnDestroy, OnInit, output, signal, viewChild, ViewEncapsulation } from '@angular/core';
 
-import { FormControl, ReactiveFormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { MatSelectModule } from '@angular/material/select';
+import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatOptionModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatIconModule } from '@angular/material/icon';
-import { MatOptionModule } from '@angular/material/core';
-import { MatButtonModule } from '@angular/material/button';
-import { Subject, BehaviorSubject, Observable, combineLatest, debounceTime, distinctUntilChanged, switchMap, startWith, map, takeUntil, tap, catchError, of } from 'rxjs';
+import { MatSelectModule } from '@angular/material/select';
+import { catchError, debounceTime, distinctUntilChanged, Observable, of, Subject, switchMap, takeUntil, tap } from 'rxjs';
 
 // Interface para definir a estrutura dos itens do select
 export interface SelectOption {
@@ -68,6 +68,10 @@ export interface ApiResponse {
       multi: true
     }
   ],
+  // Estratégia de detecção de mudança otimizada para performance
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  // Encapsulamento de view desabilitado para permitir estilos globais
+  encapsulation: ViewEncapsulation.None,
   template: `
     <div class="custom-select-container">
       <mat-form-field [appearance]="appearance()" class="w-full">
@@ -227,7 +231,6 @@ export interface ApiResponse {
     }
     
     .dark .search-option {
-      background-color: #2d2d2d !important;
       border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
     }
     
@@ -282,13 +285,11 @@ export interface ApiResponse {
     
     /* Informações de paginação dentro do select */
     .pagination-info-option {
-      background-color: #f5f5f5 !important;
       border-bottom: 1px solid #e0e0e0 !important;
       pointer-events: none !important;
     }
     
     .dark .pagination-info-option {
-      background-color: #424242 !important;
       border-bottom: 1px solid #616161 !important;
     }
     

@@ -1,4 +1,4 @@
-import { Component, Input, input, output } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
 
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
@@ -19,11 +19,15 @@ export interface CustomMatSelectOption {
     MatFormFieldModule,
     MatOptionModule
 ],
+  // Estratégia de detecção de mudança otimizada para performance
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  // Encapsulamento de view desabilitado para permitir estilos globais
+  encapsulation: ViewEncapsulation.None,
   template: `
     <mat-form-field [appearance]="appearance()" class="custom-mat-select-field">
       <!-- Label do campo -->
-      @if (label) {
-        <mat-label>{{ label }}</mat-label>
+      @if (label()) {
+        <mat-label>{{ label() }}</mat-label>
       }
     
       <!-- Select principal -->
@@ -54,8 +58,8 @@ export interface CustomMatSelectOption {
             @for (prop of optionsProps(); track prop; let i = $index) {
               <span>{{ getOptionProperty(option, prop) }}</span>
               <!-- Separador entre propriedades -->
-              @if (i !== optionsProps().length - 1 && separator) {
-                {{ separator }}
+              @if (i !== optionsProps().length - 1 && separator()) {
+                {{ separator() }}
               }
             }
           </mat-option>
@@ -63,19 +67,19 @@ export interface CustomMatSelectOption {
       </mat-select>
     
       <!-- Hint text -->
-      @if (hint) {
-        <mat-hint>{{ hint }}</mat-hint>
+      @if (hint()) {
+        <mat-hint>{{ hint() }}</mat-hint>
       }
     
       <!-- Error messages -->
-      @if (control().hasError('required') && errorMessages?.required) {
+      @if (control().hasError('required') && errorMessages()?.required) {
         <mat-error>
-          {{ errorMessages!.required }}
+          {{ errorMessages()!.required }}
         </mat-error>
       }
-      @if (control().hasError('pattern') && errorMessages?.pattern) {
+      @if (control().hasError('pattern') && errorMessages()?.pattern) {
         <mat-error>
-          {{ errorMessages!.pattern }}
+          {{ errorMessages()!.pattern }}
         </mat-error>
       }
       @for (customError of customErrors(); track customError) {
@@ -116,23 +120,23 @@ export class CustomMatSelectComponent {
   readonly propToBeBinded = input<string>(); // Propriedade a ser vinculada ao valor
   readonly disabledProp = input<string>(); // Propriedade que indica se a opção está desabilitada
   readonly placeholder = input<string>('Selecione...'); // Texto do placeholder
-  @Input() label?: string; // Label do campo
-  @Input() hint?: string; // Texto de ajuda
+  readonly label = input<string>(); // Label do campo
+  readonly hint = input<string>(); // Texto de ajuda
   readonly multiple = input<boolean>(false); // Seleção múltipla
   readonly disabled = input<boolean>(false); // Campo desabilitado
   readonly required = input<boolean>(false); // Campo obrigatório
   readonly appearance = input<'fill' | 'outline'>('outline'); // Aparência do mat-form-field
-  @Input() separator: string = ' - '; // Separador entre propriedades
+  readonly separator = input<string>(' - '); // Separador entre propriedades
   readonly showEmptyOption = input<boolean>(true); // Mostrar opção vazia
   readonly emptyOptionText = input<string>('Nenhum'); // Texto da opção vazia
   readonly emptyValue = input<any>(''); // Valor da opção vazia
   
   // Configuração de mensagens de erro
-  @Input() errorMessages?: {
+  readonly errorMessages = input<{
     required?: string;
     pattern?: string;
     [key: string]: string | undefined;
-  };
+}>();
   
   // Erros customizados adicionais
   readonly customErrors = input<Array<{

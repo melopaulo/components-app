@@ -1,14 +1,14 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal, ViewEncapsulation } from '@angular/core';
 
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatIconModule } from '@angular/material/icon';
 import { Observable } from 'rxjs';
 
-import { CustomMatSelect4Component, SelectOption, SearchParams, ApiResponse } from './custom-mat-select4.component';
 import { MockApiService } from '../../services/mock-api.service';
+import { ApiResponse, CustomMatSelect4Component, SearchParams } from './custom-mat-select4.component';
 
 @Component({
   selector: 'app-custom-mat-select4-demo',
@@ -21,6 +21,10 @@ import { MockApiService } from '../../services/mock-api.service';
     MatDividerModule,
     CustomMatSelect4Component
 ],
+  // Estratégia de detecção de mudança otimizada para performance
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  // Encapsulamento de view desabilitado para permitir estilos globais
+  encapsulation: ViewEncapsulation.None,
   template: `
     <div class="demo-container p-6 max-w-6xl mx-auto">
       <!-- Cabeçalho -->
@@ -236,24 +240,6 @@ import { MockApiService } from '../../services/mock-api.service';
   styles: [`
     .demo-container {
       min-height: 100vh;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    }
-    
-    .dark .demo-container {
-      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-    }
-    
-    mat-card {
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    
-    mat-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-    }
-    
-    .dark mat-card:hover {
-      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
     }
   `]
 })
