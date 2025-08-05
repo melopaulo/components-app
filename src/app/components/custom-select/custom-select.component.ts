@@ -16,6 +16,7 @@ import {
   signal,
   viewChild,
   ViewEncapsulation,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, NgControl } from '@angular/forms';
 import { MatFormFieldControl, MatFormFieldModule } from '@angular/material/form-field';
@@ -163,6 +164,8 @@ export interface CustomSelectOption {
     </div>
     `,
   styleUrls: ['./custom-select.component.scss'],
+  // Estratégia de detecção de mudança otimizada para performance
+  changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   host: {
     class: 'custom-select',

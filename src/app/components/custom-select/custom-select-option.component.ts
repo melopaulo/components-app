@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
 
 
 @Component({
@@ -8,6 +8,10 @@ import { Component, input } from '@angular/core';
   template: `
     <ng-content />
   `,
+  // Estratégia de detecção de mudança otimizada para performance
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  // Encapsulamento de view desabilitado para permitir estilos globais
+  encapsulation: ViewEncapsulation.None,
   host: {
     class: 'custom-select-option-content',
   },

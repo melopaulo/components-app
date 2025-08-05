@@ -34,193 +34,193 @@ body {
 }
 
 // Classes utilitárias personalizadas que combinam Tailwind com Material Design
-.material-container {
-  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
-}
+// .material-container {
+//   @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+// }
 
-.material-card {
-  @apply bg-white rounded-lg shadow-md p-6;
-}
+// .material-card {
+//   @apply bg-white rounded-lg shadow-md p-6;
+// }
 
-.material-button-primary {
-  @apply bg-primary-700 text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-800 transition-colors duration-200;
-}
+// .material-button-primary {
+//   @apply bg-primary-700 text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-800 transition-colors duration-200;
+// }
 
-.material-button-secondary {
-  @apply bg-surface-100 text-primary-700 px-6 py-3 rounded-lg font-medium hover:bg-surface-200 transition-colors duration-200;
-}
+// .material-button-secondary {
+//   @apply bg-surface-100 text-primary-700 px-6 py-3 rounded-lg font-medium hover:bg-surface-200 transition-colors duration-200;
+// }
 
-.material-input {
-  @apply w-full px-4 py-3 border border-surface-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
-}
+// .material-input {
+//   @apply w-full px-4 py-3 border border-surface-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+// }
 
-// Customizações específicas para componentes Material
-.mat-mdc-form-field {
-  .mat-mdc-text-field-wrapper {
-    @apply rounded-lg;
-  }
+// // Customizações específicas para componentes Material
+// .mat-mdc-form-field {
+//   .mat-mdc-text-field-wrapper {
+//     @apply rounded-lg;
+//   }
   
-  .mat-mdc-form-field-label {
-    @apply text-surface-600;
-  }
+//   .mat-mdc-form-field-label {
+//     @apply text-surface-600;
+//   }
   
-  .mat-mdc-form-field-error {
-    @apply text-warn-600 text-sm;
-  }
+//   .mat-mdc-form-field-error {
+//     @apply text-warn-600 text-sm;
+//   }
   
-  .mat-mdc-form-field-hint {
-    @apply text-surface-500 text-sm;
-  }
-}
+//   .mat-mdc-form-field-hint {
+//     @apply text-surface-500 text-sm;
+//   }
+// }
 
-.mat-mdc-button {
-  @apply font-medium transition-all duration-200;
+// .mat-mdc-button {
+//   @apply font-medium transition-all duration-200;
   
-  &.mat-primary {
-    @apply bg-primary-700 text-white hover:bg-primary-800;
-  }
+//   &.mat-primary {
+//     @apply bg-primary-700 text-white hover:bg-primary-800;
+//   }
   
-  &.mat-accent {
-    @apply bg-accent-500 text-white hover:bg-accent-600;
-  }
+//   &.mat-accent {
+//     @apply bg-accent-500 text-white hover:bg-accent-600;
+//   }
   
-  &.mat-warn {
-    @apply bg-warn-500 text-white hover:bg-warn-600;
-  }
-}
+//   &.mat-warn {
+//     @apply bg-warn-500 text-white hover:bg-warn-600;
+//   }
+// }
 
-.mat-mdc-raised-button {
-  @apply shadow-md hover:shadow-lg transition-shadow duration-200;
-}
+// .mat-mdc-raised-button {
+//   @apply shadow-md hover:shadow-lg transition-shadow duration-200;
+// }
 
-.mat-mdc-outlined-button {
-  @apply border-2 transition-all duration-200;
+// .mat-mdc-outlined-button {
+//   @apply border-2 transition-all duration-200;
   
-  &.mat-primary {
-    @apply border-primary-700 text-primary-700 hover:bg-primary-50;
-  }
+//   &.mat-primary {
+//     @apply border-primary-700 text-primary-700 hover:bg-primary-50;
+//   }
   
-  &.mat-accent {
-    @apply border-accent-500 text-accent-500 hover:bg-accent-50;
-  }
+//   &.mat-accent {
+//     @apply border-accent-500 text-accent-500 hover:bg-accent-50;
+//   }
   
-  &.mat-warn {
-    @apply border-warn-500 text-warn-500 hover:bg-warn-50;
-  }
-}
+//   &.mat-warn {
+//     @apply border-warn-500 text-warn-500 hover:bg-warn-50;
+//   }
+// }
 
-.mat-mdc-card {
-  @apply transition-shadow duration-200;
+// .mat-mdc-card {
+//   @apply transition-shadow duration-200;
   
-  &:hover {
-    @apply shadow-lg;
-  }
-}
+//   &:hover {
+//     @apply shadow-lg;
+//   }
+// }
 
-.mat-mdc-select-panel {
-  @apply rounded-lg shadow-lg;
-}
+// .mat-mdc-select-panel {
+//   @apply rounded-lg shadow-lg;
+// }
 
-.mat-mdc-option {
-  @apply transition-colors duration-150;
+// .mat-mdc-option {
+//   @apply transition-colors duration-150;
   
-  &:hover {
-    @apply bg-surface-50;
-  }
+//   &:hover {
+//     @apply bg-surface-50;
+//   }
   
-  &.mat-mdc-option-active {
-    @apply bg-primary-50 text-primary-700;
-  }
-}
+//   &.mat-mdc-option-active {
+//     @apply bg-primary-50 text-primary-700;
+//   }
+// }
 
-// Customizações para o toolbar
-.mat-toolbar {
-  @apply shadow-md;
+// // Customizações para o toolbar
+// .mat-toolbar {
+//   @apply shadow-md;
   
-  &.mat-primary {
-    @apply bg-primary-700;
-  }
-}
+//   &.mat-primary {
+//     @apply bg-primary-700;
+//   }
+// }
 
 // Scrollbar personalizada
-::-webkit-scrollbar {
-  @apply w-2;
-}
+// ::-webkit-scrollbar {
+//   @apply w-2;
+// }
 
-::-webkit-scrollbar-track {
-  @apply bg-surface-100 rounded-full;
-}
+// ::-webkit-scrollbar-track {
+//   @apply bg-surface-100 rounded-full;
+// }
 
-::-webkit-scrollbar-thumb {
-  @apply bg-surface-400 rounded-full hover:bg-surface-500;
-}
+// ::-webkit-scrollbar-thumb {
+//   @apply bg-surface-400 rounded-full hover:bg-surface-500;
+// }
 
-// Animações personalizadas
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+// // Animações personalizadas
+// @keyframes fadeIn {
+//   from {
+//     opacity: 0;
+//     transform: translateY(10px);
+//   }
+//   to {
+//     opacity: 1;
+//     transform: translateY(0);
+//   }
+// }
 
-@keyframes slideIn {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(0);
-  }
-}
+// @keyframes slideIn {
+//   from {
+//     transform: translateX(-100%);
+//   }
+//   to {
+//     transform: translateX(0);
+//   }
+// }
 
-.animate-fade-in {
-  animation: fadeIn 0.3s ease-out;
-}
+// .animate-fade-in {
+//   animation: fadeIn 0.3s ease-out;
+// }
 
-.animate-slide-in {
-  animation: slideIn 0.3s ease-out;
-}
+// .animate-slide-in {
+//   animation: slideIn 0.3s ease-out;
+// }
 
-// Classes responsivas personalizadas
-.responsive-grid {
-  @apply grid gap-6;
-  @apply grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
-}
+// // Classes responsivas personalizadas
+// .responsive-grid {
+//   @apply grid gap-6;
+//   @apply grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
+// }
 
-.responsive-padding {
-  @apply px-4 sm:px-6 lg:px-8;
-}
+// .responsive-padding {
+//   @apply px-4 sm:px-6 lg:px-8;
+// }
 
-.responsive-margin {
-  @apply mx-4 sm:mx-6 lg:mx-8;
-}
+// .responsive-margin {
+//   @apply mx-4 sm:mx-6 lg:mx-8;
+// }
 
-// Estados de foco acessíveis
-.focus-visible {
-  @apply outline-none ring-2 ring-primary-500 ring-offset-2;
-}
+// // Estados de foco acessíveis
+// .focus-visible {
+//   @apply outline-none ring-2 ring-primary-500 ring-offset-2;
+// }
 
-// Utilitários para texto
-.text-truncate {
-  @apply overflow-hidden whitespace-nowrap text-ellipsis;
-}
+// // Utilitários para texto
+// .text-truncate {
+//   @apply overflow-hidden whitespace-nowrap text-ellipsis;
+// }
 
-.text-balance {
-  text-wrap: balance;
-}
+// .text-balance {
+//   text-wrap: balance;
+// }
 
-// Utilitários para layout
-.flex-center {
-  @apply flex items-center justify-center;
-}
+// // Utilitários para layout
+// .flex-center {
+//   @apply flex items-center justify-center;
+// }
 
-.flex-between {
-  @apply flex items-center justify-between;
-}
+// .flex-between {
+//   @apply flex items-center justify-between;
+// }
 
-.absolute-center {
-  @apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
-}
+// .absolute-center {
+//   @apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
+// }

@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,7 +17,11 @@ import { ThemeToggleComponent } from './components/theme-toggle/theme-toggle.com
     ThemeToggleComponent
   ],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrl: './app.scss',
+  // Estratégia de detecção de mudança otimizada para performance
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  // Encapsulamento de view desabilitado para permitir estilos globais
+  encapsulation: ViewEncapsulation.None
 })
 export class App {
   protected readonly title = signal('Components Demo App');

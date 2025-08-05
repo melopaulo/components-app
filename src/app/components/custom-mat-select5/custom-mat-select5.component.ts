@@ -1,14 +1,14 @@
-import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit, forwardRef, signal, computed, input, output, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, computed, ElementRef, forwardRef, input, OnDestroy, OnInit, output, signal, viewChild, ViewEncapsulation } from '@angular/core';
 
-import { FormControl, ReactiveFormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { MatSelectModule } from '@angular/material/select';
+import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatOptionModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatIconModule } from '@angular/material/icon';
-import { MatOptionModule } from '@angular/material/core';
-import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { Subject, BehaviorSubject, Observable, combineLatest, debounceTime, distinctUntilChanged, switchMap, startWith, map, takeUntil, tap, catchError, of } from 'rxjs';
+import { MatSelectModule } from '@angular/material/select';
+import { catchError, debounceTime, distinctUntilChanged, Observable, of, Subject, switchMap, takeUntil, tap } from 'rxjs';
 
 // Interface para definir a estrutura dos itens do select
 export interface SelectOption {
@@ -49,7 +49,7 @@ export interface ApiResponse {
 }
 
 @Component({
-  selector: 'app-custom-mat-select3',
+  selector: 'app-custom-mat-select5',
   standalone: true,
   imports: [
     ReactiveFormsModule,
@@ -59,12 +59,12 @@ export interface ApiResponse {
     MatProgressSpinnerModule,
     MatIconModule,
     MatOptionModule,
-    NgxMatSelectSearchModule
+    MatButtonModule
 ],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => CustomMatSelect3Component),
+      useExisting: forwardRef(() => CustomMatSelect5Component),
       multi: true
     }
   ],
@@ -72,250 +72,13 @@ export interface ApiResponse {
   changeDetection: ChangeDetectionStrategy.OnPush,
   // Encapsulamento de view desabilitado para permitir estilos globais
   encapsulation: ViewEncapsulation.None,
-  template: `
-    <div class="custom-select-container">
-      <mat-form-field [appearance]="appearance()" class="w-full">
-        <mat-label>{{ label() }}</mat-label>
-    
-        <mat-select
-          [formControl]="control"
-          [multiple]="multiple()"
-          [disabled]="disabled()"
-          [required]="required()"
-          [placeholder]="placeholder()"
-          (selectionChange)="onSelectionChange($event)"
-          (openedChange)="onOpenedChange($event)">
-    
-          <!-- Campo de busca integrado com ícone customizado -->
-          <mat-option>
-            <ngx-mat-select-search
-              [formControl]="searchControl"
-              [placeholderLabel]="searchPlaceholder()"
-              [noEntriesFoundLabel]="noEntriesFoundLabel()"
-              [clearSearchInput]="clearSearchOnClose()"
-              [searching]="isSearching()"
-              [enableClearOnEscapePressed]="true">
-    
-              <!-- Ícone customizado para limpar busca -->
-              <mat-icon ngxMatSelectSearchClear class="custom-clear-icon">
-                {{ customClearIcon() }}
-              </mat-icon>
-    
-            </ngx-mat-select-search>
-          </mat-option>
-    
-          <!-- Report de paginação -->
-          @if (showPaginationInfo() && allOptions().length > 0) {
-            <mat-option
-              disabled
-              class="pagination-info-option">
-              <div class="pagination-info">
-                <mat-icon class="pagination-icon">info</mat-icon>
-                <span class="pagination-text">{{ paginationText() }}</span>
-              </div>
-            </mat-option>
-          }
-    
-          <!-- Opções do select -->
-          @for (option of filteredOptions(); track trackByValue($index, option)) {
-            <mat-option
-              [value]="option.value"
-              [disabled]="option.disabled">
-              {{ option.label }}
-            </mat-option>
-          }
-    
-          <!-- Indicador de carregamento para scroll infinito -->
-          @if (isLoadingMore()) {
-            <mat-option
-              disabled
-              class="loading-option">
-              <div class="loading-content">
-                <mat-spinner diameter="20" />
-                <span class="loading-text">{{ loadingMoreLabel() }}</span>
-              </div>
-            </mat-option>
-          }
-    
-          <!-- Mensagem quando não há mais itens -->
-          @if (!hasMoreItems() && allOptions().length > 0 && !isSearching()) {
-            <mat-option
-              disabled
-              class="info-option">
-              <div class="info-content">
-                <mat-icon class="info-icon">check_circle</mat-icon>
-                <span class="info-text">{{ noMoreItemsLabel() }}</span>
-              </div>
-            </mat-option>
-          }
-    
-          <!-- Mensagem quando não há resultados -->
-          @if (filteredOptions().length === 0 && !isSearching() && !isLoadingMore()) {
-            <mat-option
-              disabled
-              class="info-option">
-              <div class="info-content">
-                <mat-icon class="info-icon">search_off</mat-icon>
-                <span class="info-text">{{ noResultsLabel() }}</span>
-              </div>
-            </mat-option>
-          }
-    
-        </mat-select>
-    
-        <!-- Mensagens de erro -->
-        @for (error of getErrorMessages(); track error) {
-          <mat-error>
-            {{ error }}
-          </mat-error>
-        }
-    
-      </mat-form-field>
-    
-      <!-- Informações de paginação externa (opcional) -->
-      @if (showPaginationInfo() && allOptions().length > 0) {
-        <div
-          class="external-pagination-info">
-          <small class="text-gray-600 dark:text-gray-400">
-            {{ paginationText() }}
-          </small>
-        </div>
-      }
-    </div>
-    `,
-  styles: [`
-    :host {
-      display: block;
-      width: 100%;
-    }
-    
-    .custom-select-container {
-      width: 100%;
-    }
-    
-    .mat-mdc-select-panel {
-      max-height: 400px !important;
-    }
-    
-    ::ng-deep .mat-mdc-select-panel .mat-mdc-option {
-      min-height: 48px;
-    }
-    
-    ::ng-deep .ngx-mat-select-search {
-      border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-      margin-bottom: 8px;
-      padding: 8px 16px;
-    }
-    
-    /* Ícone customizado de limpar busca */
-    ::ng-deep .custom-clear-icon {
-      color: #f44336 !important;
-      font-size: 18px !important;
-      width: 18px !important;
-      height: 18px !important;
-      cursor: pointer;
-      transition: color 0.2s ease;
-    }
-    
-    ::ng-deep .custom-clear-icon:hover {
-      color: #d32f2f !important;
-    }
-    
-    /* Informações de paginação dentro do select */
-    .pagination-info-option {
-      background-color: #f5f5f5 !important;
-      border-bottom: 1px solid #e0e0e0 !important;
-      pointer-events: none !important;
-    }
-    
-    .dark .pagination-info-option {
-      background-color: #424242 !important;
-      border-bottom: 1px solid #616161 !important;
-    }
-    
-    .pagination-info {
-      display: flex;
-      align-items: center;
-      padding: 8px 0;
-      font-size: 12px;
-      color: #666;
-    }
-    
-    .dark .pagination-info {
-      color: #bbb;
-    }
-    
-    .pagination-icon {
-      font-size: 16px !important;
-      width: 16px !important;
-      height: 16px !important;
-      margin-right: 8px;
-      color: #2196f3;
-    }
-    
-    .pagination-text {
-      font-weight: 500;
-    }
-    
-    /* Opções de carregamento e informações */
-    .loading-option,
-    .info-option {
-      pointer-events: none !important;
-      opacity: 0.8;
-    }
-    
-    .loading-content,
-    .info-content {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 12px 0;
-      gap: 8px;
-    }
-    
-    .loading-text,
-    .info-text {
-      font-size: 14px;
-      color: #666;
-    }
-    
-    .dark .loading-text,
-    .dark .info-text {
-      color: #bbb;
-    }
-    
-    .info-icon {
-      font-size: 18px !important;
-      width: 18px !important;
-      height: 18px !important;
-      color: #4caf50;
-    }
-    
-    /* Informações de paginação externa */
-    .external-pagination-info {
-      margin-top: 4px;
-      text-align: right;
-      padding: 0 12px;
-    }
-    
-    .external-pagination-info small {
-      font-size: 11px;
-      font-weight: 500;
-    }
-    
-    /* Responsividade */
-    @media (max-width: 768px) {
-      .pagination-info {
-        font-size: 11px;
-      }
-      
-      .external-pagination-info {
-        text-align: center;
-      }
-    }
-  `]
+  templateUrl: './custom-mat-select5.component.html',
+  styleUrl: './custom-mat-select5.component.scss'
 })
-export class CustomMatSelect3Component implements OnInit, OnDestroy, AfterViewInit, ControlValueAccessor {
+export class CustomMatSelect5Component implements OnInit, OnDestroy, AfterViewInit, ControlValueAccessor {
+  // ViewChild para acessar o input de busca
+  readonly searchInput = viewChild.required<ElementRef<HTMLInputElement>>('searchInput');
+  
   // Inputs do componente
   readonly label = input<string>('');
   readonly placeholder = input<string>('');
@@ -432,13 +195,14 @@ export class CustomMatSelect3Component implements OnInit, OnDestroy, AfterViewIn
   
   ngOnInit() {
     this.setupSearchSubscription();
-    this.setupScrollInfiniteSubscription();
     this.loadInitialData();
   }
   
   ngAfterViewInit() {
     // Configurar detecção de scroll no painel do select
-    this.setupScrollDetection();
+    setTimeout(() => {
+      this.setupScrollDetection();
+    }, 100);
   }
   
   ngOnDestroy() {
@@ -484,22 +248,11 @@ export class CustomMatSelect3Component implements OnInit, OnDestroy, AfterViewIn
     });
   }
   
-  // Configurar subscription para scroll infinito
-  private setupScrollInfiniteSubscription() {
-    // Esta será configurada quando o painel for aberto
-  }
-  
-  // Configurar detecção de scroll
-  private setupScrollDetection() {
-    // Implementar detecção de scroll no painel do select
-    // Será ativado quando o select estiver aberto
-  }
-  
   // Carregar dados iniciais
   private loadInitialData() {
     const searchFunction = this.searchFunction();
     if (!searchFunction) {
-      console.warn('searchFunction não foi fornecida para CustomMatSelect3Component');
+      console.warn('searchFunction não foi fornecida para CustomMatSelect5Component');
       return;
     }
     
@@ -590,11 +343,50 @@ export class CustomMatSelect3Component implements OnInit, OnDestroy, AfterViewIn
       // Configurar detecção de scroll quando o painel abrir
       setTimeout(() => {
         this.setupPanelScrollDetection();
+        // Focar no campo de busca quando abrir
+        const searchInput = this.searchInput();
+        if (searchInput) {
+          searchInput.nativeElement.focus();
+        }
       }, 100);
     } else if (this.clearSearchOnClose()) {
       // Limpar busca quando fechar
       this.searchControl.setValue('');
     }
+  }
+  
+  // Manipular teclas no campo de busca
+  onSearchKeydown(event: KeyboardEvent) {
+    // Evitar que certas teclas fechem o select
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter') {
+      event.stopPropagation();
+    }
+    
+    // Permitir que Escape feche o select
+    if (event.key === 'Escape') {
+      // Limpar busca primeiro, depois fechar
+      if (this.searchControl.value) {
+        this.clearSearch(event);
+      }
+    }
+  }
+  
+  // Limpar busca
+  clearSearch(event: Event) {
+    event.stopPropagation();
+    this.searchControl.setValue('');
+    // Focar novamente no campo de busca
+    if (this.searchInput()) {
+      setTimeout(() => {
+        this.searchInput().nativeElement.focus();
+      }, 10);
+    }
+  }
+  
+  // Configurar detecção de scroll no painel
+  private setupScrollDetection() {
+    // Implementar detecção de scroll no painel do select
+    // Será ativado quando o select estiver aberto
   }
   
   // Configurar detecção de scroll no painel

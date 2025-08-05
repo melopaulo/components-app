@@ -8,10 +8,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { Observable } from 'rxjs';
 
 import { MockApiService } from '../../services/mock-api.service';
-import { ApiResponse, CustomMatSelect4Component, SearchParams } from './custom-mat-select4.component';
+import { ApiResponse, CustomMatSelect5Component, SearchParams } from './custom-mat-select5.component';
 
 @Component({
-  selector: 'app-custom-mat-select4-demo',
+  selector: 'app-custom-mat-select5-demo',
   standalone: true,
   imports: [
     ReactiveFormsModule,
@@ -19,7 +19,7 @@ import { ApiResponse, CustomMatSelect4Component, SearchParams } from './custom-m
     MatButtonModule,
     MatIconModule,
     MatDividerModule,
-    CustomMatSelect4Component
+    CustomMatSelect5Component
 ],
   // Estratégia de detecção de mudança otimizada para performance
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,10 +30,10 @@ import { ApiResponse, CustomMatSelect4Component, SearchParams } from './custom-m
       <!-- Cabeçalho -->
       <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          Custom Mat Select 4 - Busca Nativa
+          Custom Mat Select 5 - Versão Refatorada
         </h1>
         <p class="text-gray-600 dark:text-gray-400 text-lg">
-          Componente de seleção avançado com busca e scroll infinito usando apenas Angular Material (sem ngx-mat-select-search)
+          Componente de seleção avançado com arquivos HTML e SCSS separados, usando apenas Tailwind CSS
         </p>
         
         <!-- Badges de funcionalidades -->
@@ -55,8 +55,12 @@ import { ApiResponse, CustomMatSelect4Component, SearchParams } from './custom-m
             Relatório de Paginação
           </span>
           <span class="px-3 py-1 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded-full text-sm font-medium">
-            <mat-icon class="inline-block w-4 h-4 mr-1">block</mat-icon>
-            Sem Dependências Externas
+            <mat-icon class="inline-block w-4 h-4 mr-1">palette</mat-icon>
+            Apenas Tailwind CSS
+          </span>
+          <span class="px-3 py-1 bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 rounded-full text-sm font-medium">
+            <mat-icon class="inline-block w-4 h-4 mr-1">architecture</mat-icon>
+            Arquivos Separados
           </span>
         </div>
       </div>
@@ -73,7 +77,7 @@ import { ApiResponse, CustomMatSelect4Component, SearchParams } from './custom-m
               <h3 class="text-lg font-medium mb-3 text-gray-900 dark:text-white">
                 Países (Busca Nativa Básica)
               </h3>
-              <app-custom-mat-select4 formControlName="country"
+              <app-custom-mat-select5 formControlName="country"
                 label="Selecione um país"
                 placeholder="Digite para buscar países..."
                 [searchFunction]="searchCountriesFunction"
@@ -93,7 +97,7 @@ import { ApiResponse, CustomMatSelect4Component, SearchParams } from './custom-m
               <h3 class="text-lg font-medium mb-3 text-gray-900 dark:text-white">
                 Cidades Brasileiras (Paginação Customizada)
               </h3>
-              <app-custom-mat-select4 formControlName="cities"
+              <app-custom-mat-select5 formControlName="cities"
                 label="Selecione cidades"
                 placeholder="Digite para buscar cidades..."
                 [multiple]="true"
@@ -116,7 +120,7 @@ import { ApiResponse, CustomMatSelect4Component, SearchParams } from './custom-m
               <h3 class="text-lg font-medium mb-3 text-gray-900 dark:text-white">
                 Empresas de Tecnologia (Ícone Personalizado)
               </h3>
-              <app-custom-mat-select4 formControlName="techCompany"
+              <app-custom-mat-select5 formControlName="techCompany"
                 label="Selecione uma empresa"
                 placeholder="Digite para buscar empresas..."
                 [searchFunction]="searchTechCompaniesFunction"
@@ -138,7 +142,7 @@ import { ApiResponse, CustomMatSelect4Component, SearchParams } from './custom-m
               <h3 class="text-lg font-medium mb-3 text-gray-900 dark:text-white">
                 Busca Geral (Paginação Avançada)
               </h3>
-              <app-custom-mat-select4 formControlName="generalSearch"
+              <app-custom-mat-select5 formControlName="generalSearch"
                 label="Busca geral"
                 placeholder="Digite para buscar em todos os dados..."
                 [searchFunction]="searchAllDataFunction"
@@ -243,7 +247,7 @@ import { ApiResponse, CustomMatSelect4Component, SearchParams } from './custom-m
     }
   `]
 })
-export class CustomMatSelect4DemoComponent implements OnInit {
+export class CustomMatSelect5DemoComponent implements OnInit {
   private fb = inject(FormBuilder);
   private mockApiService = inject(MockApiService);
 

@@ -25,5 +25,9 @@ export const routes: Routes = [
   {
     path: 'custom-mat-select4',
     loadComponent: () => import('./components/custom-mat-select4/custom-mat-select4-demo.component').then(m => m.CustomMatSelect4DemoComponent)
+  },
+  {
+    path: 'custom-mat-select5',
+    loadComponent: () => import('./components/custom-mat-select5/custom-mat-select5-demo.component').then(m => m.CustomMatSelect5DemoComponent)
   }
 ];
