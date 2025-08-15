@@ -1,4 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
+import { CdkVirtualScrollViewport, ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import {
   AfterViewInit,
@@ -7,6 +8,9 @@ import {
   input,
   output,
   ViewChild,
+  inject,
+  effect,
+  signal,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -15,6 +19,10 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { SkeletonLoaderComponent } from './skeleton-loader/skeleton-loader.component';
+import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
+import { VirtualScrollService } from '../services/virtual-scroll.service';
+import { TableCacheService } from '../services/table-cache.service';
 
 import {
   PageChangeEvent,
@@ -40,6 +48,9 @@ import {
     MatButtonModule,
     CurrencyPipe,
     DatePipe,
+    ScrollingModule,
+    SkeletonLoaderComponent,
+    LoadingSpinnerComponent,
   ],
   templateUrl: './table-presentation.component.html',
   styleUrl: './table-presentation.component.scss',
@@ -48,12 +59,20 @@ export class TablePresentationComponent<T = any> implements AfterViewInit {
   // Inputs como signals
   config = input<TableConfig<T>>();
   data = input<TableData<T>>();
+  
+  // Serviços injetados
+  virtualScrollService = inject(VirtualScrollService);
+  private cacheService = inject(TableCacheService);
+  
+  // ViewChild para virtual scroll
+  @ViewChild(CdkVirtualScrollViewport) virtualScrollViewport?: CdkVirtualScrollViewport;
 
   // Outputs
   pageChange = output<PageChangeEvent>();
   sortChange = output<SortChangeEvent>();
   selectionChange = output<SelectionChangeEvent<T>>();
   rowClick = output<T>();
+  loadVirtualData = output<{ start: number; end: number }>();
 
   // ViewChild para controles
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -69,23 +88,34 @@ export class TablePresentationComponent<T = any> implements AfterViewInit {
     return new MatTableDataSource(items);
   });
 
+  // Virtual scroll data source
+  virtualDataSource = computed(() => {
+    const virtualData = this.virtualScrollService.getVirtualData()();
+    return new MatTableDataSource(virtualData.items.filter(item => item !== null));
+  });
+
+  // Track by function para performance
+  trackByFn = computed(() => {
+    const config = this.config();
+    return config?.virtualScrolling?.trackByFn || this.virtualScrollService.defaultTrackBy;
+  });
+
   displayedColumns = computed(() => {
     const columns: string[] = [];
+    const config = this.config();
 
-    if (this.config()?.multiSelect) {
+    if (config?.selection?.enabled && config?.selection?.multiple) {
       columns.push('select');
     }
 
-    if (this.config()?.singleSelect) {
+    if (config?.selection?.enabled && !config?.selection?.multiple) {
       columns.push('radio');
     }
 
-    if (this.config()?.showRowNumbers) {
-      columns.push('rowNumber');
-    }
+    // Adiciona coluna de números de linha se necessário
+    columns.push('rowNumber');
 
-    const dataColumns =
-      this.config()?.columns?.map((col) => col.key.toString()) || [];
+    const dataColumns = config?.columns?.map((col) => col.key.toString()) || [];
     columns.push(...dataColumns);
 
     return columns;
@@ -139,10 +169,11 @@ export class TablePresentationComponent<T = any> implements AfterViewInit {
   }
 
   isSelected(row: T): boolean {
-    if (this.config()?.multiSelect) {
+    const config = this.config();
+    if (config?.selection?.enabled && config?.selection?.multiple) {
       return this.selection.isSelected(row);
     }
-    if (this.config()?.singleSelect) {
+    if (config?.selection?.enabled && !config?.selection?.multiple) {
       return this.singleSelection.isSelected(row);
     }
     return false;
@@ -272,7 +303,222 @@ export class TablePresentationComponent<T = any> implements AfterViewInit {
     return classes.join(' ');
   }
 
+  // Métodos para virtual scrolling
+  /**
+   * Configuração adaptativa de buffer baseada na performance
+   */
+  private adaptiveBufferConfig = signal({
+    baseBufferSize: 5,
+    maxBufferSize: 20,
+    minBufferSize: 2,
+    scrollVelocity: 0,
+    lastScrollTime: 0,
+    performanceScore: 1
+  });
+
+  /**
+   * Calcula o tamanho do buffer baseado na velocidade de scroll e performance
+   */
+  private calculateAdaptiveBuffer(): number {
+    const config = this.adaptiveBufferConfig();
+    const virtualConfig = this.config()?.virtualScrolling;
+    
+    // Buffer base da configuração ou padrão
+    let bufferSize = virtualConfig?.bufferSize || config.baseBufferSize;
+    
+    // Ajusta baseado na velocidade de scroll
+    if (config.scrollVelocity > 10) {
+      // Scroll rápido: aumenta buffer
+      bufferSize = Math.min(config.maxBufferSize, bufferSize * 1.5);
+    } else if (config.scrollVelocity < 2) {
+      // Scroll lento: reduz buffer para economizar memória
+      bufferSize = Math.max(config.minBufferSize, bufferSize * 0.8);
+    }
+    
+    // Ajusta baseado na performance do dispositivo
+    bufferSize = Math.floor(bufferSize * config.performanceScore);
+    
+    return Math.max(config.minBufferSize, Math.min(config.maxBufferSize, bufferSize));
+  }
+
+  /**
+   * Atualiza métricas de performance para buffer adaptativo
+   */
+  private updatePerformanceMetrics(scrollIndex: number): void {
+    const now = performance.now();
+    const config = this.adaptiveBufferConfig();
+    
+    if (config.lastScrollTime > 0) {
+      const timeDiff = now - config.lastScrollTime;
+      const velocity = timeDiff > 0 ? Math.abs(scrollIndex) / timeDiff : 0;
+      
+      this.adaptiveBufferConfig.update(current => ({
+        ...current,
+        scrollVelocity: velocity,
+        lastScrollTime: now,
+        // Simula score de performance baseado na frequência de scroll
+        performanceScore: timeDiff < 16 ? 1.2 : timeDiff > 50 ? 0.8 : 1
+      }));
+    } else {
+      this.adaptiveBufferConfig.update(current => ({
+        ...current,
+        lastScrollTime: now
+      }));
+    }
+  }
+
+  /**
+   * Calcula buffer mínimo adaptativo em pixels
+   */
+  getAdaptiveMinBuffer(): number {
+    const config = this.config()?.virtualScrolling;
+    const baseMinBuffer = config?.minBufferPx || 200;
+    const performanceScore = this.adaptiveBufferConfig().performanceScore;
+    
+    return Math.floor(baseMinBuffer * performanceScore);
+  }
+
+  /**
+   * Calcula buffer máximo adaptativo em pixels
+   */
+  getAdaptiveMaxBuffer(): number {
+    const config = this.config()?.virtualScrolling;
+    const baseMaxBuffer = config?.maxBufferPx || 400;
+    const performanceScore = this.adaptiveBufferConfig().performanceScore;
+    const scrollVelocity = this.adaptiveBufferConfig().scrollVelocity;
+    
+    // Aumenta buffer máximo para scroll rápido
+    let adaptiveMaxBuffer = baseMaxBuffer;
+    if (scrollVelocity > 10) {
+      adaptiveMaxBuffer = Math.min(800, baseMaxBuffer * 1.5);
+    }
+    
+    return Math.floor(adaptiveMaxBuffer * performanceScore);
+  }
+
+  onVirtualScrollChange(index: number): void {
+    const config = this.config();
+    if (!config?.virtualScrolling?.enabled) return;
+
+    const viewport = this.virtualScrollViewport;
+    if (!viewport) return;
+
+    // Atualiza métricas de performance
+    this.updatePerformanceMetrics(index);
+
+    const viewportSize = viewport.getViewportSize();
+    const itemSize = config.virtualScrolling.itemSize || 48;
+    const visibleItems = Math.ceil(viewportSize / itemSize);
+    
+    // Calcula buffer adaptativo
+    const bufferSize = this.calculateAdaptiveBuffer();
+    
+    const start = Math.max(0, index - bufferSize);
+    const totalSize = this.virtualScrollService.getVirtualData()().totalSize;
+    const end = Math.min(totalSize - 1, index + visibleItems + bufferSize);
+    
+    // Verifica se o range já está carregado
+    if (!this.virtualScrollService.checkRangeLoaded(start, end)) {
+      this.requestVirtualData(start, end);
+    }
+  }
+
+  private requestVirtualData(start: number, end: number): void {
+    // Emite evento para o componente container carregar os dados
+    this.loadVirtualData.emit({ start, end });
+  }
+
+  // Método para coordenar virtual scrolling com paginação tradicional
+  onPageChangeWithVirtualScroll(event: PageChangeEvent): void {
+    const config = this.config();
+    
+    if (config?.virtualScrolling?.enabled) {
+      // Em modo virtual scrolling, a paginação funciona como navegação de chunks
+      const pageSize = event.pageSize;
+      const pageIndex = event.pageIndex;
+      const start = pageIndex * pageSize;
+      const end = start + pageSize - 1;
+      
+      // Solicita carregamento do chunk da página
+      this.requestVirtualData(start, end);
+      
+      // Scroll para o início da página virtual
+      if (this.virtualScrollViewport) {
+        this.virtualScrollViewport.scrollToIndex(start);
+      }
+    }
+    
+    // Emite evento de mudança de página normalmente
+    this.pageChange.emit(event);
+  }
+
+  // Métodos para skeleton loading
+  getSkeletonWidth(columnType?: string): string {
+    switch (columnType) {
+      case 'number':
+      case 'currency':
+        return '60px';
+      case 'date':
+        return '100px';
+      case 'boolean':
+        return '40px';
+      default:
+        return Math.random() > 0.5 ? '80%' : '60%';
+    }
+  }
+
   getCellValue(row: T, column: TableColumn<T>): any {
     return row[column.key];
+  }
+
+  /**
+   * Verifica se o virtual scrolling está carregando dados
+   */
+  isVirtualScrollLoading(): boolean {
+    return this.virtualScrollService.getLoadingState()();
+  }
+
+  /**
+   * TrackBy function para otimizar performance da tabela
+   * Usa uma chave única para cada item para evitar re-renderizações desnecessárias
+   */
+  trackByItem = (index: number, item: any): any => {
+    // Se o item tem um ID único, usa ele
+    if (item && typeof item === 'object') {
+      return item.id || item._id || item.uuid || JSON.stringify(item);
+    }
+    // Fallback para o índice se não houver ID único
+    return index;
+  };
+
+  /**
+   * TrackBy function específica para virtual scrolling
+   * Otimizada para grandes volumes de dados
+   */
+  trackByVirtualItem = (index: number, item: any): any => {
+    // Para virtual scrolling, prioriza o índice + ID para melhor performance
+    const itemId = item?.id || item?._id || item?.uuid;
+    return itemId ? `${index}-${itemId}` : index;
+  };
+
+
+
+  /**
+   * TrackBy function customizada baseada na configuração
+   * Permite usar trackBy functions personalizadas definidas na configuração
+   */
+  getTrackByFunction(): (index: number, item: any) => any {
+    const customTrackBy = this.config()?.virtualScrolling?.trackByFn;
+    if (customTrackBy) {
+      return customTrackBy;
+    }
+    
+    // Se virtual scrolling está habilitado, usa trackBy otimizado
+    if (this.config()?.virtualScrolling?.enabled) {
+      return this.trackByVirtualItem;
+    }
+    
+    // Caso padrão
+    return this.trackByItem;
   }
 }

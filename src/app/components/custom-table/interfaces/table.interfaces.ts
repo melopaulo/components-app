@@ -42,14 +42,21 @@ export interface SortConfig {
 // Interface principal de configuração da tabela
 export interface TableConfig<T = any> {
   columns: TableColumn<T>[];
+  data: TableData<T>;
   pagination?: PaginationConfig;
-  sort?: SortConfig;
-  multiSelect?: boolean;
-  singleSelect?: boolean;
-  showRowNumbers?: boolean;
-  noDataMessage?: string;
-  cssClass?: string;
-  fixedHeight?: string;
+  sorting?: SortConfig;
+  selection?: {
+    enabled: boolean;
+    multiple?: boolean;
+    selectedItems?: T[];
+  };
+  loading?: boolean;
+  customTemplates?: CustomTemplates;
+  fixedHeight?: boolean;
+  height?: string;
+  virtualScrolling?: VirtualScrollConfig;
+  cache?: CacheConfig;
+  loadingStates?: LoadingStatesConfig;
 }
 
 // Interface para dados da tabela com paginação
@@ -83,3 +90,45 @@ export interface CustomTemplates {
 // Tipos auxiliares
 export type TableSelectionModel<T> = SelectionModel<T>;
 export type TableSortDirection = 'asc' | 'desc' | '';
+
+// Virtual Scrolling Configuration
+export interface VirtualScrollConfig {
+  enabled: boolean;
+  itemSize: number;
+  minBufferPx?: number;
+  maxBufferPx?: number;
+  bufferSize?: number;
+  trackByFn?: (index: number, item: any) => any;
+}
+
+// Cache Configuration
+export interface CacheConfig {
+  enabled: boolean;
+  maxSize?: number;
+  ttl?: number; // Time to live in milliseconds
+  strategy?: 'lru' | 'fifo';
+}
+
+// Loading States Configuration
+export interface LoadingStatesConfig {
+  skeleton?: boolean;
+  skeletonRows?: number;
+  spinner?: boolean;
+  shimmer?: boolean;
+  customTemplate?: any;
+}
+
+// Cache Entry Interface
+export interface CacheEntry<T = any> {
+  data: T[];
+  timestamp: number;
+  page: number;
+  totalItems: number;
+}
+
+// Virtual Scroll Data Interface
+export interface VirtualScrollData<T = any> {
+  items: T[];
+  totalSize: number;
+  loadedRanges: { start: number; end: number }[];
+}

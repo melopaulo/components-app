@@ -63,6 +63,12 @@
             color="primary">
             Altura Fixa (400px)
           </mat-slide-toggle>
+          <mat-slide-toggle
+            [checked]="virtualScrollEnabled()"
+            (change)="toggleVirtualScrolling()"
+            color="primary">
+            Virtual Scrolling (ETAPA 2)
+          </mat-slide-toggle>
         </div>
 
         <!-- Informações de Estado -->
@@ -151,15 +157,18 @@
         [columns]="columns()"
         [data]="tableData()"
         [loading]="loading()"
-        [multiSelect]="multiSelectEnabled()"
-        [singleSelect]="singleSelectEnabled()"
-        [showRowNumbers]="showRowNumbers()"
-        [fixedHeight]="fixedHeight()"
+        [multipleSelection]="multiSelectEnabled()"
+        [selectionEnabled]="singleSelectEnabled() || multiSelectEnabled()"
+        [fixedHeight]="fixedHeightEnabled()"
         [pageSizeOptions]="pageSizeOptions()"
+        [virtualScrolling]="virtualScrollConfig()"
+        [cacheConfig]="cacheConfig()"
+        [loadingStates]="loadingStatesConfig()"
         (pageChange)="onPageChange($event)"
         (sortChange)="onSortChange($event)"
         (selectionChange)="onSelectionChange($event)"
         (rowClick)="onRowClick($event)"
+        (virtualDataRequest)="onVirtualDataRequest($event)"
       ></app-table-container>
     </mat-card-content>
   </mat-card>

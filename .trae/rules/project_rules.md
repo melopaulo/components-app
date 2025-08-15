@@ -2,6 +2,7 @@ Angular Project Rules
 Architecture & Framework
 
 ## This is an Angular signals-based application
+- Must use angular 18 or higher feature:  new control flow sintax, inject() function, new input() and output() api, queries as signal and standalone components.
 - Use Angular Material and Tailwind CSS
 - All services, components, pipes, and other artifacts must be signals-based
 

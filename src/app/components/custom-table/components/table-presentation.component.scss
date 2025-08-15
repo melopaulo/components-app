@@ -3,7 +3,141 @@
 }
 
 .custom-table-container {
-  @apply bg-surface rounded-lg border border-gray-200 overflow-hidden;
+  @apply bg-surface rounded-lg shadow-sm border border-outline-variant;
+
+  .table-header {
+    @apply bg-surface-variant/10;
+  }
+
+  .table-content {
+    @apply relative;
+  }
+
+  .custom-table {
+    @apply bg-surface;
+
+    .mat-mdc-header-row {
+      @apply bg-surface-variant/5;
+    }
+
+    .mat-mdc-row {
+      @apply hover:bg-surface-variant/10 transition-colors cursor-pointer;
+
+      &.selected {
+        @apply bg-primary/10;
+      }
+    }
+
+    .mat-mdc-cell,
+    .mat-mdc-header-cell {
+      @apply border-b border-outline-variant/20 px-4 py-3;
+    }
+
+    .mat-mdc-header-cell {
+      @apply font-medium text-on-surface;
+    }
+
+    .mat-mdc-cell {
+      @apply text-on-surface;
+    }
+  }
+
+  .custom-paginator {
+    @apply bg-surface border-t border-outline-variant/20;
+
+    .mat-mdc-paginator-range-label {
+      @apply text-on-surface-variant;
+    }
+  }
+
+  .no-data {
+    @apply flex flex-col items-center justify-center py-16 text-center;
+  }
+
+  // Virtual Scrolling Styles
+  .virtual-scroll-container {
+    @apply relative;
+
+    .virtual-viewport {
+      @apply h-full;
+
+      .virtual-table {
+        @apply w-full;
+      }
+    }
+  }
+
+  // Overlay de loading para virtual scrolling
+  .virtual-loading-overlay {
+    @apply absolute top-0 left-0 right-0 z-10 bg-surface/80 backdrop-blur-sm;
+    @apply flex items-center justify-center p-4;
+    min-height: 60px;
+  }
+
+  // Skeleton Loading Styles
+  .skeleton-container {
+    @apply p-4;
+
+    .skeleton-table {
+      @apply w-full;
+
+      .skeleton-header {
+        @apply flex border-b border-outline-variant/20 pb-3 mb-3;
+
+        .skeleton-header-cell {
+          @apply px-4 py-2 flex-1;
+
+          .skeleton-text {
+            @apply h-4 bg-surface-variant/30 rounded;
+          }
+        }
+      }
+
+      .skeleton-body {
+        .skeleton-row {
+          @apply flex border-b border-outline-variant/10 py-3;
+
+          .skeleton-cell {
+            @apply px-4 flex-1;
+
+            .skeleton-text {
+              @apply h-4 bg-surface-variant/20 rounded;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Skeleton Shimmer Animation
+  .skeleton-shimmer {
+    @apply relative overflow-hidden;
+
+    &::before {
+      content: '';
+      @apply absolute inset-0 bg-gradient-to-r from-transparent via-surface-variant/40 to-transparent;
+      animation: shimmer 1.5s infinite;
+      transform: translateX(-100%);
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  // Loading States
+  .loading-overlay {
+    @apply absolute inset-0 bg-surface/80 flex items-center justify-center z-10;
+  }
+
+  .loading-spinner {
+    @apply flex items-center gap-3 text-on-surface-variant;
+  }
 }
 
 .custom-table {

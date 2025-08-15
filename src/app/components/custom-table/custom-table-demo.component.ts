@@ -13,6 +13,9 @@ import {
   SortChangeEvent,
   TableColumn,
   TableData,
+  VirtualScrollConfig,
+  CacheConfig,
+  LoadingStatesConfig,
 } from './interfaces/table.interfaces';
 
 interface Product {
@@ -108,6 +111,7 @@ export class CustomTableDemoComponent {
   singleSelectEnabled = signal(false);
   showRowNumbers = signal(true);
   fixedHeightEnabled = signal(false);
+  virtualScrollEnabled = signal(false);
   pageSizeOptions = signal([5, 10, 25, 50, 100]);
 
   eventLog = signal<
@@ -146,6 +150,42 @@ export class CustomTableDemoComponent {
   currentPageSize = computed(() => this.currentPageSizeValue());
   selectedCount = computed(() => this.selectedItems().length);
   fixedHeight = computed(() => (this.fixedHeightEnabled() ? '400px' : ''));
+
+  // Configuração de Virtual Scrolling para ETAPA 2 - CARREGAMENTO LENTO
+  virtualScrollConfig = computed<VirtualScrollConfig | undefined>(() => {
+    if (!this.virtualScrollEnabled()) return undefined;
+    
+    return {
+      enabled: true,
+      itemSize: 48, // Altura de cada linha em pixels
+      minBufferPx: 200, // Buffer mínimo em pixels
+      maxBufferPx: 400, // Buffer máximo em pixels
+      bufferSize: 10, // Número de itens no buffer
+      trackByFn: (index: number, item: Product) => item.id
+    };
+  });
+
+  // Configuração de Cache Inteligente
+  cacheConfig = computed<CacheConfig | undefined>(() => {
+    if (!this.virtualScrollEnabled()) return undefined;
+    
+    return {
+      enabled: true,
+      maxSize: 1000, // Máximo de 1000 itens no cache
+      ttl: 300000, // 5 minutos de TTL
+      strategy: 'lru' // Least Recently Used
+    };
+  });
+
+  // Configuração de Estados de Loading
+  loadingStatesConfig = computed<LoadingStatesConfig | undefined>(() => {
+    return {
+      skeleton: true,
+      skeletonRows: 10,
+      spinner: true,
+      shimmer: false
+    };
+  });
 
   constructor() {
     this.generateData();
@@ -212,6 +252,38 @@ export class CustomTableDemoComponent {
         'check_circle'
       );
     }, 1500);
+  }
+
+  // Método para simular carregamento lento de dados (ETAPA 2)
+  async loadVirtualData(startIndex: number, endIndex: number): Promise<Product[]> {
+    // Simula delay de rede para demonstrar carregamento lento
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    const allData = this.allProducts();
+    return allData.slice(startIndex, endIndex + 1);
+  }
+
+  // Toggle para habilitar/desabilitar virtual scrolling
+  toggleVirtualScrolling(): void {
+    this.virtualScrollEnabled.update(enabled => !enabled);
+    console.log('Virtual Scrolling:', this.virtualScrollEnabled() ? 'Habilitado' : 'Desabilitado');
+  }
+
+  // Handler para requisições de dados virtuais (ETAPA 2)
+  async onVirtualDataRequest(event: { start: number; end: number }): Promise<void> {
+    console.log('Requisição de dados virtuais:', event);
+    
+    // Simula carregamento de dados para o range solicitado
+    this.loading.set(true);
+    
+    try {
+      const virtualData = await this.loadVirtualData(event.start, event.end);
+      console.log('Dados carregados para range:', event, virtualData.length, 'itens');
+    } catch (error) {
+      console.error('Erro ao carregar dados virtuais:', error);
+    } finally {
+      this.loading.set(false);
+    }
   }
 
   onPageChange(event: PageChangeEvent): void {

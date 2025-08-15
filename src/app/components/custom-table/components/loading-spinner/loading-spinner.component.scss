@@ -1,0 +1,125 @@
+/* Loading Spinner Styles */
+.loading-spinner {
+  @apply inline-flex flex-col items-center justify-center;
+}
+
+.spinner-centered {
+  @apply w-full h-full min-h-[100px] flex items-center justify-center;
+}
+
+.spinner-overlay {
+  @apply fixed inset-0 bg-white bg-opacity-75 z-50 flex items-center justify-center;
+}
+
+/* Spinner Icon */
+.spinner-icon {
+  animation: rotate 2s linear infinite;
+}
+
+.spinner-path {
+  stroke-linecap: round;
+  animation: dash 1.5s ease-in-out infinite;
+}
+
+/* Tamanhos do spinner */
+.spinner-small .spinner-icon {
+  @apply w-4 h-4;
+}
+
+.spinner-medium .spinner-icon {
+  @apply w-8 h-8;
+}
+
+.spinner-large .spinner-icon {
+  @apply w-12 h-12;
+}
+
+/* Cores do spinner */
+.spinner-primary .spinner-path {
+  stroke: theme('colors.blue.600');
+}
+
+.spinner-secondary .spinner-path {
+  stroke: theme('colors.gray.600');
+}
+
+.spinner-accent .spinner-path {
+  stroke: theme('colors.purple.600');
+}
+
+/* Texto do spinner */
+.spinner-text {
+  @apply mt-2 text-sm text-gray-600 font-medium;
+}
+
+.spinner-small .spinner-text {
+  @apply text-xs;
+}
+
+.spinner-large .spinner-text {
+  @apply text-base;
+}
+
+/* Animações */
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
+  }
+}
+
+/* Estados de hover */
+.loading-spinner:hover .spinner-icon {
+  animation-duration: 1s;
+}
+
+/* Modo escuro */
+@media (prefers-color-scheme: dark) {
+  .spinner-overlay {
+    @apply bg-gray-900 bg-opacity-75;
+  }
+  
+  .spinner-text {
+    @apply text-gray-300;
+  }
+  
+  .spinner-primary .spinner-path {
+    stroke: theme('colors.blue.400');
+  }
+  
+  .spinner-secondary .spinner-path {
+    stroke: theme('colors.gray.400');
+  }
+  
+  .spinner-accent .spinner-path {
+    stroke: theme('colors.purple.400');
+  }
+}
+
+/* Variações especiais */
+.spinner-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

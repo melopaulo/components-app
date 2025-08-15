@@ -1,4 +1,4 @@
-<div class="custom-table-container" [class]="config()?.cssClass || ''">
+<div class="custom-table-container">
 
   <div class="table-header bg-surface border-b border-gray-200 px-4 py-3">
     <div class="flex items-center justify-between">
@@ -26,7 +26,7 @@
             config()?.pagination?.showFirstLastButtons ?? true
           "
           [hidePageSize]="config()?.pagination?.hidePageSize ?? false"
-          (page)="onPageChange($event)"
+          (page)="onPageChangeWithVirtualScroll($event)"
           class="custom-paginator"
         >
         </mat-paginator>
@@ -40,27 +40,73 @@
     [style.height]="config()?.fixedHeight || 'auto'"
   >
 
+    <!-- Loading States -->
     <div
-      *ngIf="data()?.loading"
+      *ngIf="data()?.loading && !config()?.loadingStates?.skeleton"
       class="flex items-center justify-center p-8"
     >
-      <mat-spinner diameter="40"></mat-spinner>
-      <span class="ml-4 text-on-surface-variant">Carregando dados...</span>
+      <app-loading-spinner 
+        size="medium" 
+        color="primary" 
+        text="Carregando dados..."
+        [centered]="true">
+      </app-loading-spinner>
     </div>
 
+    <!-- Skeleton Loading -->
+    <div *ngIf="config()?.loadingStates?.skeleton && data()?.loading">
+      <app-skeleton-loader 
+        [rows]="config()?.loadingStates?.skeletonRows || 10"
+        [columns]="config()?.columns?.length || 4"
+        [showHeader]="true"
+        [rowHeight]="config()?.virtualScrolling?.itemSize ? config()?.virtualScrolling?.itemSize + 'px' : '48px'">
+      </app-skeleton-loader>
+    </div>
 
+    <!-- Virtual Scrolling Table -->
+    <div *ngIf="config()?.virtualScrolling?.enabled && !data()?.loading" class="virtual-scroll-container">
+      <!-- Loading overlay para virtual scrolling -->
+       <div *ngIf="isVirtualScrollLoading()" class="virtual-loading-overlay">
+        <app-loading-spinner 
+          size="small" 
+          color="primary" 
+          text="Carregando mais dados..."
+          [overlay]="false"
+          [centered]="true">
+        </app-loading-spinner>
+      </div>
+      
+      <cdk-virtual-scroll-viewport 
+        #virtualScrollViewport
+        [itemSize]="config()?.virtualScrolling?.itemSize || 48"
+        [minBufferPx]="getAdaptiveMinBuffer()"
+        [maxBufferPx]="getAdaptiveMaxBuffer()"
+        class="virtual-viewport"
+        (scrolledIndexChange)="onVirtualScrollChange($event)">
+        
+        <table mat-table [dataSource]="virtualDataSource()" class="w-full custom-table virtual-table">
+           <!-- Virtual scroll table columns will be implemented -->
+           <tr mat-header-row *matHeaderRowDef="displayedColumns(); trackBy: trackByColumn"></tr>
+           <tr mat-row *matRowDef="let row; columns: displayedColumns(); let i = index; trackBy: getTrackByFunction()" 
+               [class]="getRowClass(row)"
+               [attr.data-index]="i"></tr>
+         </table>
+      </cdk-virtual-scroll-viewport>
+    </div>
+
+    <!-- Regular Table -->
     <table
-      *ngIf="!data()?.loading"
+      *ngIf="!data()?.loading && !config()?.virtualScrolling?.enabled"
       mat-table
       [dataSource]="dataSource()"
       matSort
-      [matSortActive]="config()?.sort?.active || ''"
-      [matSortDirection]="config()?.sort?.direction || ''"
+      [matSortActive]="config()?.sorting?.active || ''"
+      [matSortDirection]="config()?.sorting?.direction || ''"
       (matSortChange)="onSortChange($event)"
       class="w-full custom-table"
     >
 
-      <ng-container matColumnDef="select" *ngIf="config()?.multiSelect">
+      <ng-container matColumnDef="select" *ngIf="config()?.selection?.enabled && config()?.selection?.multiple">
         <th mat-header-cell *matHeaderCellDef class="w-12">
           <mat-checkbox
             [checked]="isAllSelected()"
@@ -81,7 +127,7 @@
       </ng-container>
 
 
-      <ng-container matColumnDef="radio" *ngIf="config()?.singleSelect">
+      <ng-container matColumnDef="radio" *ngIf="config()?.selection?.enabled && !config()?.selection?.multiple">
         <th mat-header-cell *matHeaderCellDef class="w-12">
           <span class="sr-only">Seleção</span>
         </th>
@@ -96,10 +142,7 @@
       </ng-container>
 
 
-      <ng-container
-        matColumnDef="rowNumber"
-        *ngIf="config()?.showRowNumbers"
-      >
+      <ng-container matColumnDef="rowNumber">
         <th mat-header-cell *matHeaderCellDef class="w-16 text-center">
           #
         </th>
@@ -214,7 +257,7 @@
         Nenhum dado encontrado
       </h3>
       <p class="text-sm text-on-surface-variant">
-        {{ config()?.noDataMessage || 'Não há dados para exibir.' }}
+        Não há dados para exibir.
       </p>
     </div>
   </div>

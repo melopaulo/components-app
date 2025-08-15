@@ -1,0 +1,87 @@
+/* Skeleton Loader Styles */
+.skeleton-loader {
+  @apply w-full;
+}
+
+.skeleton-header {
+  @apply flex border-b border-gray-200 bg-gray-50;
+}
+
+.skeleton-header-cell {
+  @apply flex-1 px-4 py-3 flex items-center;
+}
+
+.skeleton-body {
+  @apply divide-y divide-gray-200;
+}
+
+.skeleton-row {
+  @apply flex hover:bg-gray-50;
+}
+
+.skeleton-cell {
+  @apply flex-1 px-4 py-3 flex items-center;
+}
+
+.skeleton-shimmer {
+  @apply bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded;
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeleton-text {
+  @apply h-4;
+}
+
+/* Animação de shimmer */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Variações de altura para diferentes tipos de conteúdo */
+.skeleton-text.skeleton-title {
+  @apply h-6;
+}
+
+.skeleton-text.skeleton-subtitle {
+  @apply h-3;
+}
+
+.skeleton-text.skeleton-button {
+  @apply h-8 w-20;
+}
+
+/* Estados responsivos */
+@media (max-width: 640px) {
+  .skeleton-cell {
+    @apply px-2 py-2;
+  }
+  
+  .skeleton-header-cell {
+    @apply px-2 py-2;
+  }
+}
+
+/* Modo escuro */
+@media (prefers-color-scheme: dark) {
+  .skeleton-shimmer {
+    @apply bg-gradient-to-r from-gray-700 via-gray-600 to-gray-700;
+  }
+  
+  .skeleton-header {
+    @apply bg-gray-800 border-gray-700;
+  }
+  
+  .skeleton-row {
+    @apply border-gray-700;
+    
+    &:hover {
+      @apply bg-gray-800;
+    }
+  }
+}

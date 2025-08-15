@@ -1,0 +1,28 @@
+<div class="skeleton-loader">
+  <!-- Cabeçalho do skeleton -->
+  <div *ngIf="showHeader" class="skeleton-header">
+    <div 
+      *ngFor="let col of columnsArray" 
+      class="skeleton-header-cell"
+      [style.height]="rowHeight">
+      <div class="skeleton-shimmer skeleton-text"></div>
+    </div>
+  </div>
+
+  <!-- Linhas do skeleton -->
+  <div class="skeleton-body">
+    <div 
+      *ngFor="let row of rowsArray" 
+      class="skeleton-row"
+      [style.height]="rowHeight">
+      <div 
+        *ngFor="let col of columnsArray; let colIndex = index" 
+        class="skeleton-cell">
+        <div 
+          class="skeleton-shimmer skeleton-text"
+          [style.width]="getRandomWidth(colIndex)">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
