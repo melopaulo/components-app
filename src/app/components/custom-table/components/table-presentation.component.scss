@@ -1,0 +1,47 @@
+:host {
+  @apply block w-full;
+}
+
+.custom-table-container {
+  @apply bg-surface rounded-lg border border-gray-200 overflow-hidden;
+}
+
+.custom-table {
+  @apply border-separate border-spacing-0;
+}
+
+.custom-table th {
+  @apply bg-gray-50 text-on-surface font-medium border-b border-gray-200;
+}
+
+.custom-table td {
+  @apply border-b border-gray-100 text-on-surface;
+}
+
+.custom-table tr:hover td {
+  @apply bg-surface/10;
+}
+
+.custom-table tr[aria-selected='true'] td {
+  @apply bg-primary/10;
+}
+
+.custom-paginator {
+  @apply border-0 bg-transparent;
+}
+
+.table-header {
+  @apply sticky top-0 z-10;
+}
+
+.text-align-left {
+  @apply text-left;
+}
+
+.text-align-center {
+  @apply text-center;
+}
+
+.text-align-right {
+  @apply text-right;
+}

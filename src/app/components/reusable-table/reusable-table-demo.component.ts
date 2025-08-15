@@ -143,7 +143,7 @@ interface User {
           </div>
           <div
             *ngFor="let event of eventLog(); trackBy: trackByIndex"
-            class="text-xs font-mono p-2 border-b border-outline/8 last:border-b-0"
+            class="text-xs font-mono p-2 border-b border-gray-100 last:border-b-0"
           >
             <span class="text-on-surface-variant">{{ event.timestamp }}</span>
             <span class="ml-2 text-on-surface">{{ event.message }}</span>

@@ -1,0 +1,63 @@
+:host {
+  @apply block min-h-screen;
+}
+
+.mat-mdc-card {
+  @apply shadow-sm border border-gray-200;
+}
+
+.mat-mdc-slide-toggle {
+  @apply text-sm;
+}
+
+.demo-controls {
+  @apply space-y-4;
+}
+
+.demo-grid {
+  @apply grid grid-cols-1 md:grid-cols-3 gap-4;
+}
+
+.demo-section {
+  @apply space-y-3;
+}
+
+.demo-info {
+  @apply text-sm space-y-1;
+}
+
+.demo-info-row {
+  @apply flex justify-between;
+}
+
+.demo-info-label {
+  @apply text-on-surface-variant;
+}
+
+.demo-info-value {
+  @apply font-medium;
+}
+
+.demo-info-value.primary {
+  @apply text-primary;
+}
+
+.event-log-item {
+  @apply flex items-start gap-3 py-2 border-b border-gray-100 last:border-b-0;
+}
+
+.event-log-icon {
+  @apply text-sm mt-0.5 text-primary;
+}
+
+.event-log-content {
+  @apply flex-1 min-w-0;
+}
+
+.event-log-message {
+  @apply text-sm font-medium text-on-surface;
+}
+
+.event-log-timestamp {
+  @apply text-xs text-on-surface-variant;
+}

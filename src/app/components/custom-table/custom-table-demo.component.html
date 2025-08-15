@@ -1,0 +1,200 @@
+<div class="p-6 space-y-6 min-h-screen bg-surface">
+
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-on-surface mb-2">Tabela Customizada - Demonstração</h1>
+      <p class="text-on-surface-variant">ETAPA 1: Estrutura Base e Paginação no Topo (Estilo Gmail)</p>
+    </div>
+    <div class="flex gap-3">
+      <button 
+        mat-raised-button 
+        color="primary"
+        (click)="generateData()"
+        [disabled]="loading()">
+        <mat-icon>refresh</mat-icon>
+        {{ loading() ? 'Carregando...' : 'Gerar Dados' }}
+      </button>
+      <button 
+        mat-stroked-button
+        (click)="clearSelection()">
+        <mat-icon>clear_all</mat-icon>
+        Limpar Seleção
+      </button>
+    </div>
+  </div>
+
+
+  <mat-card class="bg-surface-variant/20">
+    <mat-card-header>
+      <mat-card-title class="text-lg">Controles de Demonstração</mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+        <div class="space-y-3">
+          <h4 class="font-medium text-on-surface">Seleção</h4>
+          <mat-slide-toggle 
+            [checked]="multiSelectEnabled()"
+            (change)="toggleMultiSelect($event.checked)"
+            color="primary">
+            Seleção Múltipla
+          </mat-slide-toggle>
+          <mat-slide-toggle 
+            [checked]="singleSelectEnabled()"
+            (change)="toggleSingleSelect($event.checked)"
+            [disabled]="multiSelectEnabled()"
+            color="primary">
+            Seleção Única
+          </mat-slide-toggle>
+        </div>
+
+
+        <div class="space-y-3">
+          <h4 class="font-medium text-on-surface">Exibição</h4>
+          <mat-slide-toggle 
+            [checked]="showRowNumbers()"
+            (change)="showRowNumbers.set($event.checked)"
+            color="primary">
+            Números das Linhas
+          </mat-slide-toggle>
+          <mat-slide-toggle 
+            [checked]="fixedHeightEnabled()"
+            (change)="toggleFixedHeight($event.checked)"
+            color="primary">
+            Altura Fixa (400px)
+          </mat-slide-toggle>
+        </div>
+
+        <!-- Informações de Estado -->
+        <div class="space-y-3">
+          <h4 class="font-medium text-on-surface">Estado Atual</h4>
+          <div class="text-sm space-y-1">
+            <div class="flex justify-between">
+              <span class="text-on-surface-variant">Total de itens:</span>
+              <span class="font-medium">{{ tableData().pagination.totalItems }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-on-surface-variant">Página atual:</span>
+              <span class="font-medium">{{ currentPage() }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-on-surface-variant">Itens por página:</span>
+              <span class="font-medium">{{ currentPageSize() }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-on-surface-variant">Selecionados:</span>
+              <span class="font-medium text-primary">{{ selectedCount() }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Funcionalidades Implementadas -->
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title class="text-lg">✅ Funcionalidades da ETAPA 1</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+        <div class="space-y-2">
+          <h4 class="font-medium text-on-surface">Estrutura e Arquitetura:</h4>
+          <ul class="space-y-1 text-on-surface-variant">
+            <li>✓ Smart/Dumb Components separados</li>
+            <li>✓ Gerenciamento de estado com Angular Signals</li>
+            <li>✓ Interfaces genéricas TypeScript</li>
+            <li>✓ Reutilização de tipos do Angular Material</li>
+          </ul>
+        </div>
+        <div class="space-y-2">
+          <h4 class="font-medium text-on-surface">Paginação Estilo Gmail:</h4>
+          <ul class="space-y-1 text-on-surface-variant">
+            <li>✓ Paginação no topo da tabela</li>
+            <li>✓ Controles de navegação (primeira, anterior, próxima, última)</li>
+            <li>✓ Seletor de itens por página</li>
+            <li>✓ Totalizador de itens e informações da página</li>
+          </ul>
+        </div>
+        <div class="space-y-2">
+          <h4 class="font-medium text-on-surface">Funcionalidades Básicas:</h4>
+          <ul class="space-y-1 text-on-surface-variant">
+            <li>✓ Ordenação por colunas</li>
+            <li>✓ Seleção múltipla e única</li>
+            <li>✓ Formatação automática de dados</li>
+            <li>✓ Estados de loading e dados vazios</li>
+          </ul>
+        </div>
+        <div class="space-y-2">
+          <h4 class="font-medium text-on-surface">Estilização e Acessibilidade:</h4>
+          <ul class="space-y-1 text-on-surface-variant">
+            <li>✓ Tailwind CSS + SCSS</li>
+            <li>✓ Suporte a temas Material Design</li>
+            <li>✓ Navegação por teclado (Enter/Space)</li>
+            <li>✓ ARIA labels e atributos de acessibilidade</li>
+          </ul>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title class="text-lg">Tabela de Produtos</mat-card-title>
+      <mat-card-subtitle>
+        Demonstração completa com {{ tableData().pagination.totalItems }} produtos
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content class="p-0">
+      <app-table-container
+        [columns]="columns()"
+        [data]="tableData()"
+        [loading]="loading()"
+        [multiSelect]="multiSelectEnabled()"
+        [singleSelect]="singleSelectEnabled()"
+        [showRowNumbers]="showRowNumbers()"
+        [fixedHeight]="fixedHeight()"
+        [pageSizeOptions]="pageSizeOptions()"
+        (pageChange)="onPageChange($event)"
+        (sortChange)="onSortChange($event)"
+        (selectionChange)="onSelectionChange($event)"
+        (rowClick)="onRowClick($event)"
+      ></app-table-container>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Log de Eventos -->
+  <mat-card>
+    <mat-card-header>
+      <div class="flex items-center justify-between w-full">
+        <mat-card-title class="text-lg">Log de Eventos</mat-card-title>
+        <button 
+          mat-icon-button 
+          (click)="clearEventLog()"
+          [disabled]="eventLog().length === 0">
+          <mat-icon>clear</mat-icon>
+        </button>
+      </div>
+    </mat-card-header>
+    <mat-card-content class="max-h-64 overflow-y-auto">
+      <div *ngIf="eventLog().length === 0" class="text-center py-8 text-on-surface-variant">
+        <mat-icon class="text-4xl mb-2 opacity-50">event_note</mat-icon>
+        <p>Nenhum evento registrado ainda</p>
+        <p class="text-xs">Interaja com a tabela para ver os eventos</p>
+      </div>
+      <div 
+        *ngFor="let event of eventLog(); trackBy: trackByIndex" 
+        class="flex items-start gap-3 py-2 border-b border-gray-100 last:border-b-0">
+        <mat-icon class="text-sm mt-0.5 text-primary">{{ event.icon }}</mat-icon>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-medium text-on-surface">{{ event.type }}</span>
+            <span class="text-xs text-on-surface-variant">{{ event.timestamp }}</span>
+          </div>
+          <p class="text-xs text-on-surface-variant mt-1">{{ event.message }}</p>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

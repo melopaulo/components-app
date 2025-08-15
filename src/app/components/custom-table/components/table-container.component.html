@@ -1,0 +1,10 @@
+<div class="table-container">
+  <app-table-presentation
+    [config]="tableConfig()"
+    [data]="currentData()"
+    (pageChange)="handlePageChange($event)"
+    (sortChange)="handleSortChange($event)"
+    (selectionChange)="handleSelectionChange($event)"
+    (rowClick)="handleRowClick($event)"
+  ></app-table-presentation>
+</div>
