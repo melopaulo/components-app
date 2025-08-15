@@ -124,6 +124,11 @@ module.exports = {
       },
       // Sombras baseadas no Material Design
       boxShadow: {
+        'sm': '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+        'md': '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+        'lg': '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+        'xl': '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+        '2xl': '0 25px 50px -12px rgb(0 0 0 / 0.25)',
         'elevation-1': '0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15)',
         'elevation-2': '0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 2px 6px 2px rgba(0, 0, 0, 0.15)',
         'elevation-3': '0px 1px 3px 0px rgba(0, 0, 0, 0.3), 0px 4px 8px 3px rgba(0, 0, 0, 0.15)',
@@ -189,6 +194,42 @@ module.exports = {
           fontSize: theme('fontSize.label-large[0]'),
           lineHeight: theme('fontSize.label-large[1].lineHeight'),
           letterSpacing: theme('fontSize.label-large[1].letterSpacing'),
+          fontWeight: '500',
+        },
+        '.text-title-medium': {
+          fontSize: theme('fontSize.title-medium[0]'),
+          lineHeight: theme('fontSize.title-medium[1].lineHeight'),
+          letterSpacing: theme('fontSize.title-medium[1].letterSpacing'),
+          fontWeight: '500',
+        },
+        '.text-title-small': {
+          fontSize: theme('fontSize.title-small[0]'),
+          lineHeight: theme('fontSize.title-small[1].lineHeight'),
+          letterSpacing: theme('fontSize.title-small[1].letterSpacing'),
+          fontWeight: '500',
+        },
+        '.text-body-medium': {
+          fontSize: theme('fontSize.body-medium[0]'),
+          lineHeight: theme('fontSize.body-medium[1].lineHeight'),
+          letterSpacing: theme('fontSize.body-medium[1].letterSpacing'),
+          fontWeight: '400',
+        },
+        '.text-body-small': {
+          fontSize: theme('fontSize.body-small[0]'),
+          lineHeight: theme('fontSize.body-small[1].lineHeight'),
+          letterSpacing: theme('fontSize.body-small[1].letterSpacing'),
+          fontWeight: '400',
+        },
+        '.text-label-medium': {
+          fontSize: theme('fontSize.label-medium[0]'),
+          lineHeight: theme('fontSize.label-medium[1].lineHeight'),
+          letterSpacing: theme('fontSize.label-medium[1].letterSpacing'),
+          fontWeight: '500',
+        },
+        '.text-label-small': {
+          fontSize: theme('fontSize.label-small[0]'),
+          lineHeight: theme('fontSize.label-small[1].lineHeight'),
+          letterSpacing: theme('fontSize.label-small[1].letterSpacing'),
           fontWeight: '500',
         },
         

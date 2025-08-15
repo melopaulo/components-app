@@ -22,12 +22,16 @@ export const routes: Routes = [
     path: 'custom-mat-select3',
     loadComponent: () => import('./components/custom-mat-select3/custom-mat-select3-demo.component').then(m => m.CustomMatSelect3DemoComponent)
   },
-  {
-    path: 'custom-mat-select4',
-    loadComponent: () => import('./components/custom-mat-select4/custom-mat-select4-demo.component').then(m => m.CustomMatSelect4DemoComponent)
-  },
+  // {
+  //   path: 'custom-mat-select4',
+  //   loadComponent: () => import('./components/custom-mat-select4/custom-mat-select4-demo.component').then(m => m.CustomMatSelect4DemoComponent)
+  // },
   {
     path: 'custom-mat-select5',
     loadComponent: () => import('./components/custom-mat-select5/custom-mat-select5-demo.component').then(m => m.CustomMatSelect5DemoComponent)
+  },
+  {
+    path: 'reusable-table',
+    loadComponent: () => import('./components/reusable-table/reusable-table-demo.component').then(m => m.ReusableTableDemoComponent)
   }
 ];

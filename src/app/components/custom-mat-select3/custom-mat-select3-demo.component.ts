@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 import { CustomMatSelect3Component, SearchParams, ApiResponse } from './custom-mat-select3.component';
 import { MockApiService } from '../../services/mock-api.service';
@@ -409,18 +409,62 @@ export class CustomMatSelect3DemoComponent implements OnInit {
   searchAllDataFunction: (params: SearchParams) => Observable<ApiResponse>;
   
   constructor() {
-    // Configurar funções de busca
-    this.searchCountriesFunction = (params: SearchParams) => 
-      this.mockApiService.searchCountries(params);
+    // Configurar funções de busca com conversão de tipos
+    this.searchCountriesFunction = (params: SearchParams) => {
+      const fullParams = {
+        ...params,
+        limit: params.pageSize || 10,
+        offset: ((params.page || 1) - 1) * (params.pageSize || 10)
+      };
+      return this.mockApiService.searchCountries(fullParams).pipe(
+        map((response: any) => ({
+          items: response.entities || response.items || [],
+          pagination: response.pagination || { page: 1, pageSize: 10, totalItems: 0, hasMore: false }
+        }))
+      );
+    };
     
-    this.searchCitiesFunction = (params: SearchParams) => 
-      this.mockApiService.searchBrazilianCities(params);
+    this.searchCitiesFunction = (params: SearchParams) => {
+      const fullParams = {
+        ...params,
+        limit: params.pageSize || 10,
+        offset: ((params.page || 1) - 1) * (params.pageSize || 10)
+      };
+      return this.mockApiService.searchBrazilianCities(fullParams).pipe(
+        map((response: any) => ({
+          items: response.entities || response.items || [],
+          pagination: response.pagination || { page: 1, pageSize: 10, totalItems: 0, hasMore: false }
+        }))
+      );
+    };
     
-    this.searchTechCompaniesFunction = (params: SearchParams) => 
-      this.mockApiService.searchTechCompanies(params);
+    this.searchTechCompaniesFunction = (params: SearchParams) => {
+      const fullParams = {
+        ...params,
+        limit: params.pageSize || 10,
+        offset: ((params.page || 1) - 1) * (params.pageSize || 10)
+      };
+      return this.mockApiService.searchTechCompanies(fullParams).pipe(
+        map((response: any) => ({
+          items: response.entities || response.items || [],
+          pagination: response.pagination || { page: 1, pageSize: 10, totalItems: 0, hasMore: false }
+        }))
+      );
+    };
     
-    this.searchAllDataFunction = (params: SearchParams) => 
-      this.mockApiService.searchItems(params);
+    this.searchAllDataFunction = (params: SearchParams) => {
+      const fullParams = {
+        ...params,
+        limit: params.pageSize || 10,
+        offset: ((params.page || 1) - 1) * (params.pageSize || 10)
+      };
+      return this.mockApiService.searchItems(fullParams).pipe(
+        map((response: any) => ({
+          items: response.entities || response.items || [],
+          pagination: response.pagination || { page: 1, pageSize: 10, totalItems: 0, hasMore: false }
+        }))
+      );
+    };
   }
   
   ngOnInit() {

@@ -5,7 +5,7 @@ import { SelectOption, SearchParams, ApiResponse } from '../components/custom-ma
 @Injectable({
   providedIn: 'root'
 })
-export class MockApiService {
+export class MockApiV5Service {
   
   // Dados mock para simular uma API com muitos itens
   private mockData: SelectOption[] = [

@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 import { MockApiService } from '../../services/mock-api.service';
 import { ApiResponse, CustomMatSelect4Component, SearchParams } from './custom-mat-select4.component';
@@ -262,19 +262,67 @@ export class CustomMatSelect4DemoComponent implements OnInit {
   
   // Funções de busca para cada select
   searchCountriesFunction = (params: SearchParams): Observable<ApiResponse> => {
-    return this.mockApiService.searchCountries(params);
+    // Adicionar propriedades obrigatórias ao params
+    const fullParams = {
+      ...params,
+      limit: params.pageSize || 10,
+      offset: ((params.page || 1) - 1) * (params.pageSize || 10)
+    };
+    return this.mockApiService.searchCountries(fullParams).pipe(
+      // Converter ApiResponse<any> para ApiResponse
+      map((response: any) => ({
+        items: response.entities || response.items || [],
+        pagination: response.pagination || { page: 1, pageSize: 10, totalItems: 0, hasMore: false }
+      }))
+    );
   };
   
   searchCitiesFunction = (params: SearchParams): Observable<ApiResponse> => {
-    return this.mockApiService.searchBrazilianCities(params);
+    // Adicionar propriedades obrigatórias ao params
+    const fullParams = {
+      ...params,
+      limit: params.pageSize || 10,
+      offset: ((params.page || 1) - 1) * (params.pageSize || 10)
+    };
+    return this.mockApiService.searchBrazilianCities(fullParams).pipe(
+      // Converter ApiResponse<any> para ApiResponse
+      map((response: any) => ({
+        items: response.entities || response.items || [],
+        pagination: response.pagination || { page: 1, pageSize: 10, totalItems: 0, hasMore: false }
+      }))
+    );
   };
   
   searchTechCompaniesFunction = (params: SearchParams): Observable<ApiResponse> => {
-    return this.mockApiService.searchTechCompanies(params);
+    // Adicionar propriedades obrigatórias ao params
+    const fullParams = {
+      ...params,
+      limit: params.pageSize || 10,
+      offset: ((params.page || 1) - 1) * (params.pageSize || 10)
+    };
+    return this.mockApiService.searchTechCompanies(fullParams).pipe(
+      // Converter ApiResponse<any> para ApiResponse
+      map((response: any) => ({
+        items: response.entities || response.items || [],
+        pagination: response.pagination || { page: 1, pageSize: 10, totalItems: 0, hasMore: false }
+      }))
+    );
   };
   
   searchAllDataFunction = (params: SearchParams): Observable<ApiResponse> => {
-    return this.mockApiService.searchItems(params);
+    // Adicionar propriedades obrigatórias ao params
+    const fullParams = {
+      ...params,
+      limit: params.pageSize || 10,
+      offset: ((params.page || 1) - 1) * (params.pageSize || 10)
+    };
+    return this.mockApiService.searchItems(fullParams).pipe(
+      // Converter ApiResponse<any> para ApiResponse
+      map((response: any) => ({
+        items: response.entities || response.items || [],
+        pagination: response.pagination || { page: 1, pageSize: 10, totalItems: 0, hasMore: false }
+      }))
+    );
   };
 
   constructor() {

@@ -1,6 +1,6 @@
 <!-- Container principal do componente de seleção customizado -->
 <!-- Responsável por encapsular todo o select com funcionalidades avançadas -->
-<div class="custom-select-container">
+<div class="custom-select-container w-full">
   
   <!-- Campo de formulário Material Design com largura total -->
   <!-- Permite ao usuário selecionar uma ou múltiplas opções de uma lista -->
@@ -22,12 +22,12 @@
 
       <!-- Opção especial que contém o campo de busca nativo -->
       <!-- Permite ao usuário filtrar as opções disponíveis em tempo real -->
-      <mat-option class="search-option" disabled>
-        <div class="search-container">
+      <mat-option class="search-option !p-2" disabled>
+        <div class="search-container w-full">
           
           <!-- Campo de entrada para busca com aparência preenchida -->
           <!-- Usuário digita aqui para filtrar as opções do select -->
-          <mat-form-field appearance="fill" class="search-field">
+          <mat-form-field appearance="fill" class="search-field w-full">
             <mat-label>{{ searchPlaceholder() }}</mat-label>
             <input
               matInput
@@ -38,7 +38,7 @@
               autocomplete="off">
 
             <!-- Ícone de busca que indica a funcionalidade de pesquisa -->
-            <mat-icon matPrefix class="search-icon">search</mat-icon>
+            <mat-icon matPrefix class="search-icon text-surface-500">search</mat-icon>
 
             <!-- Botão para limpar a busca quando há texto digitado -->
             <!-- Permite ao usuário resetar rapidamente o filtro aplicado -->
@@ -46,10 +46,10 @@
               <button
                 mat-icon-button
                 matSuffix
-                class="clear-search-btn"
+                class="clear-search-btn !w-8 !h-8 hover:bg-surface-100 transition-colors duration-200"
                 (click)="clearSearch($event)"
                 type="button">
-                <mat-icon class="custom-clear-icon">{{ customClearIcon() }}</mat-icon>
+                <mat-icon class="custom-clear-icon text-surface-600 hover:text-warn-500">{{ customClearIcon() }}</mat-icon>
               </button>
             }
 
@@ -58,7 +58,7 @@
             @if (isSearching()) {
               <mat-spinner matSuffix
                 diameter="20"
-                class="search-spinner" />
+                class="search-spinner !mr-2" />
             }
           </mat-form-field>
         </div>
@@ -69,10 +69,10 @@
       @if (showPaginationInfo() && allOptions().length > 0) {
         <mat-option
           disabled
-          class="pagination-info-option">
-          <div class="pagination-info">
-            <mat-icon class="pagination-icon">info</mat-icon>
-            <span class="pagination-text">{{ paginationText() }}</span>
+          class="pagination-info-option !p-3 !bg-surface-50">
+          <div class="pagination-info flex items-center gap-2">
+            <mat-icon class="pagination-icon text-primary-500 !text-sm">info</mat-icon>
+            <span class="pagination-text text-body-small text-surface-600">{{ paginationText() }}</span>
           </div>
         </mat-option>
       }
@@ -82,8 +82,9 @@
       @for (option of filteredOptions(); track trackByValue($index, option)) {
         <mat-option
           [value]="option.value"
-          [disabled]="option.disabled">
-          {{ option.label }}
+          [disabled]="option.disabled"
+          class="!py-3 !px-4 hover:!bg-surface-100 transition-colors duration-150">
+          <span class="text-body-medium text-on-surface-primary">{{ option.label }}</span>
         </mat-option>
       }
 
@@ -92,10 +93,10 @@
       @if (isLoadingMore()) {
         <mat-option
           disabled
-          class="loading-option">
-          <div class="loading-content">
+          class="loading-option !p-3 !bg-surface-50">
+          <div class="loading-content flex items-center gap-3 justify-center">
             <mat-spinner diameter="20" />
-            <span class="loading-text">{{ loadingMoreLabel() }}</span>
+            <span class="loading-text text-body-small text-surface-600">{{ loadingMoreLabel() }}</span>
           </div>
         </mat-option>
       }
@@ -105,10 +106,10 @@
       @if (!hasMoreItems() && allOptions().length > 0 && !isSearching()) {
         <mat-option
           disabled
-          class="info-option">
-          <div class="info-content">
-            <mat-icon class="info-icon">check_circle</mat-icon>
-            <span class="info-text">{{ noMoreItemsLabel() }}</span>
+          class="info-option !p-3 !bg-surface-50">
+          <div class="info-content flex items-center gap-2 justify-center">
+            <mat-icon class="info-icon text-accent-500 !text-sm">check_circle</mat-icon>
+            <span class="info-text text-body-small text-surface-600">{{ noMoreItemsLabel() }}</span>
           </div>
         </mat-option>
       }
@@ -118,10 +119,10 @@
       @if (filteredOptions().length === 0 && !isSearching() && !isLoadingMore()) {
         <mat-option
           disabled
-          class="info-option">
-          <div class="info-content">
-            <mat-icon class="info-icon">search_off</mat-icon>
-            <span class="info-text">{{ noResultsLabel() }}</span>
+          class="info-option !p-3 !bg-surface-50">
+          <div class="info-content flex items-center gap-2 justify-center">
+            <mat-icon class="info-icon text-warn-500 !text-sm">search_off</mat-icon>
+            <span class="info-text text-body-small text-surface-600">{{ noResultsLabel() }}</span>
           </div>
         </mat-option>
       }
@@ -141,8 +142,8 @@
   <!-- Informações de paginação externa (opcional) -->
   <!-- Exibe estatísticas de paginação fora do dropdown -->
   @if (showPaginationInfo() && allOptions().length > 0) {
-    <div class="external-pagination-info">
-      <small class="text-gray-600 dark:text-gray-400">
+    <div class="external-pagination-info mt-2 px-1">
+      <small class="text-body-small text-surface-500">
         {{ paginationText() }}
       </small>
     </div>

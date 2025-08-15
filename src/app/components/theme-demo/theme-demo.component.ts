@@ -39,6 +39,8 @@ import { ThemeService } from '../../services/theme.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   // Encapsulamento de view desabilitado para permitir estilos globais
   encapsulation: ViewEncapsulation.None,
+  // Arquivo de estilos específico do componente
+  styleUrl: './theme-demo.component.scss',
   template: `
     <div class="container mx-auto px-4 py-8 animate-fade-in">
       <!-- Cabeçalho -->

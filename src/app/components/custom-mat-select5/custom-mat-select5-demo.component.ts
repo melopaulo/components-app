@@ -7,8 +7,37 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { Observable } from 'rxjs';
 
-import { MockApiService } from '../../services/mock-api.service';
+import { MockApiV5Service } from '../../services/mock-api-v5.service';
 import { ApiResponse, CustomMatSelect5Component, SearchParams } from './custom-mat-select5.component';
+
+// Interfaces para tipagem dos dados
+interface Country {
+  id: number;
+  name: string;
+  code: string;
+  label: string;
+}
+
+interface City {
+  id: number;
+  name: string;
+  state: string;
+  label: string;
+}
+
+interface TechCompany {
+  id: number;
+  name: string;
+  sector: string;
+  label: string;
+}
+
+interface GeneralItem {
+  id: number;
+  name: string;
+  type: string;
+  label: string;
+}
 
 @Component({
   selector: 'app-custom-mat-select5-demo',
@@ -26,40 +55,40 @@ import { ApiResponse, CustomMatSelect5Component, SearchParams } from './custom-m
   // Encapsulamento de view desabilitado para permitir estilos globais
   encapsulation: ViewEncapsulation.None,
   template: `
-    <div class="demo-container p-6 max-w-6xl mx-auto">
+    <div class="demo-container container-padding section-spacing max-w-6xl mx-auto">
       <!-- Cabeçalho -->
       <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+        <h1 class="text-headline-large text-on-surface-primary mb-2">
           Custom Mat Select 5 - Versão Refatorada
         </h1>
-        <p class="text-gray-600 dark:text-gray-400 text-lg">
+        <p class="text-body-large text-on-surface-secondary">
           Componente de seleção avançado com arquivos HTML e SCSS separados, usando apenas Tailwind CSS
         </p>
         
         <!-- Badges de funcionalidades -->
         <div class="flex flex-wrap gap-2 mt-4">
-          <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm font-medium">
-            <mat-icon class="inline-block w-4 h-4 mr-1">search</mat-icon>
+          <span class="px-3 py-1 bg-primary-100 text-primary-800 rounded-full text-label-medium font-medium">
+            <mat-icon class="inline-block !w-4 !h-4 mr-1 !text-sm">search</mat-icon>
             Busca Nativa
           </span>
-          <span class="px-3 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full text-sm font-medium">
-            <mat-icon class="inline-block w-4 h-4 mr-1">all_inclusive</mat-icon>
+          <span class="px-3 py-1 bg-accent-100 text-accent-800 rounded-full text-label-medium font-medium">
+            <mat-icon class="inline-block !w-4 !h-4 mr-1 !text-sm">all_inclusive</mat-icon>
             Scroll Infinito
           </span>
-          <span class="px-3 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded-full text-sm font-medium">
-            <mat-icon class="inline-block w-4 h-4 mr-1">tune</mat-icon>
+          <span class="px-3 py-1 bg-surface-200 text-surface-800 rounded-full text-label-medium font-medium">
+            <mat-icon class="inline-block !w-4 !h-4 mr-1 !text-sm">tune</mat-icon>
             Ícone Customizado
           </span>
-          <span class="px-3 py-1 bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 rounded-full text-sm font-medium">
-            <mat-icon class="inline-block w-4 h-4 mr-1">analytics</mat-icon>
+          <span class="px-3 py-1 bg-primary-200 text-primary-900 rounded-full text-label-medium font-medium">
+            <mat-icon class="inline-block !w-4 !h-4 mr-1 !text-sm">analytics</mat-icon>
             Relatório de Paginação
           </span>
-          <span class="px-3 py-1 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded-full text-sm font-medium">
-            <mat-icon class="inline-block w-4 h-4 mr-1">palette</mat-icon>
+          <span class="px-3 py-1 bg-warn-100 text-warn-800 rounded-full text-label-medium font-medium">
+            <mat-icon class="inline-block !w-4 !h-4 mr-1 !text-sm">palette</mat-icon>
             Apenas Tailwind CSS
           </span>
-          <span class="px-3 py-1 bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 rounded-full text-sm font-medium">
-            <mat-icon class="inline-block w-4 h-4 mr-1">architecture</mat-icon>
+          <span class="px-3 py-1 bg-accent-200 text-accent-900 rounded-full text-label-medium font-medium">
+            <mat-icon class="inline-block !w-4 !h-4 mr-1 !text-sm">architecture</mat-icon>
             Arquivos Separados
           </span>
         </div>
@@ -74,7 +103,7 @@ import { ApiResponse, CustomMatSelect5Component, SearchParams } from './custom-m
           <!-- Select de Países -->
           <mat-card class="p-6">
             <div>
-              <h3 class="text-lg font-medium mb-3 text-gray-900 dark:text-white">
+              <h3 class="text-title-medium text-on-surface-primary mb-4">
                 Países (Busca Nativa Básica)
               </h3>
               <app-custom-mat-select5 formControlName="country"
@@ -94,7 +123,7 @@ import { ApiResponse, CustomMatSelect5Component, SearchParams } from './custom-m
           <!-- Select Múltiplo de Cidades -->
           <mat-card class="p-6">
             <div>
-              <h3 class="text-lg font-medium mb-3 text-gray-900 dark:text-white">
+              <h3 class="text-title-medium text-on-surface-primary mb-4">
                 Cidades Brasileiras (Paginação Customizada)
               </h3>
               <app-custom-mat-select5 formControlName="cities"
@@ -117,7 +146,7 @@ import { ApiResponse, CustomMatSelect5Component, SearchParams } from './custom-m
           <!-- Select de Empresas de Tecnologia -->
           <mat-card class="p-6">
             <div>
-              <h3 class="text-lg font-medium mb-3 text-gray-900 dark:text-white">
+              <h3 class="text-title-medium text-on-surface-primary mb-4">
                 Empresas de Tecnologia (Ícone Personalizado)
               </h3>
               <app-custom-mat-select5 formControlName="techCompany"
@@ -139,8 +168,8 @@ import { ApiResponse, CustomMatSelect5Component, SearchParams } from './custom-m
           <!-- Select Geral com Todos os Dados -->
           <mat-card class="p-6">
             <div>
-              <h3 class="text-lg font-medium mb-3 text-gray-900 dark:text-white">
-                Busca Geral (Paginação Avançada)
+              <h3 class="text-title-medium text-on-surface-primary mb-4">
+                4. Busca Geral (Múltiplos Tipos)
               </h3>
               <app-custom-mat-select5 formControlName="generalSearch"
                 label="Busca geral"
@@ -170,45 +199,45 @@ import { ApiResponse, CustomMatSelect5Component, SearchParams } from './custom-m
           
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <!-- País selecionado -->
-            <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-              <h4 class="font-medium text-blue-900 dark:text-blue-100 mb-2">País Selecionado</h4>
-              <p class="text-sm text-blue-700 dark:text-blue-300">
+            <div class="card-container bg-primary-50 border-primary-200">
+              <h4 class="text-title-small text-primary-900 mb-3">País Selecionado</h4>
+              <p class="text-body-small text-primary-800">
                 {{ selectedCountry() || 'Nenhum país selecionado' }}
               </p>
-              <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">
+              <p class="text-label-small text-primary-500 mt-2">
                 Última busca: {{ lastCountrySearch() || 'Nenhuma' }}
               </p>
             </div>
 
             <!-- Cidades selecionadas -->
-            <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
-              <h4 class="font-medium text-green-900 dark:text-green-100 mb-2">Cidades Selecionadas</h4>
-              <p class="text-sm text-green-700 dark:text-green-300">
-                {{ selectedCities().length }} cidade(s) selecionada(s)
+            <div class="card-container bg-accent-50 border-accent-200">
+              <h4 class="text-title-small text-accent-900 mb-3">Cidades Selecionadas</h4>
+              <p class="text-body-small text-accent-800">
+                {{ selectedCities().length > 0 ? selectedCities().join(', ') : 'Nenhuma cidade selecionada' }}
               </p>
-              <p class="text-xs text-green-600 dark:text-green-400 mt-1">
+              <p class="text-label-small text-accent-500 mt-2">
                 Última busca: {{ lastCitiesSearch() || 'Nenhuma' }}
               </p>
             </div>
 
             <!-- Empresa selecionada -->
-            <div class="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
-              <h4 class="font-medium text-purple-900 dark:text-purple-100 mb-2">Empresa Selecionada</h4>
-              <p class="text-sm text-purple-700 dark:text-purple-300">
+            <div class="card-container bg-surface-100 border-surface-300">
+              <h4 class="text-title-small text-surface-900 mb-3">Empresa Selecionada</h4>
+              <p class="text-body-small text-surface-800">
                 {{ selectedTechCompany() || 'Nenhuma empresa selecionada' }}
               </p>
-              <p class="text-xs text-purple-600 dark:text-purple-400 mt-1">
+              <p class="text-label-small text-surface-500 mt-2">
                 Última busca: {{ lastTechCompanySearch() || 'Nenhuma' }}
               </p>
             </div>
 
             <!-- Busca geral -->
-            <div class="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg">
-              <h4 class="font-medium text-orange-900 dark:text-orange-100 mb-2">Busca Geral</h4>
-              <p class="text-sm text-orange-700 dark:text-orange-300">
+            <div class="card-container bg-warn-50 border-warn-200">
+              <h4 class="text-title-small text-warn-900 mb-3">Busca Geral</h4>
+              <p class="text-body-small text-warn-800">
                 {{ selectedGeneralSearch() || 'Nenhum item selecionado' }}
               </p>
-              <p class="text-xs text-orange-600 dark:text-orange-400 mt-1">
+              <p class="text-label-small text-warn-500 mt-2">
                 Última busca: {{ lastGeneralSearch() || 'Nenhuma' }}
               </p>
             </div>
@@ -216,14 +245,14 @@ import { ApiResponse, CustomMatSelect5Component, SearchParams } from './custom-m
         </mat-card>
 
         <!-- Ações -->
-        <mat-card class="p-6">
+        <div class="card-container">
           <div class="flex flex-wrap gap-4">
             <button 
               mat-raised-button 
               color="primary" 
               (click)="resetForm()"
-              class="flex items-center gap-2">
-              <mat-icon>refresh</mat-icon>
+              class="flex items-center gap-2 !px-6 !py-3">
+              <mat-icon class="!text-lg">refresh</mat-icon>
               Limpar Formulário
             </button>
             
@@ -231,12 +260,12 @@ import { ApiResponse, CustomMatSelect5Component, SearchParams } from './custom-m
               mat-raised-button 
               color="accent" 
               (click)="logFormValue()"
-              class="flex items-center gap-2">
-              <mat-icon>code</mat-icon>
+              class="flex items-center gap-2 !px-6 !py-3">
+              <mat-icon class="!text-lg">code</mat-icon>
               Log Valores
             </button>
           </div>
-        </mat-card>
+        </div>
 
       </form>
     </div>
@@ -249,7 +278,7 @@ import { ApiResponse, CustomMatSelect5Component, SearchParams } from './custom-m
 })
 export class CustomMatSelect5DemoComponent implements OnInit {
   private fb = inject(FormBuilder);
-  private mockApiService = inject(MockApiService);
+  private mockApiService = inject(MockApiV5Service);
 
   demoForm: FormGroup;
   
@@ -264,20 +293,20 @@ export class CustomMatSelect5DemoComponent implements OnInit {
   lastTechCompanySearch = signal<string>('');
   lastGeneralSearch = signal<string>('');
   
-  // Funções de busca para cada select
-  searchCountriesFunction = (params: SearchParams): Observable<ApiResponse> => {
+  // Funções de busca para cada select - agora tipadas
+  searchCountriesFunction = (params: SearchParams<any>): Observable<ApiResponse<any>> => {
     return this.mockApiService.searchCountries(params);
   };
   
-  searchCitiesFunction = (params: SearchParams): Observable<ApiResponse> => {
+  searchCitiesFunction = (params: SearchParams<any>): Observable<ApiResponse<any>> => {
     return this.mockApiService.searchBrazilianCities(params);
   };
   
-  searchTechCompaniesFunction = (params: SearchParams): Observable<ApiResponse> => {
+  searchTechCompaniesFunction = (params: SearchParams<any>): Observable<ApiResponse<any>> => {
     return this.mockApiService.searchTechCompanies(params);
   };
   
-  searchAllDataFunction = (params: SearchParams): Observable<ApiResponse> => {
+  searchAllDataFunction = (params: SearchParams<any>): Observable<ApiResponse<any>> => {
     return this.mockApiService.searchItems(params);
   };
 
@@ -299,25 +328,43 @@ export class CustomMatSelect5DemoComponent implements OnInit {
   }
 
   // Event handlers para mudanças de seleção
-  onCountryChange(value: any) {
+  onCountryChange(value: Country | Country[] | null) {
     console.log('País selecionado:', value);
-    this.selectedCountry.set(value?.label || '');
+    if (Array.isArray(value)) {
+      this.selectedCountry.set(value[0]?.label || '');
+    } else {
+      this.selectedCountry.set(value?.label || '');
+    }
   }
 
-  onCitiesChange(values: any[]) {
+  onCitiesChange(values: City[] | City | null) {
     console.log('Cidades selecionadas:', values);
-    const cityLabels = values?.map(v => v.label) || [];
-    this.selectedCities.set(cityLabels);
+    if (Array.isArray(values)) {
+      const cityLabels = values.map(v => v.label);
+      this.selectedCities.set(cityLabels);
+    } else if (values) {
+      this.selectedCities.set([values.label]);
+    } else {
+      this.selectedCities.set([]);
+    }
   }
 
-  onTechCompanyChange(value: any) {
+  onTechCompanyChange(value: TechCompany | TechCompany[] | null) {
     console.log('Empresa selecionada:', value);
-    this.selectedTechCompany.set(value?.label || '');
+    if (Array.isArray(value)) {
+      this.selectedTechCompany.set(value[0]?.label || '');
+    } else {
+      this.selectedTechCompany.set(value?.label || '');
+    }
   }
 
-  onGeneralSearchChange(value: any) {
+  onGeneralSearchChange(value: GeneralItem | GeneralItem[] | null) {
     console.log('Busca geral selecionada:', value);
-    this.selectedGeneralSearch.set(value?.label || '');
+    if (Array.isArray(value)) {
+      this.selectedGeneralSearch.set(value[0]?.label || '');
+    } else {
+      this.selectedGeneralSearch.set(value?.label || '');
+    }
   }
 
   // Event handlers para mudanças de busca
