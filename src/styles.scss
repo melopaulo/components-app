@@ -1,88 +1,43 @@
-/* You can add global styles to this file, and also import other style files */
 
-// Importar Tailwind CSS
-@import "tailwindcss";
+// Include theming for Angular Material with `mat.theme()`.
+// This Sass mixin will define CSS variables that are used for styling Angular Material
+// components according to the Material 3 design spec.
+// Learn more about theming and how to use it for your application's
+// custom components at https://material.angular.dev/guide/theming
+@use '@angular/material' as mat;
 
-// Importar Angular Material (tema base)
-@import '@angular/material/prebuilt-themes/indigo-pink.css';
-
-// Importar overrides customizados do Material com Tailwind
-@import './material-tailwind-overrides.scss';
-
-// Importar fontes do Google
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
-@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
-
-// Reset e configurações globais usando Tailwind
-* {
-  @apply box-border;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 html {
-  @apply h-full text-base; // Base para rem (16px)
+  @include mat.theme((
+    color: (
+      primary: mat.$azure-palette,
+      tertiary: mat.$blue-palette,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
 }
 
 body {
-  @apply m-0 p-0 h-full;
-  @apply font-sans text-body-medium text-on-surface-primary;
-  @apply bg-surface-50;
-  @apply antialiased;
-  
-  // Configurações específicas do Material Design
-  -moz-osx-font-smoothing: grayscale;
-}
+  // Default the application to a light color theme. This can be changed to
+  // `dark` to enable the dark color theme, or to `light dark` to defer to the
+  // user's system settings.
+  color-scheme: light;
 
-// Configurações globais para a aplicação
-.app-container {
-  @apply min-h-screen bg-surface-50;
-}
+  // Set a default background, font and text colors for the application using
+  // Angular Material's system-level CSS variables. Learn more about these
+  // variables at https://material.angular.dev/guide/system-variables
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
 
-// Utilitários para espaçamento consistente
-.container-padding {
-  @apply px-4 md:px-6 lg:px-8;
+  // Reset the user agent margin.
+  margin: 0;
 }
+/* You can add global styles to this file, and also import other style files */
 
-.section-spacing {
-  @apply py-6 md:py-8 lg:py-12;
-}
 
-// Classes auxiliares para tipografia Material Design
-.text-on-surface-primary {
-  color: rgba(0, 0, 0, 0.87);
-}
-
-.text-on-surface-secondary {
-  color: rgba(0, 0, 0, 0.60);
-}
-
-.text-on-surface-disabled {
-  color: rgba(0, 0, 0, 0.38);
-}
-
-.text-on-surface-hint {
-  color: rgba(0, 0, 0, 0.38);
-}
-
-// Classes auxiliares para cards
-.card-container {
-  @apply p-6 bg-white rounded-lg border border-surface-200 shadow-sm;
-}
-
-// Classes para modo escuro (se necessário no futuro)
-@media (prefers-color-scheme: dark) {
-  .text-on-surface-primary {
-    color: rgba(255, 255, 255, 1);
-  }
-  
-  .text-on-surface-secondary {
-    color: rgba(255, 255, 255, 0.70);
-  }
-  
-  .text-on-surface-disabled {
-    color: rgba(255, 255, 255, 0.50);
-  }
-  
-  .text-on-surface-hint {
-    color: rgba(255, 255, 255, 0.50);
-  }
-}
+html, body { height: 100%; }
