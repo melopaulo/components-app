@@ -12,7 +12,9 @@
   </svg>
 
   <!-- Texto de carregamento -->
-  <div *ngIf="text" class="spinner-text">
-    {{ text }}
-  </div>
+  @if (text()) {
+    <div class="spinner-text">
+      {{ text() }}
+    </div>
+  }
 </div>

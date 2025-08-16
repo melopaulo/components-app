@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import {
   Component,
   computed,
@@ -40,7 +40,7 @@ import { ColumnSelectorComponent } from './column-selector.component';
 @Component({
   selector: 'app-table-container',
   standalone: true,
-  imports: [CommonModule, TablePresentationComponent, ColumnSelectorComponent],
+  imports: [TablePresentationComponent, ColumnSelectorComponent],
   templateUrl: './table-container.component.html',
   styleUrl: './table-container.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

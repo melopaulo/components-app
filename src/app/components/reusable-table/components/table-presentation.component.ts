@@ -1,13 +1,6 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { CommonModule } from '@angular/common';
-import {
-  Component,
-  computed,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-} from '@angular/core';
+
+import { Component, computed, input, OnInit, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
@@ -32,7 +25,6 @@ import {
   selector: 'app-table-presentation',
   standalone: true,
   imports: [
-    CommonModule,
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
@@ -42,31 +34,31 @@ import {
     MatButtonModule,
   ],
   template: `
-    <div class="table-container" [class]="config?.cssClass || ''">
+    <div class="table-container" [class]="config()?.cssClass || ''">
       <!-- Paginação no topo estilo Gmail -->
       <div
         class="pagination-top bg-surface border-b border-gray-200 px-4 py-2 flex items-center justify-between"
       >
         <div class="pagination-info flex items-center gap-4">
-          <span
-            class="text-sm text-on-surface"
-            *ngIf="config?.pagination?.showPageInfo"
-          >
+          @if (config()?.pagination?.showPageInfo) {
+          <span class="text-sm text-on-surface">
             {{ paginationInfo() }}
           </span>
+          }
 
           <!-- Controles de navegação -->
           <div class="pagination-controls flex items-center gap-1">
+            @if (config()?.pagination?.showFirstLastButtons) {
             <button
               mat-icon-button
               [disabled]="isFirstPage()"
               (click)="goToFirstPage()"
               [attr.aria-label]="'Primeira página'"
               class="text-on-surface hover:text-on-surface"
-              *ngIf="config?.pagination?.showFirstLastButtons"
             >
               <mat-icon>first_page</mat-icon>
             </button>
+            }
 
             <button
               mat-icon-button
@@ -88,16 +80,17 @@ import {
               <mat-icon>chevron_right</mat-icon>
             </button>
 
+            @if (config()?.pagination?.showFirstLastButtons) {
             <button
               mat-icon-button
               [disabled]="isLastPage()"
               (click)="goToLastPage()"
               [attr.aria-label]="'Última página'"
               class="text-on-surface hover:text-on-surface"
-              *ngIf="config?.pagination?.showFirstLastButtons"
             >
               <mat-icon>last_page</mat-icon>
             </button>
+            }
           </div>
         </div>
 
@@ -106,16 +99,15 @@ import {
           <span class="text-sm text-on-surface">Itens por página:</span>
           <select
             class="bg-surface border border-outline rounded px-2 py-1 text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
-            [value]="config?.pagination?.pageSize"
+            [value]="config()?.pagination?.pageSize"
             (change)="onPageSizeChange($event)"
             [attr.aria-label]="'Selecionar itens por página'"
           >
-            <option
-              *ngFor="let size of config?.pagination?.pageSizeOptions"
-              [value]="size"
-            >
+            @for (size of config()?.pagination?.pageSizeOptions; track size) {
+            <option [value]="size">
               {{ size }}
             </option>
+            }
           </select>
         </div>
       </div>
@@ -123,41 +115,42 @@ import {
       <!-- Tabela -->
       <div
         class="table-wrapper"
-        [style.height]="config?.fixedHeight || 'auto'"
-        [style.overflow-y]="config?.fixedHeight ? 'auto' : 'visible'"
+        [style.height]="config()?.fixedHeight || 'auto'"
+        [style.overflow-y]="config()?.fixedHeight ? 'auto' : 'visible'"
       >
         <table
           mat-table
-          [dataSource]="data || []"
+          [dataSource]="data() || []"
           matSort
-          [matSortActive]="config?.sort?.active || ''"
-          [matSortDirection]="config?.sort?.direction || ''"
+          [matSortActive]="config()?.sort?.active || ''"
+          [matSortDirection]="config()?.sort?.direction || ''"
           (matSortChange)="onSortChange($event)"
           class="w-full"
         >
           <!-- Coluna de seleção múltipla -->
-          <ng-container matColumnDef="select" *ngIf="config?.multiSelect">
+          @if (config()?.multiSelect) {
+          <ng-container matColumnDef="select">
             <th mat-header-cell *matHeaderCellDef class="w-12">
               <mat-checkbox
                 [checked]="isAllSelected()"
                 [indeterminate]="isPartiallySelected()"
                 (change)="toggleAllSelection($event)"
                 [attr.aria-label]="'Selecionar todos'"
-              >
-              </mat-checkbox>
+              />
             </th>
             <td mat-cell *matCellDef="let row" class="w-12">
               <mat-checkbox
                 [checked]="selection.isSelected(row)"
                 (change)="toggleRowSelection(row, $event)"
                 [attr.aria-label]="'Selecionar linha'"
-              >
-              </mat-checkbox>
+              />
             </td>
           </ng-container>
+          }
 
           <!-- Coluna de números de linha -->
-          <ng-container matColumnDef="rowNumber" *ngIf="config?.showRowNumbers">
+          @if (config()?.showRowNumbers) {
+          <ng-container matColumnDef="rowNumber">
             <th mat-header-cell *matHeaderCellDef class="w-16 text-center">
               #
             </th>
@@ -169,12 +162,12 @@ import {
               {{ getRowNumber(i) }}
             </td>
           </ng-container>
+          }
 
           <!-- Colunas dinâmicas -->
-          <ng-container
-            *ngFor="let column of visibleColumns(); trackBy: trackByColumn"
-            [matColumnDef]="getColumnKey(column)"
-          >
+          @for (column of visibleColumns(); track trackByColumn($index, column))
+          {
+          <ng-container [matColumnDef]="getColumnKey(column)">
             <th
               mat-header-cell
               *matHeaderCellDef
@@ -198,6 +191,7 @@ import {
               {{ formatCellValue(row[column.key], column) }}
             </td>
           </ng-container>
+          }
 
           <tr
             mat-header-row
@@ -216,26 +210,28 @@ import {
         </table>
 
         <!-- Estado de carregamento -->
+        @if (config()?.loading) {
         <div
-          *ngIf="config?.loading"
           class="loading-overlay absolute inset-0 bg-surface/80 flex items-center justify-center z-10"
         >
           <div class="flex flex-col items-center gap-2">
-            <mat-spinner diameter="32"></mat-spinner>
+            <mat-spinner diameter="32" />
             <span class="text-sm text-on-surface">Carregando...</span>
           </div>
         </div>
+        }
 
         <!-- Estado sem dados -->
+        @if (!config()?.loading && (!data() || data()?.length === 0)) {
         <div
-          *ngIf="!config?.loading && (!data || data.length === 0)"
           class="no-data-message flex flex-col items-center justify-center py-12 text-center"
         >
           <mat-icon class="text-6xl text-on-surface/50 mb-4">inbox</mat-icon>
           <p class="text-lg text-on-surface">
-            {{ config?.noDataMessage || 'Nenhum dado encontrado' }}
+            {{ config()?.noDataMessage || 'Nenhum dado encontrado' }}
           </p>
         </div>
+        }
       </div>
     </div>
   `,
@@ -285,36 +281,37 @@ import {
 })
 export class TablePresentationComponent<T = any> implements OnInit {
   // Inputs
-  @Input() config: TableConfig<T> | undefined;
-  @Input() data: T[] | undefined;
+  readonly config = input<TableConfig<T>>();
+  readonly data = input<T[]>();
 
   // Outputs
-  @Output() pageChange = new EventEmitter<PageChangeEvent>();
-  @Output() sortChange = new EventEmitter<SortChangeEvent>();
-  @Output() selectionChange = new EventEmitter<SelectionChangeEvent<T>>();
-  @Output() rowClick = new EventEmitter<T>();
+  readonly pageChange = output<PageChangeEvent>();
+  readonly sortChange = output<SortChangeEvent>();
+  readonly selectionChange = output<SelectionChangeEvent<T>>();
+  readonly rowClick = output<T>();
 
   // Estado interno
   selection = new SelectionModel<T>(true, []);
 
   // Computed signals
   visibleColumns = computed(() => {
-    return this.config?.columns || [];
+    return this.config()?.columns || [];
   });
 
   displayedColumns = computed(() => {
     const columns: string[] = [];
 
-    if (this.config?.multiSelect) {
+    const config = this.config();
+    if (config?.multiSelect) {
       columns.push('select');
     }
 
-    if (this.config?.showRowNumbers) {
+    if (config?.showRowNumbers) {
       columns.push('rowNumber');
     }
 
     const dataColumns = this.visibleColumns().map((col) =>
-      this.getColumnKey(col),
+      this.getColumnKey(col)
     );
     columns.push(...dataColumns);
 
@@ -322,9 +319,10 @@ export class TablePresentationComponent<T = any> implements OnInit {
   });
 
   paginationInfo = computed(() => {
-    if (!this.config?.pagination) return '';
+    const config = this.config();
+    if (!config?.pagination) return '';
 
-    const { pageIndex, pageSize, totalItems } = this.config.pagination;
+    const { pageIndex, pageSize, totalItems } = config.pagination;
     const startItem = pageIndex * pageSize + 1;
     const endItem = Math.min((pageIndex + 1) * pageSize, totalItems);
 
@@ -343,12 +341,13 @@ export class TablePresentationComponent<T = any> implements OnInit {
 
   // Métodos de paginação
   isFirstPage(): boolean {
-    return this.config?.pagination.pageIndex === 0;
+    return this.config()?.pagination.pageIndex === 0;
   }
 
   isLastPage(): boolean {
-    if (!this.config?.pagination) return true;
-    const { pageIndex, pageSize, totalItems } = this.config.pagination;
+    const config = this.config();
+    if (!config?.pagination) return true;
+    const { pageIndex, pageSize, totalItems } = config.pagination;
     return (pageIndex + 1) * pageSize >= totalItems;
   }
 
@@ -358,19 +357,20 @@ export class TablePresentationComponent<T = any> implements OnInit {
 
   goToPreviousPage(): void {
     if (!this.isFirstPage()) {
-      this.emitPageChange(this.config!.pagination.pageIndex - 1);
+      this.emitPageChange(this.config()!.pagination.pageIndex - 1);
     }
   }
 
   goToNextPage(): void {
     if (!this.isLastPage()) {
-      this.emitPageChange(this.config!.pagination.pageIndex + 1);
+      this.emitPageChange(this.config()!.pagination.pageIndex + 1);
     }
   }
 
   goToLastPage(): void {
-    if (!this.config?.pagination) return;
-    const { pageSize, totalItems } = this.config.pagination;
+    const config = this.config();
+    if (!config?.pagination) return;
+    const { pageSize, totalItems } = config.pagination;
     const lastPageIndex = Math.ceil(totalItems / pageSize) - 1;
     this.emitPageChange(Math.max(0, lastPageIndex));
   }
@@ -382,15 +382,15 @@ export class TablePresentationComponent<T = any> implements OnInit {
     this.pageChange.emit({
       pageIndex: 0, // Reset para primeira página
       pageSize: newPageSize,
-      previousPageIndex: this.config?.pagination.pageIndex,
+      previousPageIndex: this.config()?.pagination.pageIndex,
     });
   }
 
   private emitPageChange(pageIndex: number): void {
     this.pageChange.emit({
       pageIndex,
-      pageSize: this.config?.pagination.pageSize || 10,
-      previousPageIndex: this.config?.pagination.pageIndex,
+      pageSize: this.config()?.pagination.pageSize || 10,
+      previousPageIndex: this.config()?.pagination.pageIndex,
     });
   }
 
@@ -404,20 +404,22 @@ export class TablePresentationComponent<T = any> implements OnInit {
 
   // Métodos de seleção
   isAllSelected(): boolean {
-    if (!this.data) return false;
-    return this.selection.selected.length === this.data.length;
+    const data = this.data();
+    if (!data) return false;
+    return this.selection.selected.length === data.length;
   }
 
   isPartiallySelected(): boolean {
-    if (!this.data) return false;
+    if (!this.data()) return false;
     return this.selection.selected.length > 0 && !this.isAllSelected();
   }
 
   toggleAllSelection(event: any): void {
-    if (!this.data) return;
+    const data = this.data();
+    if (!data) return;
 
     if (event.checked) {
-      this.selection.select(...this.data);
+      this.selection.select(...data);
     } else {
       this.selection.clear();
     }
@@ -437,12 +439,9 @@ export class TablePresentationComponent<T = any> implements OnInit {
   }
 
   getRowNumber(index: number): number {
-    if (!this.config?.pagination) return index + 1;
-    return (
-      this.config.pagination.pageIndex * this.config.pagination.pageSize +
-      index +
-      1
-    );
+    const config = this.config();
+    if (!config?.pagination) return index + 1;
+    return config.pagination.pageIndex * config.pagination.pageSize + index + 1;
   }
 
   formatCellValue(value: any, column: TableColumn<T>): string {

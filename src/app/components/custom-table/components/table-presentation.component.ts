@@ -12,9 +12,9 @@ import {
   input,
   output,
   signal,
-  ViewChild,
   ChangeDetectionStrategy,
   ViewEncapsulation,
+  viewChild
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -70,8 +70,7 @@ export class TablePresentationComponent<T = any> implements AfterViewInit {
   private cacheService = inject(TableCacheService);
 
   // ViewChild para virtual scroll
-  @ViewChild(CdkVirtualScrollViewport)
-  virtualScrollViewport?: CdkVirtualScrollViewport;
+  readonly virtualScrollViewport = viewChild(CdkVirtualScrollViewport);
 
   // Outputs
   pageChange = output<PageChangeEvent>();
@@ -81,8 +80,8 @@ export class TablePresentationComponent<T = any> implements AfterViewInit {
   loadVirtualData = output<{ start: number; end: number }>();
 
   // ViewChild para controles
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+  readonly paginator = viewChild.required(MatPaginator);
+  readonly sort = viewChild.required(MatSort);
 
   // Estado interno
   private selection = new SelectionModel<T>(true, []);
@@ -134,11 +133,13 @@ export class TablePresentationComponent<T = any> implements AfterViewInit {
 
   ngAfterViewInit(): void {
     // Configurar paginator e sort após a view ser inicializada
-    if (this.paginator) {
-      this.dataSource().paginator = this.paginator;
+    const paginator = this.paginator();
+    if (paginator) {
+      this.dataSource().paginator = paginator;
     }
-    if (this.sort) {
-      this.dataSource().sort = this.sort;
+    const sort = this.sort();
+    if (sort) {
+      this.dataSource().sort = sort;
     }
   }
 
@@ -414,7 +415,7 @@ export class TablePresentationComponent<T = any> implements AfterViewInit {
     const config = this.config();
     if (!config?.virtualScrolling?.enabled) return;
 
-    const viewport = this.virtualScrollViewport;
+    const viewport = this.virtualScrollViewport();
     if (!viewport) return;
 
     // Atualiza métricas de performance
@@ -457,8 +458,9 @@ export class TablePresentationComponent<T = any> implements AfterViewInit {
       this.requestVirtualData(start, end);
 
       // Scroll para o início da página virtual
-      if (this.virtualScrollViewport) {
-        this.virtualScrollViewport.scrollToIndex(start);
+      const virtualScrollViewport = this.virtualScrollViewport();
+      if (virtualScrollViewport) {
+        virtualScrollViewport.scrollToIndex(start);
       }
     }
 

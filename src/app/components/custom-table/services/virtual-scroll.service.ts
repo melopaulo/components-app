@@ -1,4 +1,4 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import {
   VirtualScrollConfig,
   VirtualScrollData,
@@ -10,6 +10,8 @@ import { TableCacheService } from './table-cache.service';
   providedIn: 'root',
 })
 export class VirtualScrollService {
+  private cacheService = inject(TableCacheService);
+
   private virtualData = signal<VirtualScrollData>({
     items: [],
     totalSize: 0,
@@ -25,8 +27,6 @@ export class VirtualScrollService {
 
   private isLoading = signal(false);
   private loadingRanges = signal<{ start: number; end: number }[]>([]);
-
-  constructor(private cacheService: TableCacheService) {}
 
   /**
    * Dados virtuais como signal readonly

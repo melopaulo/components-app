@@ -2,17 +2,20 @@
   <div class="table-header bg-surface border-b border-gray-200 px-4 py-3">
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-4 text-sm text-on-surface">
-        <span *ngIf="config()?.pagination?.showPageInfo">
-          {{ getPageInfo() }}
-        </span>
-        <span *ngIf="hasSelection()" class="text-primary">
-          {{ getSelectionInfo() }}
-        </span>
+        @if (config()?.pagination?.showPageInfo) {
+          <span>
+            {{ getPageInfo() }}
+          </span>
+        }
+        @if (hasSelection()) {
+          <span class="text-primary">
+            {{ getSelectionInfo() }}
+          </span>
+        }
       </div>
 
       <div class="flex items-center gap-2">
-        <mat-paginator
-          #paginator
+        <mat-paginator #paginator
           [length]="config()?.pagination?.totalItems || 0"
           [pageSize]="config()?.pagination?.pageSize || 10"
           [pageIndex]="config()?.pagination?.pageIndex || 0"
@@ -25,8 +28,7 @@
           [hidePageSize]="config()?.pagination?.hidePageSize ?? false"
           (page)="onPageChangeWithVirtualScroll($event)"
           class="custom-paginator"
-        >
-        </mat-paginator>
+           />
       </div>
     </div>
   </div>
@@ -34,232 +36,230 @@
   <div
     class="table-content overflow-auto bg-surface"
     [style.height]="config()?.fixedHeight || 'auto'"
-  >
-    <!-- Loading States -->
-    <div
-      *ngIf="data()?.loading && !config()?.loadingStates?.skeleton"
-      class="flex items-center justify-center p-8"
     >
-      <app-loading-spinner
-        size="medium"
-        color="primary"
-        text="Carregando dados..."
-        [centered]="true"
-      >
-      </app-loading-spinner>
-    </div>
+    <!-- Loading States -->
+    @if (data()?.loading && !config()?.loadingStates?.skeleton) {
+      <div
+        class="flex items-center justify-center p-8"
+        >
+        <app-loading-spinner size="medium"
+          color="primary"
+          text="Carregando dados..."
+          [centered]="true"
+           />
+      </div>
+    }
 
     <!-- Skeleton Loading -->
-    <div *ngIf="config()?.loadingStates?.skeleton && data()?.loading">
-      <app-skeleton-loader
-        [rows]="config()?.loadingStates?.skeletonRows || 10"
-        [columns]="config()?.columns?.length || 4"
-        [showHeader]="true"
+    @if (config()?.loadingStates?.skeleton && data()?.loading) {
+      <div>
+        <app-skeleton-loader [rows]="config()?.loadingStates?.skeletonRows || 10"
+          [columns]="config()?.columns?.length || 4"
+          [showHeader]="true"
         [rowHeight]="
           config()?.virtualScrolling?.itemSize
             ? config()?.virtualScrolling?.itemSize + 'px'
             : '48px'
         "
-      >
-      </app-skeleton-loader>
-    </div>
+           />
+      </div>
+    }
 
     <!-- Virtual Scrolling Table -->
-    <div
-      *ngIf="config()?.virtualScrolling?.enabled && !data()?.loading"
-      class="virtual-scroll-container"
-    >
-      <!-- Loading overlay para virtual scrolling -->
-      <div *ngIf="isVirtualScrollLoading()" class="virtual-loading-overlay">
-        <app-loading-spinner
-          size="small"
-          color="primary"
-          text="Carregando mais dados..."
-          [overlay]="false"
-          [centered]="true"
+    @if (config()?.virtualScrolling?.enabled && !data()?.loading) {
+      <div
+        class="virtual-scroll-container"
         >
-        </app-loading-spinner>
-      </div>
-
-      <cdk-virtual-scroll-viewport
-        #virtualScrollViewport
-        [itemSize]="config()?.virtualScrolling?.itemSize || 48"
-        [minBufferPx]="getAdaptiveMinBuffer()"
-        [maxBufferPx]="getAdaptiveMaxBuffer()"
-        class="virtual-viewport"
-        (scrolledIndexChange)="onVirtualScrollChange($event)"
-      >
-        <table
-          mat-table
-          [dataSource]="virtualDataSource()"
-          class="w-full custom-table virtual-table"
-        >
-          <!-- Virtual scroll table columns will be implemented -->
-          <tr
-            mat-header-row
-            *matHeaderRowDef="displayedColumns(); trackBy: trackByColumn"
-          ></tr>
-          <tr
-            mat-row
+        <!-- Loading overlay para virtual scrolling -->
+        @if (isVirtualScrollLoading()) {
+          <div class="virtual-loading-overlay">
+            <app-loading-spinner size="small"
+              color="primary"
+              text="Carregando mais dados..."
+              [overlay]="false"
+              [centered]="true"
+               />
+          </div>
+        }
+        <cdk-virtual-scroll-viewport
+          #virtualScrollViewport
+          [itemSize]="config()?.virtualScrolling?.itemSize || 48"
+          [minBufferPx]="getAdaptiveMinBuffer()"
+          [maxBufferPx]="getAdaptiveMaxBuffer()"
+          class="virtual-viewport"
+          (scrolledIndexChange)="onVirtualScrollChange($event)"
+          >
+          <table
+            mat-table
+            [dataSource]="virtualDataSource()"
+            class="w-full custom-table virtual-table"
+            >
+            <!-- Virtual scroll table columns will be implemented -->
+            <tr
+              mat-header-row
+              *matHeaderRowDef="displayedColumns(); trackBy: trackByColumn"
+            ></tr>
+            <tr
+              mat-row
             *matRowDef="
               let row;
               columns: displayedColumns();
               let i = index;
               trackBy: getTrackByFunction()
             "
-            [class]="getRowClass(row)"
-            [attr.data-index]="i"
-          ></tr>
-        </table>
-      </cdk-virtual-scroll-viewport>
-    </div>
+              [class]="getRowClass(row)"
+              [attr.data-index]="i"
+            ></tr>
+          </table>
+        </cdk-virtual-scroll-viewport>
+      </div>
+    }
 
     <!-- Regular Table -->
-    <table
-      *ngIf="!data()?.loading && !config()?.virtualScrolling?.enabled"
-      mat-table
-      [dataSource]="dataSource()"
-      matSort
-      [matSortActive]="config()?.sorting?.active || ''"
-      [matSortDirection]="config()?.sorting?.direction || ''"
-      (matSortChange)="onSortChange($event)"
-      class="w-full custom-table"
-    >
-      <ng-container
-        matColumnDef="select"
-        *ngIf="config()?.selection?.enabled && config()?.selection?.multiple"
-      >
-        <th mat-header-cell *matHeaderCellDef class="w-12">
-          <mat-checkbox
-            [checked]="isAllSelected()"
-            [indeterminate]="isPartiallySelected()"
-            (change)="toggleAllSelection($event)"
-            [attr.aria-label]="'Selecionar todos'"
-          >
-          </mat-checkbox>
-        </th>
-        <td mat-cell *matCellDef="let row" class="w-12">
-          <mat-checkbox
-            [checked]="isSelected(row)"
-            (change)="toggleRowSelection(row, $event)"
-            [attr.aria-label]="'Selecionar linha'"
-          >
-          </mat-checkbox>
-        </td>
-      </ng-container>
-
-      <ng-container
-        matColumnDef="radio"
-        *ngIf="config()?.selection?.enabled && !config()?.selection?.multiple"
-      >
-        <th mat-header-cell *matHeaderCellDef class="w-12">
-          <span class="sr-only">Seleção</span>
-        </th>
-        <td mat-cell *matCellDef="let row" class="w-12">
-          <mat-checkbox
-            [checked]="isSelected(row)"
-            (change)="toggleSingleSelection(row, $event)"
-            [attr.aria-label]="'Selecionar linha'"
-          >
-          </mat-checkbox>
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="rowNumber">
-        <th mat-header-cell *matHeaderCellDef class="w-16 text-center">#</th>
-        <td
-          mat-cell
-          *matCellDef="let row; let i = index"
-          class="w-16 text-center text-on-surface"
+    @if (!data()?.loading && !config()?.virtualScrolling?.enabled) {
+      <table
+        mat-table
+        [dataSource]="dataSource()"
+        matSort
+        [matSortActive]="config()?.sorting?.active || ''"
+        [matSortDirection]="config()?.sorting?.direction || ''"
+        (matSortChange)="onSortChange($event)"
+        class="w-full custom-table"
         >
-          {{ getRowNumber(i) }}
-        </td>
-      </ng-container>
-
-      <ng-container
-        *ngFor="let column of config()?.columns || []; trackBy: trackByColumn"
-        [matColumnDef]="column.key.toString()"
-      >
-        <th
-          mat-header-cell
-          *matHeaderCellDef
-          [mat-sort-header]="column.sortable ? column.key.toString() : ''"
-          [style.width]="column.width"
-          [class]="getHeaderClass(column)"
-          [attr.aria-label]="column.title"
-        >
-          {{ column.title }}
-        </th>
-
-        <td
-          mat-cell
-          *matCellDef="let row"
-          [style.width]="column.width"
-          [class]="getCellClass(column)"
-          (click)="onRowClick(row)"
-        >
-          <ng-container [ngSwitch]="column.type">
-            <span *ngSwitchDefault>
-              {{ getCellValue(row, column) }}
-            </span>
-
-            <span *ngSwitchCase="'number'" class="font-mono">
-              {{ getCellValue(row, column) | number }}
-            </span>
-
-            <span *ngSwitchCase="'date'">
-              {{ getCellValue(row, column) | date: "dd/MM/yyyy" }}
-            </span>
-
-            <span *ngSwitchCase="'currency'" class="font-mono">
-              {{
-                getCellValue(row, column) | currency: "BRL" : "symbol" : "1.2-2"
-              }}
-            </span>
-
-            <span *ngSwitchCase="'boolean'">
-              <mat-icon
+        @if (config()?.selection?.enabled && config()?.selection?.multiple) {
+          <ng-container
+            matColumnDef="select"
+            >
+            <th mat-header-cell *matHeaderCellDef class="w-12">
+              <mat-checkbox [checked]="isAllSelected()"
+                [indeterminate]="isPartiallySelected()"
+                (change)="toggleAllSelection($event)"
+                [attr.aria-label]="'Selecionar todos'"
+                 />
+            </th>
+            <td mat-cell *matCellDef="let row" class="w-12">
+              <mat-checkbox [checked]="isSelected(row)"
+                (change)="toggleRowSelection(row, $event)"
+                [attr.aria-label]="'Selecionar linha'"
+                 />
+            </td>
+          </ng-container>
+        }
+        @if (config()?.selection?.enabled && !config()?.selection?.multiple) {
+          <ng-container
+            matColumnDef="radio"
+            >
+            <th mat-header-cell *matHeaderCellDef class="w-12">
+              <span class="sr-only">Seleção</span>
+            </th>
+            <td mat-cell *matCellDef="let row" class="w-12">
+              <mat-checkbox [checked]="isSelected(row)"
+                (change)="toggleSingleSelection(row, $event)"
+                [attr.aria-label]="'Selecionar linha'"
+                 />
+            </td>
+          </ng-container>
+        }
+        <ng-container matColumnDef="rowNumber">
+          <th mat-header-cell *matHeaderCellDef class="w-16 text-center">#</th>
+          <td
+            mat-cell
+            *matCellDef="let row; let i = index"
+            class="w-16 text-center text-on-surface"
+            >
+            {{ getRowNumber(i) }}
+          </td>
+        </ng-container>
+        @for (column of config()?.columns || []; track trackByColumn($index, column)) {
+          <ng-container
+            [matColumnDef]="column.key.toString()"
+            >
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              [mat-sort-header]="column.sortable ? column.key.toString() : ''"
+              [style.width]="column.width"
+              [class]="getHeaderClass(column)"
+              [attr.aria-label]="column.title"
+              >
+              {{ column.title }}
+            </th>
+            <td
+              mat-cell
+              *matCellDef="let row"
+              [style.width]="column.width"
+              [class]="getCellClass(column)"
+              (click)="onRowClick(row)"
+              >
+              @switch (column.type) {
+                @default {
+                  <span>
+                    {{ getCellValue(row, column) }}
+                  </span>
+                }
+                @case ('number') {
+                  <span class="font-mono">
+                    {{ getCellValue(row, column) | number }}
+                  </span>
+                }
+                @case ('date') {
+                  <span>
+                    {{ getCellValue(row, column) | date: "dd/MM/yyyy" }}
+                  </span>
+                }
+                @case ('currency') {
+                  <span class="font-mono">
+                    {{
+                    getCellValue(row, column) | currency: "BRL" : "symbol" : "1.2-2"
+                    }}
+                  </span>
+                }
+                @case ('boolean') {
+                  <span>
+                    <mat-icon
                 [class]="
                   getCellValue(row, column) ? 'text-green-600' : 'text-red-600'
                 "
                 [attr.aria-label]="
                   getCellValue(row, column) ? 'Ativo' : 'Inativo'
                 "
-              >
-                {{ getCellValue(row, column) ? "check_circle" : "cancel" }}
-              </mat-icon>
-            </span>
+                      >
+                      {{ getCellValue(row, column) ? "check_circle" : "cancel" }}
+                    </mat-icon>
+                  </span>
+                }
+              }
+            </td>
           </ng-container>
-        </td>
-      </ng-container>
+        }
+        <tr
+          mat-header-row
+          *matHeaderRowDef="displayedColumns(); sticky: true"
+        ></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns()"
+          [class]="getRowClass(row)"
+          [attr.aria-selected]="isSelected(row)"
+          tabindex="0"
+          (keydown.enter)="onRowClick(row)"
+          (keydown.space)="onRowClick(row)"
+        ></tr>
+      </table>
+    }
 
-      <tr
-        mat-header-row
-        *matHeaderRowDef="displayedColumns(); sticky: true"
-      ></tr>
-
-      <tr
-        mat-row
-        *matRowDef="let row; columns: displayedColumns()"
-        [class]="getRowClass(row)"
-        [attr.aria-selected]="isSelected(row)"
-        tabindex="0"
-        (keydown.enter)="onRowClick(row)"
-        (keydown.space)="onRowClick(row)"
-      ></tr>
-    </table>
-
-    <div
-      *ngIf="
-        !data()?.loading && (!data()?.items || data()?.items?.length === 0)
-      "
-      class="flex flex-col items-center justify-center p-12 text-center"
-    >
-      <mat-icon class="text-6xl text-on-surface/50 mb-4">inbox</mat-icon>
-      <h3 class="text-lg font-medium text-on-surface mb-2">
-        Nenhum dado encontrado
-      </h3>
-      <p class="text-sm text-on-surface">Não há dados para exibir.</p>
-    </div>
+    @if (
+      !data()?.loading && (!data()?.items || data()?.items?.length === 0)
+      ) {
+      <div
+        class="flex flex-col items-center justify-center p-12 text-center"
+        >
+        <mat-icon class="text-6xl text-on-surface/50 mb-4">inbox</mat-icon>
+        <h3 class="text-lg font-medium text-on-surface mb-2">
+          Nenhum dado encontrado
+        </h3>
+        <p class="text-sm text-on-surface">Não há dados para exibir.</p>
+      </div>
+    }
   </div>
 </div>

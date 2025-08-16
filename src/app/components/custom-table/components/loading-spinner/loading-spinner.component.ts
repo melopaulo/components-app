@@ -1,10 +1,10 @@
 import {
   Component,
-  Input,
   ChangeDetectionStrategy,
   ViewEncapsulation,
+  input
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 /**
  * Componente de spinner de carregamento para operações rápidas
@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-loading-spinner',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './loading-spinner.component.html',
   styleUrls: ['./loading-spinner.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,27 +23,27 @@ export class LoadingSpinnerComponent {
   /**
    * Tamanho do spinner (small, medium, large)
    */
-  @Input() size: 'small' | 'medium' | 'large' = 'medium';
+  readonly size = input<'small' | 'medium' | 'large'>('medium');
 
   /**
    * Cor do spinner (primary, secondary, accent)
    */
-  @Input() color: 'primary' | 'secondary' | 'accent' = 'primary';
+  readonly color = input<'primary' | 'secondary' | 'accent'>('primary');
 
   /**
    * Texto a ser exibido abaixo do spinner
    */
-  @Input() text?: string;
+  readonly text = input<string>();
 
   /**
    * Se deve exibir o spinner em modo overlay
    */
-  @Input() overlay: boolean = false;
+  readonly overlay = input<boolean>(false);
 
   /**
    * Se deve centralizar o spinner
    */
-  @Input() centered: boolean = true;
+  readonly centered = input<boolean>(true);
 
   /**
    * Retorna as classes CSS baseadas nas propriedades
@@ -51,14 +51,14 @@ export class LoadingSpinnerComponent {
   get spinnerClasses(): string {
     const classes = ['loading-spinner'];
 
-    classes.push(`spinner-${this.size}`);
-    classes.push(`spinner-${this.color}`);
+    classes.push(`spinner-${this.size()}`);
+    classes.push(`spinner-${this.color()}`);
 
-    if (this.centered) {
+    if (this.centered()) {
       classes.push('spinner-centered');
     }
 
-    if (this.overlay) {
+    if (this.overlay()) {
       classes.push('spinner-overlay');
     }
 

@@ -1,13 +1,13 @@
 import {
   Component,
   Input,
-  Output,
-  EventEmitter,
   signal,
   computed,
   effect,
+  input,
+  output
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 import { TablePresentationComponent } from './table-presentation.component';
 import {
@@ -28,16 +28,15 @@ import {
 @Component({
   selector: 'app-table-container',
   standalone: true,
-  imports: [CommonModule, TablePresentationComponent],
+  imports: [TablePresentationComponent],
   template: `
-    <app-table-presentation
-      [config]="tableConfig()"
+    <app-table-presentation [config]="tableConfig()"
       [data]="currentData()"
       (pageChange)="onPageChange($event)"
       (sortChange)="onSortChange($event)"
       (selectionChange)="onSelectionChange($event)"
       (rowClick)="onRowClick($event)"
-    ></app-table-presentation>
+     />
   `,
 })
 export class TableContainerComponent<T = any> {
@@ -128,16 +127,16 @@ export class TableContainerComponent<T = any> {
   get fixedHeight() {
     return this.fixedHeightSignal();
   }
-  @Input() pageSizeOptions = signal<number[]>([5, 10, 25, 50, 100]);
-  @Input() showFirstLastButtons = signal<boolean>(true);
-  @Input() showPageInfo = signal<boolean>(true);
+  readonly pageSizeOptions = input(signal<number[]>([5, 10, 25, 50, 100]));
+  readonly showFirstLastButtons = input(signal<boolean>(true));
+  readonly showPageInfo = input(signal<boolean>(true));
 
   // Outputs para comunicação com componente pai
-  @Output() pageChange = new EventEmitter<PageChangeEvent>();
-  @Output() sortChange = new EventEmitter<SortChangeEvent>();
-  @Output() selectionChange = new EventEmitter<SelectionChangeEvent<T>>();
-  @Output() rowClick = new EventEmitter<T>();
-  @Output() configChange = new EventEmitter<TableConfig<T>>();
+  readonly pageChange = output<PageChangeEvent>();
+  readonly sortChange = output<SortChangeEvent>();
+  readonly selectionChange = output<SelectionChangeEvent<T>>();
+  readonly rowClick = output<T>();
+  readonly configChange = output<TableConfig<T>>();
 
   // Estado interno da paginação e ordenação
   private currentPagination = signal<PaginationConfig>(
@@ -150,9 +149,9 @@ export class TableContainerComponent<T = any> {
     columns: this.columnsSignal(),
     pagination: {
       ...this.currentPagination(),
-      pageSizeOptions: this.pageSizeOptions(),
-      showFirstLastButtons: this.showFirstLastButtons(),
-      showPageInfo: this.showPageInfo(),
+      pageSizeOptions: this.pageSizeOptions()(),
+      showFirstLastButtons: this.showFirstLastButtons()(),
+      showPageInfo: this.showPageInfo()(),
     },
     sort: this.currentSort(),
     loading: this.loadingSignal() || this.dataSignal().loading || false,

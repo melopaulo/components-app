@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -32,7 +31,6 @@ interface User {
   selector: 'app-reusable-table-demo',
   standalone: true,
   imports: [
-    CommonModule,
     MatButtonModule,
     MatCardModule,
     MatIconModule,
@@ -120,7 +118,7 @@ interface User {
         (sortChange)="onSortChange($event)"
         (selectionChange)="onSelectionChange($event)"
         (rowClick)="onRowClick($event)"
-      ></app-table-container>
+      />
 
       <!-- Log de eventos -->
       <mat-card>
@@ -131,19 +129,18 @@ interface User {
           </button>
         </mat-card-header>
         <mat-card-content class="max-h-48 overflow-y-auto">
-          <div
-            *ngIf="eventLog().length === 0"
-            class="text-center py-4 text-on-surface"
-          >
+          @if (eventLog().length === 0) {
+          <div class="text-center py-4 text-on-surface">
             Nenhum evento registrado
           </div>
+          } @for (event of eventLog(); track trackByIndex($index)) {
           <div
-            *ngFor="let event of eventLog(); trackBy: trackByIndex"
             class="text-xs font-mono p-2 border-b border-gray-100 last:border-b-0"
           >
             <span class="text-on-surface">{{ event.timestamp }}</span>
             <span class="ml-2 text-on-surface">{{ event.message }}</span>
           </div>
+          }
         </mat-card-content>
       </mat-card>
     </div>
@@ -322,7 +319,7 @@ export class ReusableTableDemoComponent {
           role,
           status: Math.random() > 0.2,
           createdAt: new Date(
-            Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000,
+            Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000
           ),
           salary: Math.floor(Math.random() * 10000) + 3000,
         });
@@ -340,7 +337,7 @@ export class ReusableTableDemoComponent {
     this.currentPageIndex.set(event.pageIndex);
     this.currentPageSize.set(event.pageSize);
     this.addEventLog(
-      `Página alterada: ${event.pageIndex + 1}, Tamanho: ${event.pageSize}`,
+      `Página alterada: ${event.pageIndex + 1}, Tamanho: ${event.pageSize}`
     );
   }
 
@@ -351,14 +348,14 @@ export class ReusableTableDemoComponent {
     });
     this.currentPageIndex.set(0); // Reset para primeira página
     this.addEventLog(
-      `Ordenação: ${event.active} ${event.direction || 'removida'}`,
+      `Ordenação: ${event.active} ${event.direction || 'removida'}`
     );
   }
 
   onSelectionChange(event: SelectionChangeEvent<User>): void {
     this.selectedItems.set(event.selected);
     this.addEventLog(
-      `Seleção alterada: ${event.selected.length} itens selecionados`,
+      `Seleção alterada: ${event.selected.length} itens selecionados`
     );
   }
 
@@ -371,7 +368,7 @@ export class ReusableTableDemoComponent {
     this.multiSelectEnabled.update((current) => !current);
     this.selectedItems.set([]);
     this.addEventLog(
-      `Seleção múltipla ${this.multiSelectEnabled() ? 'ativada' : 'desativada'}`,
+      `Seleção múltipla ${this.multiSelectEnabled() ? 'ativada' : 'desativada'}`
     );
   }
 

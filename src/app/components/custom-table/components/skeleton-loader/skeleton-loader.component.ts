@@ -1,10 +1,10 @@
 import {
   Component,
-  Input,
   ChangeDetectionStrategy,
   ViewEncapsulation,
+  input
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 /**
  * Componente de skeleton loader para exibir durante carregamento de dados
@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-skeleton-loader',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './skeleton-loader.component.html',
   styleUrls: ['./skeleton-loader.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,35 +23,35 @@ export class SkeletonLoaderComponent {
   /**
    * Número de linhas do skeleton a serem exibidas
    */
-  @Input() rows: number = 5;
+  readonly rows = input<number>(5);
 
   /**
    * Número de colunas do skeleton a serem exibidas
    */
-  @Input() columns: number = 4;
+  readonly columns = input<number>(4);
 
   /**
    * Se deve exibir o cabeçalho do skeleton
    */
-  @Input() showHeader: boolean = true;
+  readonly showHeader = input<boolean>(true);
 
   /**
    * Altura de cada linha do skeleton
    */
-  @Input() rowHeight: string = '48px';
+  readonly rowHeight = input<string>('48px');
 
   /**
    * Gera array para iteração no template
    */
   get rowsArray(): number[] {
-    return Array.from({ length: this.rows }, (_, i) => i);
+    return Array.from({ length: this.rows() }, (_, i) => i);
   }
 
   /**
    * Gera array para iteração das colunas no template
    */
   get columnsArray(): number[] {
-    return Array.from({ length: this.columns }, (_, i) => i);
+    return Array.from({ length: this.columns() }, (_, i) => i);
   }
 
   /**

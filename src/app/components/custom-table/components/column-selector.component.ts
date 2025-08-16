@@ -1,5 +1,5 @@
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
-import { CommonModule } from '@angular/common';
+
 import {
   ChangeDetectionStrategy,
   Component,
@@ -35,7 +35,6 @@ import { ColumnPreferencesService } from '../services/column-preferences.service
   selector: 'app-column-selector',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     MatButtonModule,
     MatCheckboxModule,
@@ -43,8 +42,8 @@ import { ColumnPreferencesService } from '../services/column-preferences.service
     MatInputModule,
     MatMenuModule,
     MatTooltipModule,
-    DragDropModule,
-  ],
+    DragDropModule
+],
   template: `
     <button
       mat-icon-button
@@ -52,10 +51,10 @@ import { ColumnPreferencesService } from '../services/column-preferences.service
       [matTooltip]="'Configurar colunas'"
       class="text-on-surface hover:text-on-surface"
       [attr.aria-label]="'Abrir menu de configuração de colunas'"
-    >
+      >
       <mat-icon>view_column</mat-icon>
     </button>
-
+    
     <mat-menu #columnMenu="matMenu" class="column-selector-menu">
       <div class="column-selector-content" (click)="$event.stopPropagation()">
         <!-- Cabeçalho -->
@@ -67,83 +66,84 @@ import { ColumnPreferencesService } from '../services/column-preferences.service
             {{ visibleColumnsCount() }} de {{ totalColumnsCount() }}
           </span>
         </div>
-
+    
         <!-- Lista de colunas -->
         <div
           class="column-list"
           [attr.aria-label]="'Lista de colunas disponíveis'"
-        >
+          >
           <div
             cdkDropList
             [cdkDropListDisabled]="!config().dragDropEnabled"
             (cdkDropListDropped)="onColumnReorder($event)"
             class="column-items"
-          >
-            <div
-              *ngFor="let column of filteredColumns(); trackBy: trackByColumn"
-              cdkDrag
-              [cdkDragDisabled]="!config().dragDropEnabled"
-              class="column-item"
-              [class.column-item-dragging]="config().dragDropEnabled"
             >
-              <!-- Handle de drag -->
+            @for (column of filteredColumns(); track trackByColumn($index, column)) {
               <div
-                *ngIf="config().dragDropEnabled"
-                cdkDragHandle
-                class="drag-handle"
+                cdkDrag
+                [cdkDragDisabled]="!config().dragDropEnabled"
+                class="column-item"
+                [class.column-item-dragging]="config().dragDropEnabled"
+                >
+                <!-- Handle de drag -->
+                @if (config().dragDropEnabled) {
+                  <div
+                    cdkDragHandle
+                    class="drag-handle"
                 [attr.aria-label]="
                   'Arrastar para reordenar coluna ' + column.title
                 "
-              >
-                <mat-icon class="text-on-surface opacity-30"
-                  >drag_indicator</mat-icon
-                >
-              </div>
-
-              <!-- Checkbox de visibilidade -->
-              <mat-checkbox
-                [checked]="column.visible !== false"
-                [disabled]="isLastVisibleColumn(column)"
-                (change)="onColumnVisibilityChange(column, $event.checked)"
+                    >
+                    <mat-icon class="text-on-surface opacity-30"
+                      >drag_indicator</mat-icon
+                      >
+                    </div>
+                  }
+                  <!-- Checkbox de visibilidade -->
+                  <mat-checkbox
+                    [checked]="column.visible !== false"
+                    [disabled]="isLastVisibleColumn(column)"
+                    (change)="onColumnVisibilityChange(column, $event.checked)"
                 [attr.aria-label]="
                   'Alternar visibilidade da coluna ' + column.title
                 "
-                class="column-checkbox"
-              >
-                <span class="column-title">{{ column.title }}</span>
-              </mat-checkbox>
-
-              <!-- Indicador de coluna obrigatória -->
-              <mat-icon
-                *ngIf="isLastVisibleColumn(column)"
-                class="required-indicator"
-                [matTooltip]="'Esta coluna deve permanecer visível'"
-                aria-label="Coluna obrigatória"
-              >
-                lock
-              </mat-icon>
+                    class="column-checkbox"
+                    >
+                    <span class="column-title">{{ column.title }}</span>
+                  </mat-checkbox>
+                  <!-- Indicador de coluna obrigatória -->
+                  @if (isLastVisibleColumn(column)) {
+                    <mat-icon
+                      class="required-indicator"
+                      [matTooltip]="'Esta coluna deve permanecer visível'"
+                      aria-label="Coluna obrigatória"
+                      >
+                      lock
+                    </mat-icon>
+                  }
+                </div>
+              }
             </div>
           </div>
+    
+          <!-- Ações -->
+          <div class="column-selector-actions">
+            <button
+              mat-button
+              (click)="selectAllColumns()"
+              [disabled]="allColumnsVisible()"
+              class="action-button"
+              >
+              Mostrar Todas
+            </button>
+    
+            <button mat-button (click)="resetToDefault()" class="action-button">
+              Resetar
+            </button>
+          </div>
         </div>
-
-        <!-- Ações -->
-        <div class="column-selector-actions">
-          <button
-            mat-button
-            (click)="selectAllColumns()"
-            [disabled]="allColumnsVisible()"
-            class="action-button"
-          >
-            Mostrar Todas
-          </button>
-
-          <button mat-button (click)="resetToDefault()" class="action-button">
-            Resetar
-          </button>
-        </div>
-      </div>
-    </mat-menu>
-  `,
+      </mat-menu>
+    `,
   styles: [
     `
       .column-selector-menu {

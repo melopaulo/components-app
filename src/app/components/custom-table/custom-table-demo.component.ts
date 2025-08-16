@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, computed, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -37,14 +37,13 @@ interface Product {
   selector: 'app-custom-table-demo',
   standalone: true,
   imports: [
-    CommonModule,
     MatButtonModule,
     MatCardModule,
     MatIconModule,
     MatSlideToggleModule,
     MatDividerModule,
-    TableContainerComponent,
-  ],
+    TableContainerComponent
+],
   templateUrl: './custom-table-demo.component.html',
   styleUrl: './custom-table-demo.component.scss',
 })
