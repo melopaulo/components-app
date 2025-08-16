@@ -1,13 +1,15 @@
-import { Component, input, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
-
+import {
+  Component,
+  input,
+  ChangeDetectionStrategy,
+  ViewEncapsulation,
+} from '@angular/core';
 
 @Component({
   selector: 'custom-select-option',
   standalone: true,
   imports: [],
-  template: `
-    <ng-content />
-  `,
+  template: ` <ng-content /> `,
   // Estratégia de detecção de mudança otimizada para performance
   changeDetection: ChangeDetectionStrategy.OnPush,
   // Encapsulamento de view desabilitado para permitir estilos globais
@@ -19,7 +21,7 @@ import { Component, input, ChangeDetectionStrategy, ViewEncapsulation } from '@a
 export class CustomSelectOptionComponent {
   // Valor da opção
   value = input.required<any>();
-  
+
   // Se a opção está desabilitada
   disabled = input<boolean>(false);
 }

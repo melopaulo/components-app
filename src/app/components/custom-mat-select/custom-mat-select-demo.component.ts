@@ -1,10 +1,23 @@
-import { Component, OnInit, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ChangeDetectionStrategy,
+  ViewEncapsulation,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
-import { CustomMatSelectComponent, CustomMatSelectOption } from './custom-mat-select.component';
+import {
+  CustomMatSelectComponent,
+  CustomMatSelectOption,
+} from './custom-mat-select.component';
 
 @Component({
   selector: 'custom-mat-select-demo',
@@ -26,29 +39,32 @@ import { CustomMatSelectComponent, CustomMatSelectOption } from './custom-mat-se
       <mat-card class="demo-card">
         <mat-card-header>
           <mat-card-title>Demonstração do Custom Mat-Select</mat-card-title>
-          <mat-card-subtitle>Componente reutilizável baseado no mat-select</mat-card-subtitle>
+          <mat-card-subtitle
+            >Componente reutilizável baseado no mat-select</mat-card-subtitle
+          >
         </mat-card-header>
 
         <mat-card-content>
           <form [formGroup]="form" class="demo-form">
-            
             <!-- Exemplo 1: Select simples com binding de propriedade específica -->
             <section class="demo-section">
               <h3>1. Select de Usuários (binding por ID)</h3>
-              <custom-mat-select [control]="getUserControl()"
+              <custom-mat-select
+                [control]="getUserControl()"
                 [options]="usersList"
                 [optionsProps]="['userId', 'userName']"
                 [propToBeBinded]="'userId'"
                 [label]="'Usuários'"
                 [hint]="'Selecione um usuário da lista'"
                 [errorMessages]="{
-                  required: 'Por favor, selecione um usuário'
+                  required: 'Por favor, selecione um usuário',
                 }"
                 placeholder="Escolha um usuário..."
                 (selectionChanged)="onUserSelectionChange($event)"
-               />
+              />
               <p class="result">
-                <strong>Usuário selecionado:</strong> {{ form.get('user')?.value || 'Nenhum' }}
+                <strong>Usuário selecionado:</strong>
+                {{ form.get('user')?.value || 'Nenhum' }}
               </p>
             </section>
 
@@ -57,19 +73,20 @@ import { CustomMatSelectComponent, CustomMatSelectOption } from './custom-mat-se
             <!-- Exemplo 2: Select com binding do objeto completo -->
             <section class="demo-section">
               <h3>2. Select de Itens (binding do objeto completo)</h3>
-              <custom-mat-select [control]="getItemControl()"
+              <custom-mat-select
+                [control]="getItemControl()"
                 [options]="items"
                 [optionsProps]="['name']"
                 [label]="'Itens'"
                 [hint]="'Selecione um item da lista'"
                 [errorMessages]="{
-                  required: 'Por favor, selecione um item'
+                  required: 'Por favor, selecione um item',
                 }"
                 placeholder="Escolha um item..."
                 (selectionChanged)="onItemSelectionChange($event)"
-               />
+              />
               <p class="result">
-                <strong>Item selecionado:</strong> 
+                <strong>Item selecionado:</strong>
                 {{ (form.get('item')?.value | json) || 'Nenhum' }}
               </p>
             </section>
@@ -79,7 +96,8 @@ import { CustomMatSelectComponent, CustomMatSelectOption } from './custom-mat-se
             <!-- Exemplo 3: Select com opções desabilitadas -->
             <section class="demo-section">
               <h3>3. Select de Categorias (com opções desabilitadas)</h3>
-              <custom-mat-select [control]="getCategoryControl()"
+              <custom-mat-select
+                [control]="getCategoryControl()"
                 [options]="categories"
                 [optionsProps]="['name', 'description']"
                 [propToBeBinded]="'id'"
@@ -89,9 +107,10 @@ import { CustomMatSelectComponent, CustomMatSelectOption } from './custom-mat-se
                 [separator]="' | '"
                 placeholder="Escolha uma categoria..."
                 (selectionChanged)="onCategorySelectionChange($event)"
-               />
+              />
               <p class="result">
-                <strong>Categoria selecionada:</strong> {{ form.get('category')?.value || 'Nenhuma' }}
+                <strong>Categoria selecionada:</strong>
+                {{ form.get('category')?.value || 'Nenhuma' }}
               </p>
             </section>
 
@@ -100,7 +119,8 @@ import { CustomMatSelectComponent, CustomMatSelectOption } from './custom-mat-se
             <!-- Exemplo 4: Select múltiplo -->
             <section class="demo-section">
               <h3>4. Select Múltiplo de Tags</h3>
-              <custom-mat-select [control]="getMultipleItemsControl()"
+              <custom-mat-select
+                [control]="getMultipleItemsControl()"
                 [options]="tags"
                 [optionsProps]="['label']"
                 [propToBeBinded]="'value'"
@@ -110,13 +130,12 @@ import { CustomMatSelectComponent, CustomMatSelectOption } from './custom-mat-se
                 [showEmptyOption]="false"
                 placeholder="Escolha as tags..."
                 (selectionChanged)="onMultipleItemsSelectionChange($event)"
-               />
+              />
               <p class="result">
-                <strong>Tags selecionadas:</strong> 
+                <strong>Tags selecionadas:</strong>
                 {{ (form.get('multipleItems')?.value | json) || 'Nenhuma' }}
               </p>
             </section>
-
           </form>
         </mat-card-content>
 
@@ -141,91 +160,93 @@ import { CustomMatSelectComponent, CustomMatSelectOption } from './custom-mat-se
       </mat-card>
     </div>
   `,
-  styles: [`
-    .demo-container {
-      padding: 20px;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    .demo-card {
-      margin-bottom: 20px;
-    }
-
-    .demo-form {
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
-
-    .demo-section {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .demo-section h3 {
-      margin: 0;
-      color: #1976d2;
-      font-size: 16px;
-      font-weight: 500;
-    }
-
-    .result {
-      background-color: #f5f5f5;
-      padding: 12px;
-      border-radius: 4px;
-      margin: 0;
-      font-size: 14px;
-      border-left: 4px solid #1976d2;
-    }
-
-    mat-divider {
-      margin: 24px 0;
-    }
-
-    mat-card-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .form-values {
-      background-color: #f8f9fa;
-      padding: 16px;
-      margin-top: 16px;
-      border-radius: 4px;
-    }
-
-    .form-values h4 {
-      margin: 0 0 12px 0;
-      color: #333;
-    }
-
-    .form-values pre {
-      background-color: white;
-      padding: 12px;
-      border-radius: 4px;
-      border: 1px solid #ddd;
-      font-size: 12px;
-      overflow-x: auto;
-    }
-
-    /* Responsividade */
-    @media (max-width: 600px) {
+  styles: [
+    `
       .demo-container {
-        padding: 10px;
+        padding: 20px;
+        max-width: 800px;
+        margin: 0 auto;
       }
-      
-      mat-card-actions {
+
+      .demo-card {
+        margin-bottom: 20px;
+      }
+
+      .demo-form {
+        display: flex;
         flex-direction: column;
+        gap: 24px;
       }
-      
-      mat-card-actions button {
-        width: 100%;
+
+      .demo-section {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
       }
-    }
-  `],
+
+      .demo-section h3 {
+        margin: 0;
+        color: #1976d2;
+        font-size: 16px;
+        font-weight: 500;
+      }
+
+      .result {
+        background-color: #f5f5f5;
+        padding: 12px;
+        border-radius: 4px;
+        margin: 0;
+        font-size: 14px;
+        border-left: 4px solid #1976d2;
+      }
+
+      mat-divider {
+        margin: 24px 0;
+      }
+
+      mat-card-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .form-values {
+        background-color: #f8f9fa;
+        padding: 16px;
+        margin-top: 16px;
+        border-radius: 4px;
+      }
+
+      .form-values h4 {
+        margin: 0 0 12px 0;
+        color: #333;
+      }
+
+      .form-values pre {
+        background-color: white;
+        padding: 12px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        font-size: 12px;
+        overflow-x: auto;
+      }
+
+      /* Responsividade */
+      @media (max-width: 600px) {
+        .demo-container {
+          padding: 10px;
+        }
+
+        mat-card-actions {
+          flex-direction: column;
+        }
+
+        mat-card-actions button {
+          width: 100%;
+        }
+      }
+    `,
+  ],
 })
 export class CustomMatSelectDemoComponent implements OnInit {
   // Formulário reativo
@@ -237,7 +258,7 @@ export class CustomMatSelectDemoComponent implements OnInit {
     { userId: 'uid2', userName: 'Maria Santos' },
     { userId: 'uid3', userName: 'Pedro Oliveira' },
     { userId: 'uid4', userName: 'Ana Costa' },
-    { userId: 'uid5', userName: 'Carlos Ferreira' }
+    { userId: 'uid5', userName: 'Carlos Ferreira' },
   ];
 
   items: CustomMatSelectOption[] = [
@@ -245,15 +266,40 @@ export class CustomMatSelectDemoComponent implements OnInit {
     { id: '2', name: 'Mouse Logitech' },
     { id: '3', name: 'Teclado Mecânico' },
     { id: '4', name: 'Monitor 24"' },
-    { id: '5', name: 'Webcam HD' }
+    { id: '5', name: 'Webcam HD' },
   ];
 
   categories: CustomMatSelectOption[] = [
-    { id: 'cat1', name: 'Eletrônicos', description: 'Dispositivos eletrônicos', disabled: false },
-    { id: 'cat2', name: 'Informática', description: 'Equipamentos de TI', disabled: false },
-    { id: 'cat3', name: 'Móveis', description: 'Mobiliário de escritório', disabled: true },
-    { id: 'cat4', name: 'Papelaria', description: 'Materiais de escritório', disabled: false },
-    { id: 'cat5', name: 'Limpeza', description: 'Produtos de limpeza', disabled: true }
+    {
+      id: 'cat1',
+      name: 'Eletrônicos',
+      description: 'Dispositivos eletrônicos',
+      disabled: false,
+    },
+    {
+      id: 'cat2',
+      name: 'Informática',
+      description: 'Equipamentos de TI',
+      disabled: false,
+    },
+    {
+      id: 'cat3',
+      name: 'Móveis',
+      description: 'Mobiliário de escritório',
+      disabled: true,
+    },
+    {
+      id: 'cat4',
+      name: 'Papelaria',
+      description: 'Materiais de escritório',
+      disabled: false,
+    },
+    {
+      id: 'cat5',
+      name: 'Limpeza',
+      description: 'Produtos de limpeza',
+      disabled: true,
+    },
   ];
 
   tags: CustomMatSelectOption[] = [
@@ -262,7 +308,7 @@ export class CustomMatSelectDemoComponent implements OnInit {
     { value: 'review', label: 'Revisar' },
     { value: 'approved', label: 'Aprovado' },
     { value: 'pending', label: 'Pendente' },
-    { value: 'completed', label: 'Concluído' }
+    { value: 'completed', label: 'Concluído' },
   ];
 
   ngOnInit(): void {
@@ -277,7 +323,7 @@ export class CustomMatSelectDemoComponent implements OnInit {
       user: new FormControl('', [Validators.required]),
       item: new FormControl({}, [Validators.required]),
       category: new FormControl(''),
-      multipleItems: new FormControl([])
+      multipleItems: new FormControl([]),
     });
   }
 
@@ -325,7 +371,9 @@ export class CustomMatSelectDemoComponent implements OnInit {
   submitForm(): void {
     if (this.form.valid) {
       console.log('Formulário válido:', this.form.value);
-      alert('Formulário enviado com sucesso! Verifique o console para ver os dados.');
+      alert(
+        'Formulário enviado com sucesso! Verifique o console para ver os dados.',
+      );
     } else {
       console.log('Formulário inválido:', this.form.errors);
       alert('Por favor, preencha todos os campos obrigatórios.');
@@ -343,7 +391,7 @@ export class CustomMatSelectDemoComponent implements OnInit {
       user: '',
       item: {},
       category: '',
-      multipleItems: []
+      multipleItems: [],
     });
   }
 
@@ -355,7 +403,7 @@ export class CustomMatSelectDemoComponent implements OnInit {
       user: 'uid2',
       item: { id: '1', name: 'Notebook Dell' },
       category: 'cat2',
-      multipleItems: ['urgent', 'important']
+      multipleItems: ['urgent', 'important'],
     });
   }
 
@@ -370,7 +418,7 @@ export class CustomMatSelectDemoComponent implements OnInit {
    * Marca todos os campos como tocados para exibir erros
    */
   private markFormGroupTouched(): void {
-    Object.keys(this.form.controls).forEach(key => {
+    Object.keys(this.form.controls).forEach((key) => {
       const control = this.form.get(key);
       control?.markAsTouched();
     });

@@ -13,6 +13,8 @@ import {
   output,
   signal,
   ViewChild,
+  ChangeDetectionStrategy,
+  ViewEncapsulation,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -55,6 +57,8 @@ import {
   ],
   templateUrl: './table-presentation.component.html',
   styleUrl: './table-presentation.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
 })
 export class TablePresentationComponent<T = any> implements AfterViewInit {
   // Inputs como signals
@@ -94,7 +98,7 @@ export class TablePresentationComponent<T = any> implements AfterViewInit {
   virtualDataSource = computed(() => {
     const virtualData = this.virtualScrollService.getVirtualData()();
     return new MatTableDataSource(
-      virtualData.items.filter((item) => item !== null)
+      virtualData.items.filter((item) => item !== null),
     );
   });
 
@@ -347,7 +351,7 @@ export class TablePresentationComponent<T = any> implements AfterViewInit {
 
     return Math.max(
       config.minBufferSize,
-      Math.min(config.maxBufferSize, bufferSize)
+      Math.min(config.maxBufferSize, bufferSize),
     );
   }
 

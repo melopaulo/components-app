@@ -10,14 +10,14 @@ export const routes: Routes = [
     path: 'theme-demo',
     loadComponent: () =>
       import('./components/theme-demo/theme-demo.component').then(
-        (m) => m.ThemeDemoComponent
+        (m) => m.ThemeDemoComponent,
       ),
   },
   {
     path: 'custom-select',
     loadComponent: () =>
       import('./components/custom-select/custom-select-demo.component').then(
-        (m) => m.CustomSelectDemoComponent
+        (m) => m.CustomSelectDemoComponent,
       ),
   },
   {
@@ -49,14 +49,14 @@ export const routes: Routes = [
     path: 'reusable-table',
     loadComponent: () =>
       import('./components/reusable-table/reusable-table-demo.component').then(
-        (m) => m.ReusableTableDemoComponent
+        (m) => m.ReusableTableDemoComponent,
       ),
   },
   {
     path: 'custom-table',
     loadComponent: () =>
       import('./components/custom-table/custom-table-demo.component').then(
-        (m) => m.CustomTableDemoComponent
+        (m) => m.CustomTableDemoComponent,
       ),
   },
 ];

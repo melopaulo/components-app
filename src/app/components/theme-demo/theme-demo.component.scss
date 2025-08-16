@@ -12,7 +12,7 @@
 .material-card {
   @apply bg-white rounded-lg p-6 border border-surface-200;
   @apply transition-all duration-300 ease-in-out;
-  
+
   // Efeito hover com elevação
   &:hover {
     @apply transform -translate-y-1;
@@ -46,50 +46,50 @@
   ::ng-deep .mat-mdc-form-field {
     .mat-mdc-text-field-wrapper {
       @apply rounded-lg;
-      
+
       &.mdc-text-field--focused {
         @apply ring-2 ring-primary-200;
       }
     }
   }
-  
+
   // Customização dos botões
   ::ng-deep .mat-mdc-raised-button {
     @apply font-medium tracking-wide;
-    
+
     &.mat-primary {
       @apply shadow-lg hover:shadow-xl;
     }
   }
-  
+
   // Customização dos chips
   ::ng-deep .mat-mdc-chip {
     @apply font-medium;
-    
+
     &:hover {
       @apply transform scale-105;
       @apply transition-transform duration-200;
     }
   }
-  
+
   // Customização da progress bar
   ::ng-deep .mat-mdc-progress-bar {
     @apply h-2;
-    
+
     .mdc-linear-progress__bar-inner {
       @apply rounded-full;
     }
   }
-  
+
   // Customização dos badges
   ::ng-deep .mat-badge-content {
     @apply font-bold text-xs;
   }
-  
+
   // Customização dos ícones
   ::ng-deep .mat-icon {
     @apply transition-colors duration-200;
-    
+
     &:hover {
       @apply text-primary-600;
     }
@@ -101,7 +101,7 @@
   .responsive-grid {
     @apply grid-cols-1 gap-4;
   }
-  
+
   .material-card {
     @apply p-4;
   }
@@ -113,7 +113,9 @@
 }
 
 // Transições suaves para todos os elementos interativos
-button, .mat-mdc-form-field, .mat-mdc-chip {
+button,
+.mat-mdc-form-field,
+.mat-mdc-chip {
   @apply transition-all duration-200 ease-in-out;
 }
 

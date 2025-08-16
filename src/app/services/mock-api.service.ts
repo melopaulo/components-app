@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, delay, map } from 'rxjs';
-import { SelectOption, SearchParams, ApiResponse } from '../components/custom-mat-select5/custom-mat-select5.component';
+import {
+  SelectOption,
+  SearchParams,
+  ApiResponse,
+} from '../components/custom-mat-select5/custom-mat-select5.component';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class MockApiService {
-  
   // Dados mock para simular uma API com muitos itens
   private mockData: SelectOption[] = [
     // Países
@@ -20,7 +23,7 @@ export class MockApiService {
     { value: 'ec', label: 'Equador', group: 'América do Sul' },
     { value: 'bo', label: 'Bolívia', group: 'América do Sul' },
     { value: 'py', label: 'Paraguai', group: 'América do Sul' },
-    
+
     { value: 'us', label: 'Estados Unidos', group: 'América do Norte' },
     { value: 'ca', label: 'Canadá', group: 'América do Norte' },
     { value: 'mx', label: 'México', group: 'América do Norte' },
@@ -31,7 +34,7 @@ export class MockApiService {
     { value: 'hn', label: 'Honduras', group: 'América Central' },
     { value: 'sv', label: 'El Salvador', group: 'América Central' },
     { value: 'bz', label: 'Belize', group: 'América Central' },
-    
+
     { value: 'de', label: 'Alemanha', group: 'Europa' },
     { value: 'fr', label: 'França', group: 'Europa' },
     { value: 'it', label: 'Itália', group: 'Europa' },
@@ -52,7 +55,7 @@ export class MockApiService {
     { value: 'ro', label: 'Romênia', group: 'Europa' },
     { value: 'bg', label: 'Bulgária', group: 'Europa' },
     { value: 'hr', label: 'Croácia', group: 'Europa' },
-    
+
     { value: 'cn', label: 'China', group: 'Ásia' },
     { value: 'jp', label: 'Japão', group: 'Ásia' },
     { value: 'kr', label: 'Coreia do Sul', group: 'Ásia' },
@@ -73,7 +76,7 @@ export class MockApiService {
     { value: 'tj', label: 'Tadjiquistão', group: 'Ásia' },
     { value: 'tm', label: 'Turcomenistão', group: 'Ásia' },
     { value: 'af', label: 'Afeganistão', group: 'Ásia' },
-    
+
     { value: 'au', label: 'Austrália', group: 'Oceania' },
     { value: 'nz', label: 'Nova Zelândia', group: 'Oceania' },
     { value: 'fj', label: 'Fiji', group: 'Oceania' },
@@ -84,7 +87,7 @@ export class MockApiService {
     { value: 'to', label: 'Tonga', group: 'Oceania' },
     { value: 'ws', label: 'Samoa', group: 'Oceania' },
     { value: 'ki', label: 'Kiribati', group: 'Oceania' },
-    
+
     { value: 'za', label: 'África do Sul', group: 'África' },
     { value: 'ng', label: 'Nigéria', group: 'África' },
     { value: 'eg', label: 'Egito', group: 'África' },
@@ -104,204 +107,352 @@ export class MockApiService {
     { value: 'zw', label: 'Zimbábue', group: 'África' },
     { value: 'bw', label: 'Botsuana', group: 'África' },
     { value: 'na', label: 'Namíbia', group: 'África' },
-    { value: 'sz', label: 'Suazilândia', group: 'África' }
+    { value: 'sz', label: 'Suazilândia', group: 'África' },
   ];
-  
+
   constructor() {
     // Gerar mais dados para demonstrar scroll infinito
     this.generateMoreData();
   }
-  
+
   // Gerar dados adicionais para demonstração
   private generateMoreData() {
     const additionalData: SelectOption[] = [];
-    
+
     // Adicionar cidades brasileiras
     const brazilianCities = [
-      'São Paulo', 'Rio de Janeiro', 'Brasília', 'Salvador', 'Fortaleza',
-      'Belo Horizonte', 'Manaus', 'Curitiba', 'Recife', 'Goiânia',
-      'Belém', 'Porto Alegre', 'Guarulhos', 'Campinas', 'São Luís',
-      'São Gonçalo', 'Maceió', 'Duque de Caxias', 'Natal', 'Teresina',
-      'Campo Grande', 'Nova Iguaçu', 'São Bernardo do Campo', 'João Pessoa',
-      'Santo André', 'Osasco', 'Jaboatão dos Guararapes', 'São José dos Campos',
-      'Ribeirão Preto', 'Uberlândia', 'Contagem', 'Sorocaba', 'Aracaju',
-      'Feira de Santana', 'Cuiabá', 'Joinville', 'Juiz de Fora', 'Londrina',
-      'Aparecida de Goiânia', 'Niterói', 'Ananindeua', 'Belford Roxo',
-      'Caxias do Sul', 'Campos dos Goytacazes', 'São João de Meriti',
-      'Vila Velha', 'Florianópolis', 'Santos', 'Mauá', 'Carapicuíba',
-      'Olinda', 'Diadema', 'Jundiaí', 'Piracicaba', 'Cariacica',
-      'Bauru', 'Porto Velho', 'Serra', 'Betim', 'Paulista',
-      'Canoas', 'Cascavel', 'Ribeirão das Neves', 'Pelotas', 'Montes Claros'
+      'São Paulo',
+      'Rio de Janeiro',
+      'Brasília',
+      'Salvador',
+      'Fortaleza',
+      'Belo Horizonte',
+      'Manaus',
+      'Curitiba',
+      'Recife',
+      'Goiânia',
+      'Belém',
+      'Porto Alegre',
+      'Guarulhos',
+      'Campinas',
+      'São Luís',
+      'São Gonçalo',
+      'Maceió',
+      'Duque de Caxias',
+      'Natal',
+      'Teresina',
+      'Campo Grande',
+      'Nova Iguaçu',
+      'São Bernardo do Campo',
+      'João Pessoa',
+      'Santo André',
+      'Osasco',
+      'Jaboatão dos Guararapes',
+      'São José dos Campos',
+      'Ribeirão Preto',
+      'Uberlândia',
+      'Contagem',
+      'Sorocaba',
+      'Aracaju',
+      'Feira de Santana',
+      'Cuiabá',
+      'Joinville',
+      'Juiz de Fora',
+      'Londrina',
+      'Aparecida de Goiânia',
+      'Niterói',
+      'Ananindeua',
+      'Belford Roxo',
+      'Caxias do Sul',
+      'Campos dos Goytacazes',
+      'São João de Meriti',
+      'Vila Velha',
+      'Florianópolis',
+      'Santos',
+      'Mauá',
+      'Carapicuíba',
+      'Olinda',
+      'Diadema',
+      'Jundiaí',
+      'Piracicaba',
+      'Cariacica',
+      'Bauru',
+      'Porto Velho',
+      'Serra',
+      'Betim',
+      'Paulista',
+      'Canoas',
+      'Cascavel',
+      'Ribeirão das Neves',
+      'Pelotas',
+      'Montes Claros',
     ];
-    
+
     brazilianCities.forEach((city, index) => {
       additionalData.push({
         value: `br_city_${index}`,
         label: `${city} - Brasil`,
-        group: 'Cidades Brasileiras'
+        group: 'Cidades Brasileiras',
       });
     });
-    
+
     // Adicionar empresas de tecnologia
     const techCompanies = [
-      'Google', 'Microsoft', 'Apple', 'Amazon', 'Meta', 'Tesla', 'Netflix',
-      'Adobe', 'Salesforce', 'Oracle', 'IBM', 'Intel', 'NVIDIA', 'AMD',
-      'Cisco', 'VMware', 'ServiceNow', 'Workday', 'Zoom', 'Slack',
-      'Atlassian', 'Shopify', 'Square', 'PayPal', 'Uber', 'Airbnb',
-      'Spotify', 'Twitter', 'LinkedIn', 'Pinterest', 'Snapchat', 'TikTok',
-      'Discord', 'Twitch', 'Reddit', 'GitHub', 'GitLab', 'Bitbucket',
-      'Jira', 'Confluence', 'Trello', 'Asana', 'Monday.com', 'Notion',
-      'Figma', 'Sketch', 'InVision', 'Canva', 'Miro', 'Lucidchart'
+      'Google',
+      'Microsoft',
+      'Apple',
+      'Amazon',
+      'Meta',
+      'Tesla',
+      'Netflix',
+      'Adobe',
+      'Salesforce',
+      'Oracle',
+      'IBM',
+      'Intel',
+      'NVIDIA',
+      'AMD',
+      'Cisco',
+      'VMware',
+      'ServiceNow',
+      'Workday',
+      'Zoom',
+      'Slack',
+      'Atlassian',
+      'Shopify',
+      'Square',
+      'PayPal',
+      'Uber',
+      'Airbnb',
+      'Spotify',
+      'Twitter',
+      'LinkedIn',
+      'Pinterest',
+      'Snapchat',
+      'TikTok',
+      'Discord',
+      'Twitch',
+      'Reddit',
+      'GitHub',
+      'GitLab',
+      'Bitbucket',
+      'Jira',
+      'Confluence',
+      'Trello',
+      'Asana',
+      'Monday.com',
+      'Notion',
+      'Figma',
+      'Sketch',
+      'InVision',
+      'Canva',
+      'Miro',
+      'Lucidchart',
     ];
-    
+
     techCompanies.forEach((company, index) => {
       additionalData.push({
         value: `tech_${index}`,
         label: company,
-        group: 'Empresas de Tecnologia'
+        group: 'Empresas de Tecnologia',
       });
     });
-    
+
     // Adicionar linguagens de programação
     const programmingLanguages = [
-      'JavaScript', 'TypeScript', 'Python', 'Java', 'C#', 'C++', 'C',
-      'Go', 'Rust', 'Swift', 'Kotlin', 'Dart', 'PHP', 'Ruby', 'Scala',
-      'Clojure', 'Haskell', 'Erlang', 'Elixir', 'F#', 'OCaml', 'Perl',
-      'R', 'MATLAB', 'Julia', 'Lua', 'Shell', 'PowerShell', 'SQL',
-      'HTML', 'CSS', 'SASS', 'LESS', 'Stylus', 'XML', 'JSON', 'YAML',
-      'TOML', 'Markdown', 'LaTeX', 'Assembly', 'COBOL', 'Fortran',
-      'Pascal', 'Delphi', 'Visual Basic', 'ActionScript', 'CoffeeScript'
+      'JavaScript',
+      'TypeScript',
+      'Python',
+      'Java',
+      'C#',
+      'C++',
+      'C',
+      'Go',
+      'Rust',
+      'Swift',
+      'Kotlin',
+      'Dart',
+      'PHP',
+      'Ruby',
+      'Scala',
+      'Clojure',
+      'Haskell',
+      'Erlang',
+      'Elixir',
+      'F#',
+      'OCaml',
+      'Perl',
+      'R',
+      'MATLAB',
+      'Julia',
+      'Lua',
+      'Shell',
+      'PowerShell',
+      'SQL',
+      'HTML',
+      'CSS',
+      'SASS',
+      'LESS',
+      'Stylus',
+      'XML',
+      'JSON',
+      'YAML',
+      'TOML',
+      'Markdown',
+      'LaTeX',
+      'Assembly',
+      'COBOL',
+      'Fortran',
+      'Pascal',
+      'Delphi',
+      'Visual Basic',
+      'ActionScript',
+      'CoffeeScript',
     ];
-    
+
     programmingLanguages.forEach((language, index) => {
       additionalData.push({
         value: `lang_${index}`,
         label: language,
-        group: 'Linguagens de Programação'
+        group: 'Linguagens de Programação',
       });
     });
-    
+
     this.mockData = [...this.mockData, ...additionalData];
   }
-  
+
   // Simular busca na API com paginação
   searchItems(params: SearchParams<any>): Observable<ApiResponse<any>> {
     return of(null).pipe(
       delay(Math.random() * 500 + 200), // Simular latência da rede (200-700ms)
       map(() => {
         let filteredData = [...this.mockData];
-        
+
         // Filtrar por query se fornecida
         if (params.search && params.search.length >= 2) {
           const query = params.search.toLowerCase();
-          filteredData = this.mockData.filter(item =>
-            item.label.toLowerCase().includes(query) ||
-            (item.group && item.group.toLowerCase().includes(query))
+          filteredData = this.mockData.filter(
+            (item) =>
+              item.label.toLowerCase().includes(query) ||
+              (item.group && item.group.toLowerCase().includes(query)),
           );
         }
-        
+
         // Calcular paginação usando limit e offset
         const limit = params.limit || 20;
         const offset = params.offset || 0;
         const paginatedItems = filteredData.slice(offset, offset + limit);
-        
+
         const totalItems = filteredData.length;
-        const hasMore = (offset + limit) < totalItems;
-        
+        const hasMore = offset + limit < totalItems;
+
         return {
           entities: paginatedItems,
           total: totalItems,
-          hasMore
+          hasMore,
         };
-      })
+      }),
     );
   }
-  
+
   // Buscar países especificamente
   searchCountries(params: SearchParams<any>): Observable<ApiResponse<any>> {
     return of(null).pipe(
       delay(Math.random() * 300 + 100),
       map(() => {
-        let countries = this.mockData.filter(item => 
-          item.group && ['América do Sul', 'América do Norte', 'América Central', 'Europa', 'Ásia', 'Oceania', 'África'].includes(item.group)
+        let countries = this.mockData.filter(
+          (item) =>
+            item.group &&
+            [
+              'América do Sul',
+              'América do Norte',
+              'América Central',
+              'Europa',
+              'Ásia',
+              'Oceania',
+              'África',
+            ].includes(item.group),
         );
-        
+
         if (params.search && params.search.length >= 2) {
           const query = params.search.toLowerCase();
-          countries = countries.filter(item =>
-            item.label.toLowerCase().includes(query) ||
-            (item.group && item.group.toLowerCase().includes(query))
+          countries = countries.filter(
+            (item) =>
+              item.label.toLowerCase().includes(query) ||
+              (item.group && item.group.toLowerCase().includes(query)),
           );
         }
-        
+
         const limit = params.limit || 20;
         const offset = params.offset || 0;
         const paginatedItems = countries.slice(offset, offset + limit);
-        
+
         return {
           entities: paginatedItems,
           total: countries.length,
-          hasMore: (offset + limit) < countries.length
+          hasMore: offset + limit < countries.length,
         };
-      })
+      }),
     );
   }
-  
+
   // Buscar cidades brasileiras
-  searchBrazilianCities(params: SearchParams<any>): Observable<ApiResponse<any>> {
+  searchBrazilianCities(
+    params: SearchParams<any>,
+  ): Observable<ApiResponse<any>> {
     return of(null).pipe(
       delay(Math.random() * 400 + 150),
       map(() => {
-        let cities = this.mockData.filter(item => 
-          item.group === 'Cidades Brasileiras'
+        let cities = this.mockData.filter(
+          (item) => item.group === 'Cidades Brasileiras',
         );
-        
+
         if (params.search && params.search.length >= 2) {
           const query = params.search.toLowerCase();
-          cities = cities.filter(item =>
-            item.label.toLowerCase().includes(query)
+          cities = cities.filter((item) =>
+            item.label.toLowerCase().includes(query),
           );
         }
-        
+
         const limit = params.limit || 20;
         const offset = params.offset || 0;
         const paginatedItems = cities.slice(offset, offset + limit);
-        
+
         return {
           entities: paginatedItems,
           total: cities.length,
-          hasMore: (offset + limit) < cities.length
+          hasMore: offset + limit < cities.length,
         };
-      })
+      }),
     );
   }
-  
+
   // Buscar empresas de tecnologia
   searchTechCompanies(params: SearchParams<any>): Observable<ApiResponse<any>> {
     return of(null).pipe(
       delay(Math.random() * 350 + 100),
       map(() => {
-        let companies = this.mockData.filter(item => 
-          item.group === 'Empresas de Tecnologia'
+        let companies = this.mockData.filter(
+          (item) => item.group === 'Empresas de Tecnologia',
         );
-        
+
         if (params.search && params.search.length >= 2) {
           const query = params.search.toLowerCase();
-          companies = companies.filter(item =>
-            item.label.toLowerCase().includes(query)
+          companies = companies.filter((item) =>
+            item.label.toLowerCase().includes(query),
           );
         }
-        
+
         const limit = params.limit || 20;
         const offset = params.offset || 0;
         const paginatedItems = companies.slice(offset, offset + limit);
-        
+
         return {
           entities: paginatedItems,
           total: companies.length,
-          hasMore: (offset + limit) < companies.length
+          hasMore: offset + limit < companies.length,
         };
-      })
+      }),
     );
   }
 }

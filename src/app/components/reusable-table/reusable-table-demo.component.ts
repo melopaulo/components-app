@@ -322,7 +322,7 @@ export class ReusableTableDemoComponent {
           role,
           status: Math.random() > 0.2,
           createdAt: new Date(
-            Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000
+            Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000,
           ),
           salary: Math.floor(Math.random() * 10000) + 3000,
         });
@@ -340,7 +340,7 @@ export class ReusableTableDemoComponent {
     this.currentPageIndex.set(event.pageIndex);
     this.currentPageSize.set(event.pageSize);
     this.addEventLog(
-      `Página alterada: ${event.pageIndex + 1}, Tamanho: ${event.pageSize}`
+      `Página alterada: ${event.pageIndex + 1}, Tamanho: ${event.pageSize}`,
     );
   }
 
@@ -351,14 +351,14 @@ export class ReusableTableDemoComponent {
     });
     this.currentPageIndex.set(0); // Reset para primeira página
     this.addEventLog(
-      `Ordenação: ${event.active} ${event.direction || 'removida'}`
+      `Ordenação: ${event.active} ${event.direction || 'removida'}`,
     );
   }
 
   onSelectionChange(event: SelectionChangeEvent<User>): void {
     this.selectedItems.set(event.selected);
     this.addEventLog(
-      `Seleção alterada: ${event.selected.length} itens selecionados`
+      `Seleção alterada: ${event.selected.length} itens selecionados`,
     );
   }
 
@@ -371,7 +371,7 @@ export class ReusableTableDemoComponent {
     this.multiSelectEnabled.update((current) => !current);
     this.selectedItems.set([]);
     this.addEventLog(
-      `Seleção múltipla ${this.multiSelectEnabled() ? 'ativada' : 'desativada'}`
+      `Seleção múltipla ${this.multiSelectEnabled() ? 'ativada' : 'desativada'}`,
     );
   }
 

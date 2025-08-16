@@ -1,4 +1,9 @@
-import { Component, Input, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  Input,
+  ChangeDetectionStrategy,
+  ViewEncapsulation,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 /**
@@ -12,7 +17,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './loading-spinner.component.html',
   styleUrls: ['./loading-spinner.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class LoadingSpinnerComponent {
   /**
@@ -45,18 +50,18 @@ export class LoadingSpinnerComponent {
    */
   get spinnerClasses(): string {
     const classes = ['loading-spinner'];
-    
+
     classes.push(`spinner-${this.size}`);
     classes.push(`spinner-${this.color}`);
-    
+
     if (this.centered) {
       classes.push('spinner-centered');
     }
-    
+
     if (this.overlay) {
       classes.push('spinner-overlay');
     }
-    
+
     return classes.join(' ');
   }
 }

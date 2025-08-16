@@ -2,57 +2,63 @@
   <mat-toolbar color="primary" class="app-toolbar">
     <span>{{ title() }}</span>
     <span class="spacer"></span>
-    <button 
-      mat-button 
-      routerLink="/theme-demo" 
+    <button
+      mat-button
+      routerLink="/theme-demo"
       routerLinkActive="active-link"
-      [routerLinkActiveOptions]="{exact: false}">
+      [routerLinkActiveOptions]="{ exact: false }"
+    >
       <mat-icon>palette</mat-icon>
       Tema Demo
     </button>
-    <button 
-      mat-button 
-      routerLink="/custom-select" 
+    <button
+      mat-button
+      routerLink="/custom-select"
       routerLinkActive="active-link"
-      [routerLinkActiveOptions]="{exact: false}">
+      [routerLinkActiveOptions]="{ exact: false }"
+    >
       <mat-icon>list</mat-icon>
       Custom Select
     </button>
-    <button 
-      mat-button 
-      routerLink="/custom-mat-select" 
+    <button
+      mat-button
+      routerLink="/custom-mat-select"
       routerLinkActive="active-link"
-      [routerLinkActiveOptions]="{exact: false}">
+      [routerLinkActiveOptions]="{ exact: false }"
+    >
       <mat-icon>arrow_drop_down</mat-icon>
       Custom Mat Select
     </button>
-    <button 
-      mat-button 
-      routerLink="/custom-mat-select3" 
+    <button
+      mat-button
+      routerLink="/custom-mat-select3"
       routerLinkActive="active-link"
-      [routerLinkActiveOptions]="{exact: false}">
+      [routerLinkActiveOptions]="{ exact: false }"
+    >
       <mat-icon>search</mat-icon>
       Select Avançado
     </button>
-    <button 
-      mat-button 
-      routerLink="/custom-mat-select5" 
+    <button
+      mat-button
+      routerLink="/custom-mat-select5"
       routerLinkActive="active-link"
-      [routerLinkActiveOptions]="{exact: false}">
+      [routerLinkActiveOptions]="{ exact: false }"
+    >
       <mat-icon>architecture</mat-icon>
       Select Refatorado
     </button>
-    <button 
-      mat-button 
-      routerLink="/custom-table" 
+    <button
+      mat-button
+      routerLink="/custom-table"
       routerLinkActive="active-link"
-      [routerLinkActiveOptions]="{exact: false}">
+      [routerLinkActiveOptions]="{ exact: false }"
+    >
       <mat-icon>grid_view</mat-icon>
       Tabela Customizada
     </button>
     <app-theme-toggle />
   </mat-toolbar>
-  
+
   <main class="app-main">
     <router-outlet />
   </main>

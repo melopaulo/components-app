@@ -1,6 +1,9 @@
 import { FocusMonitor } from '@angular/cdk/a11y';
 import { CdkOverlayOrigin, OverlayModule } from '@angular/cdk/overlay';
-import { CdkVirtualScrollViewport, ScrollingModule } from '@angular/cdk/scrolling';
+import {
+  CdkVirtualScrollViewport,
+  ScrollingModule,
+} from '@angular/cdk/scrolling';
 
 import {
   Component,
@@ -18,8 +21,16 @@ import {
   ViewEncapsulation,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, NgControl } from '@angular/forms';
-import { MatFormFieldControl, MatFormFieldModule } from '@angular/material/form-field';
+import {
+  ControlValueAccessor,
+  FormsModule,
+  NG_VALUE_ACCESSOR,
+  NgControl,
+} from '@angular/forms';
+import {
+  MatFormFieldControl,
+  MatFormFieldModule,
+} from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -43,8 +54,8 @@ export interface CustomSelectOption {
     MatProgressSpinnerModule,
     MatIconModule,
     ScrollingModule,
-    OverlayModule
-],
+    OverlayModule,
+  ],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -68,7 +79,7 @@ export interface CustomSelectOption {
         [attr.aria-haspopup]="true"
         [attr.tabindex]="disabled() ? -1 : 0"
         role="combobox"
-        >
+      >
         <span class="custom-select-value" [class.placeholder]="!hasValue()">
           {{ displayValue() || placeholder() }}
         </span>
@@ -76,21 +87,15 @@ export interface CustomSelectOption {
           keyboard_arrow_down
         </mat-icon>
       </div>
-    
+
       <!-- Backdrop -->
       @if (isOpen()) {
-        <div
-          class="custom-select-backdrop"
-          (click)="close()"
-        ></div>
+        <div class="custom-select-backdrop" (click)="close()"></div>
       }
-    
+
       <!-- Overlay do dropdown -->
       @if (isOpen()) {
-        <div
-          class="custom-select-panel"
-          [style.width.px]="overlayWidth()"
-          >
+        <div class="custom-select-panel" [style.width.px]="overlayWidth()">
           <!-- Campo de busca -->
           @if (searchable()) {
             <div class="custom-select-search">
@@ -103,14 +108,14 @@ export interface CustomSelectOption {
                   (input)="onSearchInput($event)"
                   [placeholder]="searchPlaceholder()"
                   (keydown)="onSearchKeydown($event)"
-                  />
+                />
                 @if (searchTerm()) {
                   <button
                     matSuffix
                     mat-icon-button
                     (click)="clearSearch()"
                     type="button"
-                    >
+                  >
                     <mat-icon>clear</mat-icon>
                   </button>
                 }
@@ -119,7 +124,11 @@ export interface CustomSelectOption {
           }
           <!-- Lista de opções -->
           <div class="custom-select-options">
-            @for (option of filteredOptions(); track trackByFn(i, option); let i = $index) {
+            @for (
+              option of filteredOptions();
+              track trackByFn(i, option);
+              let i = $index
+            ) {
               <div
                 class="custom-select-option"
                 [class.selected]="isSelected(option)"
@@ -129,7 +138,7 @@ export interface CustomSelectOption {
                 (mouseenter)="setHighlightedIndex(i)"
                 [attr.role]="'option'"
                 [attr.aria-selected]="isSelected(option)"
-                >
+              >
                 {{ option.label }}
               </div>
             }
@@ -154,7 +163,7 @@ export interface CustomSelectOption {
                 type="button"
                 class="load-more-button"
                 (click)="loadMore()"
-                >
+              >
                 {{ loadMoreText() }}
               </button>
             </div>
@@ -162,7 +171,7 @@ export interface CustomSelectOption {
         </div>
       }
     </div>
-    `,
+  `,
   styleUrls: ['./custom-select.component.scss'],
   // Estratégia de detecção de mudança otimizada para performance
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -210,19 +219,21 @@ export class CustomSelectComponent implements ControlValueAccessor, OnDestroy {
   searchTerm = computed(() => this._searchTerm());
   isOpen = computed(() => this._isOpen());
   highlightedIndex = computed(() => this._highlightedIndex());
-  hasValue = computed(() => this._value() !== null && this._value() !== undefined);
-  
+  hasValue = computed(
+    () => this._value() !== null && this._value() !== undefined,
+  );
+
   // Filtragem reativa das opções
   filteredOptions = computed(() => {
     const term = this._searchTerm().toLowerCase().trim();
     const allOptions = this.options();
-    
+
     if (!term) {
       return allOptions;
     }
-    
-    return allOptions.filter(option => 
-      option.label.toLowerCase().includes(term)
+
+    return allOptions.filter((option) =>
+      option.label.toLowerCase().includes(term),
     );
   });
 
@@ -230,8 +241,8 @@ export class CustomSelectComponent implements ControlValueAccessor, OnDestroy {
   displayValue = computed(() => {
     const value = this._value();
     if (!value) return '';
-    
-    const option = this.options().find(opt => opt.value === value);
+
+    const option = this.options().find((opt) => opt.value === value);
     return option?.label || '';
   });
 
@@ -317,7 +328,7 @@ export class CustomSelectComponent implements ControlValueAccessor, OnDestroy {
   // Métodos públicos
   toggle(): void {
     if (this.disabled()) return;
-    
+
     if (this._isOpen()) {
       this.close();
     } else {
@@ -340,7 +351,7 @@ export class CustomSelectComponent implements ControlValueAccessor, OnDestroy {
 
   selectOption(option: CustomSelectOption): void {
     if (option.disabled) return;
-    
+
     this._value.set(option.value);
     this.close();
   }
@@ -368,7 +379,7 @@ export class CustomSelectComponent implements ControlValueAccessor, OnDestroy {
   }
 
   loadMore(): void {
-    this._currentPage.update(page => page + 1);
+    this._currentPage.update((page) => page + 1);
     this.loadMoreRequested.emit();
   }
 
@@ -376,7 +387,7 @@ export class CustomSelectComponent implements ControlValueAccessor, OnDestroy {
     // Implementar lazy loading baseado no scroll se necessário
     const filteredOptions = this.filteredOptions();
     const threshold = Math.max(1, Math.floor(filteredOptions.length * 0.8));
-    
+
     if (index >= threshold && this.hasMoreItems() && !this.loading()) {
       this.loadMore();
     }
@@ -450,7 +461,7 @@ export class CustomSelectComponent implements ControlValueAccessor, OnDestroy {
   private selectHighlightedOption(): void {
     const highlightedIndex = this._highlightedIndex();
     const options = this.filteredOptions();
-    
+
     if (highlightedIndex >= 0 && highlightedIndex < options.length) {
       this.selectOption(options[highlightedIndex]);
     }
@@ -459,7 +470,7 @@ export class CustomSelectComponent implements ControlValueAccessor, OnDestroy {
   private scrollToHighlighted(): void {
     const viewport = this.viewportRef();
     const highlightedIndex = this._highlightedIndex();
-    
+
     if (viewport && highlightedIndex >= 0) {
       viewport.scrollToIndex(highlightedIndex);
     }

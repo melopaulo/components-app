@@ -284,7 +284,7 @@ export class ColumnSelectorComponent<T = any> {
     return columns.filter(
       (column) =>
         column.title.toLowerCase().includes(search) ||
-        String(column.key).toLowerCase().includes(search)
+        String(column.key).toLowerCase().includes(search),
     );
   });
 
@@ -305,7 +305,7 @@ export class ColumnSelectorComponent<T = any> {
    */
   onColumnVisibilityChange(
     column: DynamicTableColumn<T>,
-    visible: boolean
+    visible: boolean,
   ): void {
     const columnId = column.id || String(column.key);
     const currentPreferences = this.preferences();
@@ -317,7 +317,7 @@ export class ColumnSelectorComponent<T = any> {
         visible,
         currentPreferences,
         this.config().storageKey,
-        this.config().minVisibleColumns
+        this.config().minVisibleColumns,
       );
 
     // Emite os eventos
@@ -346,7 +346,7 @@ export class ColumnSelectorComponent<T = any> {
       currentPreferences,
       event.previousIndex,
       event.currentIndex,
-      this.config().storageKey
+      this.config().storageKey,
     );
 
     // Emite os eventos
@@ -376,7 +376,7 @@ export class ColumnSelectorComponent<T = any> {
 
     this.columnPreferencesService.savePreferences(
       updatedPreferences,
-      this.config().storageKey
+      this.config().storageKey,
     );
 
     this.preferencesChange.emit(updatedPreferences);
@@ -392,7 +392,7 @@ export class ColumnSelectorComponent<T = any> {
     const defaultPreferences =
       this.columnPreferencesService.initializePreferences(
         this.columns(),
-        this.config().storageKey
+        this.config().storageKey,
       );
 
     this.preferencesChange.emit(defaultPreferences);

@@ -114,7 +114,7 @@
     @apply relative overflow-hidden;
 
     &::before {
-      content: '';
+      content: "";
       @apply absolute inset-0 bg-gradient-to-r from-transparent via-surface/40 to-transparent;
       animation: shimmer 1.5s infinite;
       transform: translateX(-100%);
@@ -156,7 +156,7 @@
   @apply bg-surface/10;
 }
 
-.custom-table tr[aria-selected='true'] td {
+.custom-table tr[aria-selected="true"] td {
   @apply bg-primary/10;
 }
 

@@ -36,15 +36,15 @@
 
 /* Cores do spinner */
 .spinner-primary .spinner-path {
-  stroke: theme('colors.blue.600');
+  stroke: theme("colors.blue.600");
 }
 
 .spinner-secondary .spinner-path {
-  stroke: theme('colors.gray.600');
+  stroke: theme("colors.gray.600");
 }
 
 .spinner-accent .spinner-path {
-  stroke: theme('colors.purple.600');
+  stroke: theme("colors.purple.600");
 }
 
 /* Texto do spinner */
@@ -92,21 +92,21 @@
   .spinner-overlay {
     @apply bg-gray-900 bg-opacity-75;
   }
-  
+
   .spinner-text {
     @apply text-gray-300;
   }
-  
+
   .spinner-primary .spinner-path {
-    stroke: theme('colors.blue.400');
+    stroke: theme("colors.blue.400");
   }
-  
+
   .spinner-secondary .spinner-path {
-    stroke: theme('colors.gray.400');
+    stroke: theme("colors.gray.400");
   }
-  
+
   .spinner-accent .spinner-path {
-    stroke: theme('colors.purple.400');
+    stroke: theme("colors.purple.400");
   }
 }
 
@@ -116,7 +116,8 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {

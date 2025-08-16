@@ -1,28 +1,29 @@
 <div class="p-6 space-y-6 min-h-screen bg-surface">
-
   <div class="flex items-center justify-between">
     <div>
-      <h1 class="text-3xl font-bold text-on-surface mb-2">Tabela Customizada - Demonstração</h1>
-      <p class="text-on-surface">ETAPA 1: Estrutura Base e Paginação no Topo (Estilo Gmail)</p>
+      <h1 class="text-3xl font-bold text-on-surface mb-2">
+        Tabela Customizada - Demonstração
+      </h1>
+      <p class="text-on-surface">
+        ETAPA 1: Estrutura Base e Paginação no Topo (Estilo Gmail)
+      </p>
     </div>
     <div class="flex gap-3">
-      <button 
-        mat-raised-button 
+      <button
+        mat-raised-button
         color="primary"
         (click)="generateData()"
-        [disabled]="loading()">
+        [disabled]="loading()"
+      >
         <mat-icon>refresh</mat-icon>
-        {{ loading() ? 'Carregando...' : 'Gerar Dados' }}
+        {{ loading() ? "Carregando..." : "Gerar Dados" }}
       </button>
-      <button 
-        mat-stroked-button
-        (click)="clearSelection()">
+      <button mat-stroked-button (click)="clearSelection()">
         <mat-icon>clear_all</mat-icon>
         Limpar Seleção
       </button>
     </div>
   </div>
-
 
   <mat-card class="bg-surface/20">
     <mat-card-header>
@@ -30,49 +31,53 @@
     </mat-card-header>
     <mat-card-content class="space-y-4">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-
         <div class="space-y-3">
           <h4 class="font-medium text-on-surface">Seleção</h4>
-          <mat-slide-toggle 
+          <mat-slide-toggle
             [checked]="multiSelectEnabled()"
             (change)="toggleMultiSelect($event.checked)"
-            color="primary">
+            color="primary"
+          >
             Seleção Múltipla
           </mat-slide-toggle>
-          <mat-slide-toggle 
+          <mat-slide-toggle
             [checked]="singleSelectEnabled()"
             (change)="toggleSingleSelect($event.checked)"
             [disabled]="multiSelectEnabled()"
-            color="primary">
+            color="primary"
+          >
             Seleção Única
           </mat-slide-toggle>
         </div>
 
-
         <div class="space-y-3">
           <h4 class="font-medium text-on-surface">Exibição</h4>
-          <mat-slide-toggle 
+          <mat-slide-toggle
             [checked]="showRowNumbers()"
             (change)="showRowNumbers.set($event.checked)"
-            color="primary">
+            color="primary"
+          >
             Números das Linhas
           </mat-slide-toggle>
-          <mat-slide-toggle 
+          <mat-slide-toggle
             [checked]="fixedHeightEnabled()"
             (change)="toggleFixedHeight($event.checked)"
-            color="primary">
+            color="primary"
+          >
             Altura Fixa (400px)
           </mat-slide-toggle>
           <mat-slide-toggle
             [checked]="virtualScrollEnabled()"
             (change)="toggleVirtualScrolling()"
-            color="primary">
+            color="primary"
+          >
             Virtual Scrolling (ETAPA 2)
           </mat-slide-toggle>
           <mat-slide-toggle
             [checked]="columnSelectorEnabled()"
             (change)="toggleColumnSelector($event.checked)"
-            color="primary">
+            color="primary"
+          >
             Seletor de Colunas (ETAPA 3)
           </mat-slide-toggle>
         </div>
@@ -83,7 +88,9 @@
           <div class="text-sm space-y-1">
             <div class="flex justify-between">
               <span class="text-on-surface">Total de itens:</span>
-              <span class="font-medium">{{ tableData().pagination.totalItems }}</span>
+              <span class="font-medium">{{
+                tableData().pagination.totalItems
+              }}</span>
             </div>
             <div class="flex justify-between">
               <span class="text-on-surface">Página atual:</span>
@@ -95,7 +102,9 @@
             </div>
             <div class="flex justify-between">
               <span class="text-on-surface">Selecionados:</span>
-              <span class="font-medium text-primary">{{ selectedCount() }}</span>
+              <span class="font-medium text-primary">{{
+                selectedCount()
+              }}</span>
             </div>
           </div>
         </div>
@@ -106,7 +115,9 @@
   <!-- Funcionalidades Implementadas -->
   <mat-card>
     <mat-card-header>
-      <mat-card-title class="text-lg">✅ Funcionalidades da ETAPA 1</mat-card-title>
+      <mat-card-title class="text-lg"
+        >✅ Funcionalidades da ETAPA 1</mat-card-title
+      >
     </mat-card-header>
     <mat-card-content>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
@@ -123,7 +134,9 @@
           <h4 class="font-medium text-on-surface">Paginação Estilo Gmail:</h4>
           <ul class="space-y-1 text-on-surface">
             <li>✓ Paginação no topo da tabela</li>
-            <li>✓ Controles de navegação (primeira, anterior, próxima, última)</li>
+            <li>
+              ✓ Controles de navegação (primeira, anterior, próxima, última)
+            </li>
             <li>✓ Seletor de itens por página</li>
             <li>✓ Totalizador de itens e informações da página</li>
           </ul>
@@ -138,7 +151,9 @@
           </ul>
         </div>
         <div class="space-y-2">
-          <h4 class="font-medium text-on-surface">Estilização e Acessibilidade:</h4>
+          <h4 class="font-medium text-on-surface">
+            Estilização e Acessibilidade:
+          </h4>
           <ul class="space-y-1 text-on-surface">
             <li>✓ Tailwind CSS + SCSS</li>
             <li>✓ Suporte a temas Material Design</li>
@@ -150,12 +165,12 @@
     </mat-card-content>
   </mat-card>
 
-
   <mat-card>
     <mat-card-header>
       <mat-card-title class="text-lg">Tabela de Produtos</mat-card-title>
       <mat-card-subtitle>
-        Demonstração completa com {{ tableData().pagination.totalItems }} produtos
+        Demonstração completa com
+        {{ tableData().pagination.totalItems }} produtos
       </mat-card-subtitle>
     </mat-card-header>
     <mat-card-content class="p-0">
@@ -207,27 +222,36 @@
     <mat-card-header>
       <div class="flex items-center justify-between w-full">
         <mat-card-title class="text-lg">Log de Eventos</mat-card-title>
-        <button 
-          mat-icon-button 
+        <button
+          mat-icon-button
           (click)="clearEventLog()"
-          [disabled]="eventLog().length === 0">
+          [disabled]="eventLog().length === 0"
+        >
           <mat-icon>clear</mat-icon>
         </button>
       </div>
     </mat-card-header>
     <mat-card-content class="max-h-64 overflow-y-auto">
-      <div *ngIf="eventLog().length === 0" class="text-center py-8 text-on-surface">
+      <div
+        *ngIf="eventLog().length === 0"
+        class="text-center py-8 text-on-surface"
+      >
         <mat-icon class="text-4xl mb-2 opacity-50">event_note</mat-icon>
         <p>Nenhum evento registrado ainda</p>
         <p class="text-xs">Interaja com a tabela para ver os eventos</p>
       </div>
-      <div 
-        *ngFor="let event of eventLog(); trackBy: trackByIndex" 
-        class="flex items-start gap-3 py-2 border-b border-gray-100 last:border-b-0">
-        <mat-icon class="text-sm mt-0.5 text-primary">{{ event.icon }}</mat-icon>
+      <div
+        *ngFor="let event of eventLog(); trackBy: trackByIndex"
+        class="flex items-start gap-3 py-2 border-b border-gray-100 last:border-b-0"
+      >
+        <mat-icon class="text-sm mt-0.5 text-primary">{{
+          event.icon
+        }}</mat-icon>
         <div class="flex-1 min-w-0">
           <div class="flex items-center justify-between">
-            <span class="text-sm font-medium text-on-surface">{{ event.type }}</span>
+            <span class="text-sm font-medium text-on-surface">{{
+              event.type
+            }}</span>
             <span class="text-xs text-on-surface">{{ event.timestamp }}</span>
           </div>
           <p class="text-xs text-on-surface mt-1">{{ event.message }}</p>

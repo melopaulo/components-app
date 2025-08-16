@@ -166,26 +166,26 @@ export class CustomTableDemoComponent {
   // Configuração de Virtual Scrolling para ETAPA 2 - CARREGAMENTO LENTO
   virtualScrollConfig = computed<VirtualScrollConfig | undefined>(() => {
     if (!this.virtualScrollEnabled()) return undefined;
-    
+
     return {
       enabled: true,
       itemSize: 48, // Altura de cada linha em pixels
       minBufferPx: 200, // Buffer mínimo em pixels
       maxBufferPx: 400, // Buffer máximo em pixels
       bufferSize: 10, // Número de itens no buffer
-      trackByFn: (index: number, item: Product) => item.id
+      trackByFn: (index: number, item: Product) => item.id,
     };
   });
 
   // Configuração de Cache Inteligente
   cacheConfig = computed<CacheConfig | undefined>(() => {
     if (!this.virtualScrollEnabled()) return undefined;
-    
+
     return {
       enabled: true,
       maxSize: 1000, // Máximo de 1000 itens no cache
       ttl: 300000, // 5 minutos de TTL
-      strategy: 'lru' // Least Recently Used
+      strategy: 'lru', // Least Recently Used
     };
   });
 
@@ -195,7 +195,7 @@ export class CustomTableDemoComponent {
       skeleton: true,
       skeletonRows: 10,
       spinner: true,
-      shimmer: false
+      shimmer: false,
     };
   });
 
@@ -264,7 +264,7 @@ export class CustomTableDemoComponent {
           stock: Math.floor(Math.random() * 100),
           active: Math.random() > 0.15,
           createdAt: new Date(
-            Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000
+            Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000,
           ),
           description: `Descrição detalhada do produto ${baseName} ${i}`,
         });
@@ -278,36 +278,50 @@ export class CustomTableDemoComponent {
       this.addEventLog(
         'Dados',
         `${products.length} produtos gerados com sucesso`,
-        'check_circle'
+        'check_circle',
       );
     }, 1500);
   }
 
   // Método para simular carregamento lento de dados (ETAPA 2)
-  async loadVirtualData(startIndex: number, endIndex: number): Promise<Product[]> {
+  async loadVirtualData(
+    startIndex: number,
+    endIndex: number,
+  ): Promise<Product[]> {
     // Simula delay de rede para demonstrar carregamento lento
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
     const allData = this.allProducts();
     return allData.slice(startIndex, endIndex + 1);
   }
 
   // Toggle para habilitar/desabilitar virtual scrolling
   toggleVirtualScrolling(): void {
-    this.virtualScrollEnabled.update(enabled => !enabled);
-    console.log('Virtual Scrolling:', this.virtualScrollEnabled() ? 'Habilitado' : 'Desabilitado');
+    this.virtualScrollEnabled.update((enabled) => !enabled);
+    console.log(
+      'Virtual Scrolling:',
+      this.virtualScrollEnabled() ? 'Habilitado' : 'Desabilitado',
+    );
   }
 
   // Handler para requisições de dados virtuais (ETAPA 2)
-  async onVirtualDataRequest(event: { start: number; end: number }): Promise<void> {
+  async onVirtualDataRequest(event: {
+    start: number;
+    end: number;
+  }): Promise<void> {
     console.log('Requisição de dados virtuais:', event);
-    
+
     // Simula carregamento de dados para o range solicitado
     this.loading.set(true);
-    
+
     try {
       const virtualData = await this.loadVirtualData(event.start, event.end);
-      console.log('Dados carregados para range:', event, virtualData.length, 'itens');
+      console.log(
+        'Dados carregados para range:',
+        event,
+        virtualData.length,
+        'itens',
+      );
     } catch (error) {
       console.error('Erro ao carregar dados virtuais:', error);
     } finally {
@@ -321,7 +335,7 @@ export class CustomTableDemoComponent {
     this.addEventLog(
       'Paginação',
       `Página ${event.pageIndex + 1}, ${event.pageSize} itens por página`,
-      'navigate_next'
+      'navigate_next',
     );
   }
 
@@ -332,7 +346,7 @@ export class CustomTableDemoComponent {
     this.addEventLog(
       'Ordenação',
       `Coluna: ${event.active}${direction}`,
-      'sort'
+      'sort',
     );
   }
 
@@ -345,7 +359,7 @@ export class CustomTableDemoComponent {
       `${count} item${count !== 1 ? 's' : ''} selecionado${
         count !== 1 ? 's' : ''
       } (${type})`,
-      'check_box'
+      'check_box',
     );
   }
 
@@ -353,17 +367,19 @@ export class CustomTableDemoComponent {
     this.addEventLog(
       'Clique',
       `Produto: ${product.name} (ID: ${product.id})`,
-      'mouse'
+      'mouse',
     );
   }
 
   // Manipuladores de eventos para colunas dinâmicas
   onColumnVisibilityChange(event: ColumnVisibilityChangeEvent): void {
-    const visibleCount = Object.values(event.preferences).filter(config => config.visible).length;
+    const visibleCount = Object.values(event.preferences).filter(
+      (config) => config.visible,
+    ).length;
     this.addEventLog(
       'column-visibility',
       `Coluna ${event.columnId}: ${event.visible ? 'mostrada' : 'ocultada'} (${visibleCount} visíveis)`,
-      'visibility'
+      'visibility',
     );
   }
 
@@ -371,7 +387,7 @@ export class CustomTableDemoComponent {
     this.addEventLog(
       'column-reorder',
       `Coluna ${String(event.column.key)} reordenada: posição ${event.previousIndex} → ${event.currentIndex}`,
-      'swap_horiz'
+      'swap_horiz',
     );
   }
 
@@ -385,7 +401,7 @@ export class CustomTableDemoComponent {
     this.addEventLog(
       'Configuração',
       `Seleção múltipla ${enabled ? 'ativada' : 'desativada'}`,
-      'settings'
+      'settings',
     );
   }
 
@@ -398,7 +414,7 @@ export class CustomTableDemoComponent {
     this.addEventLog(
       'Configuração',
       `Seleção única ${enabled ? 'ativada' : 'desativada'}`,
-      'settings'
+      'settings',
     );
   }
 
@@ -407,7 +423,7 @@ export class CustomTableDemoComponent {
     this.addEventLog(
       'Configuração',
       `Altura fixa ${enabled ? 'ativada (400px)' : 'desativada'}`,
-      'settings'
+      'settings',
     );
   }
 
@@ -416,7 +432,7 @@ export class CustomTableDemoComponent {
     this.addEventLog(
       'column-selector',
       `Seletor de colunas ${enabled ? 'ativado' : 'desativado'}`,
-      'view_column'
+      'view_column',
     );
   }
 

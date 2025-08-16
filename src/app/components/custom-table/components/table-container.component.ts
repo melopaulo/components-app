@@ -9,6 +9,8 @@ import {
   inject,
   OnInit,
   OnDestroy,
+  ChangeDetectionStrategy,
+  ViewEncapsulation,
 } from '@angular/core';
 
 import {
@@ -35,13 +37,14 @@ import { TableCacheService } from '../services/table-cache.service';
 import { ColumnPreferencesService } from '../services/column-preferences.service';
 import { ColumnSelectorComponent } from './column-selector.component';
 
-
 @Component({
   selector: 'app-table-container',
   standalone: true,
   imports: [CommonModule, TablePresentationComponent, ColumnSelectorComponent],
   templateUrl: './table-container.component.html',
   styleUrl: './table-container.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
 })
 export class TableContainerComponent<T = any> implements OnInit, OnDestroy {
   // Serviços injetados
@@ -53,7 +56,7 @@ export class TableContainerComponent<T = any> implements OnInit, OnDestroy {
   columns = input.required<DynamicTableColumn<T>[]>();
   data = input.required<TableData<T>>();
   loading = input<boolean>(false);
-  
+
   // Configurações de colunas dinâmicas
   columnSelector = input<ColumnSelectorConfig>({
     enabled: true,
@@ -61,29 +64,31 @@ export class TableContainerComponent<T = any> implements OnInit, OnDestroy {
     dragDropEnabled: true,
     persistPreferences: true,
     storageKey: 'table-columns',
-    minVisibleColumns: 1
+    minVisibleColumns: 1,
   });
-  
+
   // Configurações de seleção
   selectionEnabled = input<boolean>(false);
   multipleSelection = input<boolean>(false);
-  
+
   // Configurações de exibição
   fixedHeight = input<boolean>(false);
   height = input<string>('400px');
   pageSizeOptions = input<number[]>([5, 10, 25, 50, 100]);
-  
+
   // Configurações de Virtual Scrolling
   virtualScrolling = input<VirtualScrollConfig | undefined>(undefined);
-  
+
   // Configurações de Cache
   cacheConfig = input<CacheConfig | undefined>(undefined);
-  
+
   // Configurações de Loading States
   loadingStates = input<LoadingStatesConfig | undefined>(undefined);
-  
+
   // Função de carregamento de dados para virtual scrolling
-  dataLoader = input<((start: number, end: number) => Promise<T[]>) | undefined>(undefined);
+  dataLoader = input<
+    ((start: number, end: number) => Promise<T[]>) | undefined
+  >(undefined);
 
   // Outputs
   pageChange = output<PageChangeEvent>();
@@ -94,17 +99,15 @@ export class TableContainerComponent<T = any> implements OnInit, OnDestroy {
   columnVisibilityChange = output<ColumnVisibilityChangeEvent>();
   columnReorderChange = output<ColumnReorderEvent>();
 
-
   private currentPageIndex = signal(0);
   private currentPageSize = signal(10);
   private currentSort = signal<SortConfig>({ active: '', direction: '' });
   private selectedItems = signal<T[]>([]);
   private isVirtualScrollEnabled = signal(false);
-  
+
   // Estado das colunas dinâmicas
   columnPreferences = signal<ColumnPreferences>({});
   processedColumns = signal<DynamicTableColumn<T>[]>([]);
-
 
   tableConfig = computed<TableConfig<T>>(() => {
     const pagination: PaginationConfig = {
@@ -148,7 +151,9 @@ export class TableContainerComponent<T = any> implements OnInit, OnDestroy {
 
   // Computed signals para colunas
   visibleColumns = computed(() => {
-    return this.columnPreferencesService.getVisibleColumns(this.processedColumns());
+    return this.columnPreferencesService.getVisibleColumns(
+      this.processedColumns(),
+    );
   });
 
   constructor() {
@@ -164,7 +169,7 @@ export class TableContainerComponent<T = any> implements OnInit, OnDestroy {
     // Effect para configurar virtual scrolling
     effect(() => {
       const virtualConfig = this.virtualScrolling();
-      
+
       if (virtualConfig) {
         this.isVirtualScrollEnabled.set(true);
         this.virtualScrollService.updateConfig(virtualConfig);
@@ -175,22 +180,23 @@ export class TableContainerComponent<T = any> implements OnInit, OnDestroy {
     effect(() => {
       const columns = this.columns();
       const config = this.columnSelector();
-      
+
       if (config.enabled) {
         // Inicializa as preferências
         const preferences = this.columnPreferencesService.initializePreferences(
           columns,
-          config.storageKey
+          config.storageKey,
         );
-        
+
         this.columnPreferences.set(preferences);
-        
+
         // Aplica as preferências às colunas
-        const processedCols = this.columnPreferencesService.applyPreferencesToColumns(
-          columns,
-          preferences
-        );
-        
+        const processedCols =
+          this.columnPreferencesService.applyPreferencesToColumns(
+            columns,
+            preferences,
+          );
+
         this.processedColumns.set(processedCols);
       } else {
         // Se o seletor está desabilitado, usa as colunas originais
@@ -203,8 +209,12 @@ export class TableContainerComponent<T = any> implements OnInit, OnDestroy {
     // Inicialização do componente
     const virtualConfig = this.virtualScrolling();
     if (virtualConfig) {
-      const totalItems = this.data().pagination?.totalItems || this.data().items?.length || 0;
-      this.virtualScrollService.initializeVirtualData(totalItems, this.data().items || []);
+      const totalItems =
+        this.data().pagination?.totalItems || this.data().items?.length || 0;
+      this.virtualScrollService.initializeVirtualData(
+        totalItems,
+        this.data().items || [],
+      );
     }
   }
 
@@ -215,7 +225,6 @@ export class TableContainerComponent<T = any> implements OnInit, OnDestroy {
     }
     this.cacheService.clear();
   }
-
 
   handlePageChange(event: PageChangeEvent): void {
     this.currentPageIndex.set(event.pageIndex);
@@ -240,12 +249,6 @@ export class TableContainerComponent<T = any> implements OnInit, OnDestroy {
     this.rowClick.emit(item);
   }
 
-
-
-
-
-
-
   clearSelection(): void {
     this.selectedItems.set([]);
     this.selectionChange.emit({
@@ -259,10 +262,15 @@ export class TableContainerComponent<T = any> implements OnInit, OnDestroy {
     const { start, end } = event;
     const dataLoader = this.dataLoader();
     const cacheConfig = this.cacheConfig();
-    
+
     if (dataLoader) {
       try {
-        await this.virtualScrollService.loadRange(start, end, dataLoader, cacheConfig);
+        await this.virtualScrollService.loadRange(
+          start,
+          end,
+          dataLoader,
+          cacheConfig,
+        );
       } catch (error) {
         console.error('Erro ao carregar dados virtuais:', error);
       }
@@ -276,36 +284,39 @@ export class TableContainerComponent<T = any> implements OnInit, OnDestroy {
   handleColumnVisibilityChange(event: ColumnVisibilityChangeEvent): void {
     this.columnPreferences.set(event.preferences);
     this.columnVisibilityChange.emit(event);
-    
+
     // Reaplica as preferências às colunas
-    const processedCols = this.columnPreferencesService.applyPreferencesToColumns(
-      this.columns(),
-      event.preferences
-    );
+    const processedCols =
+      this.columnPreferencesService.applyPreferencesToColumns(
+        this.columns(),
+        event.preferences,
+      );
     this.processedColumns.set(processedCols);
   }
 
   handleColumnReorderChange(event: ColumnReorderEvent): void {
     this.columnReorderChange.emit(event);
-    
+
     // As preferências já foram atualizadas pelo ColumnSelectorComponent
     // Apenas reaplica as preferências às colunas
     const currentPreferences = this.columnPreferences();
-    const processedCols = this.columnPreferencesService.applyPreferencesToColumns(
-      this.columns(),
-      currentPreferences
-    );
+    const processedCols =
+      this.columnPreferencesService.applyPreferencesToColumns(
+        this.columns(),
+        currentPreferences,
+      );
     this.processedColumns.set(processedCols);
   }
 
   handleColumnPreferencesChange(preferences: ColumnPreferences): void {
     this.columnPreferences.set(preferences);
-    
+
     // Reaplica as preferências às colunas
-    const processedCols = this.columnPreferencesService.applyPreferencesToColumns(
-      this.columns(),
-      preferences
-    );
+    const processedCols =
+      this.columnPreferencesService.applyPreferencesToColumns(
+        this.columns(),
+        preferences,
+      );
     this.processedColumns.set(processedCols);
   }
 

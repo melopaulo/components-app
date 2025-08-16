@@ -314,7 +314,7 @@ export class TablePresentationComponent<T = any> implements OnInit {
     }
 
     const dataColumns = this.visibleColumns().map((col) =>
-      this.getColumnKey(col)
+      this.getColumnKey(col),
     );
     columns.push(...dataColumns);
 

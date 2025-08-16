@@ -11,7 +11,7 @@
 /* Remove comportamentos padrão e aplica espaçamento adequado */
 .search-option {
   @apply pointer-events-none p-0 min-h-0;
-  
+
   /* Container da busca com padding interno para melhor usabilidade */
   .search-container {
     @apply p-3 w-full;
@@ -117,7 +117,7 @@
   .search-option .search-field {
     @apply bg-gray-800;
   }
-  
+
   /* Bordas mais visíveis no tema escuro */
   .pagination-info-option,
   .loading-option,
@@ -132,13 +132,13 @@
   .search-container {
     @apply p-2;
   }
-  
+
   .pagination-info,
   .loading-content,
   .info-content {
     @apply p-2 text-xs;
   }
-  
+
   .pagination-icon,
   .info-icon {
     @apply text-sm;

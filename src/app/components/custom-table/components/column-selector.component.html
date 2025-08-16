@@ -7,7 +7,7 @@
     [disabled]="config().disabled"
   >
     <mat-icon>view_column</mat-icon>
-    <span>{{ config().buttonText || 'Colunas' }}</span>
+    <span>{{ config().buttonText || "Colunas" }}</span>
     <mat-icon>arrow_drop_down</mat-icon>
   </button>
 
@@ -24,7 +24,7 @@
               [(ngModel)]="searchTerm"
               (input)="onSearchChange($event)"
               placeholder="Digite para buscar..."
-            >
+            />
             <mat-icon matSuffix>search</mat-icon>
           </mat-form-field>
         </div>
@@ -82,20 +82,12 @@
 
       <!-- Ações do menu -->
       <div class="menu-actions">
-        <button
-          mat-button
-          (click)="resetToDefault()"
-          class="reset-button"
-        >
+        <button mat-button (click)="resetToDefault()" class="reset-button">
           <mat-icon>refresh</mat-icon>
           Restaurar padrão
         </button>
 
-        <button
-          mat-button
-          (click)="showAllColumns()"
-          class="show-all-button"
-        >
+        <button mat-button (click)="showAllColumns()" class="show-all-button">
           <mat-icon>visibility</mat-icon>
           Mostrar todas
         </button>

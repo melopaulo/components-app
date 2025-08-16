@@ -1,8 +1,6 @@
 <div class="custom-table-container">
-
   <div class="table-header bg-surface border-b border-gray-200 px-4 py-3">
     <div class="flex items-center justify-between">
-
       <div class="flex items-center gap-4 text-sm text-on-surface">
         <span *ngIf="config()?.pagination?.showPageInfo">
           {{ getPageInfo() }}
@@ -11,7 +9,6 @@
           {{ getSelectionInfo() }}
         </span>
       </div>
-
 
       <div class="flex items-center gap-2">
         <mat-paginator
@@ -34,63 +31,86 @@
     </div>
   </div>
 
-
   <div
     class="table-content overflow-auto bg-surface"
     [style.height]="config()?.fixedHeight || 'auto'"
   >
-
     <!-- Loading States -->
     <div
       *ngIf="data()?.loading && !config()?.loadingStates?.skeleton"
       class="flex items-center justify-center p-8"
     >
-      <app-loading-spinner 
-        size="medium" 
-        color="primary" 
+      <app-loading-spinner
+        size="medium"
+        color="primary"
         text="Carregando dados..."
-        [centered]="true">
+        [centered]="true"
+      >
       </app-loading-spinner>
     </div>
 
     <!-- Skeleton Loading -->
     <div *ngIf="config()?.loadingStates?.skeleton && data()?.loading">
-      <app-skeleton-loader 
+      <app-skeleton-loader
         [rows]="config()?.loadingStates?.skeletonRows || 10"
         [columns]="config()?.columns?.length || 4"
         [showHeader]="true"
-        [rowHeight]="config()?.virtualScrolling?.itemSize ? config()?.virtualScrolling?.itemSize + 'px' : '48px'">
+        [rowHeight]="
+          config()?.virtualScrolling?.itemSize
+            ? config()?.virtualScrolling?.itemSize + 'px'
+            : '48px'
+        "
+      >
       </app-skeleton-loader>
     </div>
 
     <!-- Virtual Scrolling Table -->
-    <div *ngIf="config()?.virtualScrolling?.enabled && !data()?.loading" class="virtual-scroll-container">
+    <div
+      *ngIf="config()?.virtualScrolling?.enabled && !data()?.loading"
+      class="virtual-scroll-container"
+    >
       <!-- Loading overlay para virtual scrolling -->
-       <div *ngIf="isVirtualScrollLoading()" class="virtual-loading-overlay">
-        <app-loading-spinner 
-          size="small" 
-          color="primary" 
+      <div *ngIf="isVirtualScrollLoading()" class="virtual-loading-overlay">
+        <app-loading-spinner
+          size="small"
+          color="primary"
           text="Carregando mais dados..."
           [overlay]="false"
-          [centered]="true">
+          [centered]="true"
+        >
         </app-loading-spinner>
       </div>
-      
-      <cdk-virtual-scroll-viewport 
+
+      <cdk-virtual-scroll-viewport
         #virtualScrollViewport
         [itemSize]="config()?.virtualScrolling?.itemSize || 48"
         [minBufferPx]="getAdaptiveMinBuffer()"
         [maxBufferPx]="getAdaptiveMaxBuffer()"
         class="virtual-viewport"
-        (scrolledIndexChange)="onVirtualScrollChange($event)">
-        
-        <table mat-table [dataSource]="virtualDataSource()" class="w-full custom-table virtual-table">
-           <!-- Virtual scroll table columns will be implemented -->
-           <tr mat-header-row *matHeaderRowDef="displayedColumns(); trackBy: trackByColumn"></tr>
-           <tr mat-row *matRowDef="let row; columns: displayedColumns(); let i = index; trackBy: getTrackByFunction()" 
-               [class]="getRowClass(row)"
-               [attr.data-index]="i"></tr>
-         </table>
+        (scrolledIndexChange)="onVirtualScrollChange($event)"
+      >
+        <table
+          mat-table
+          [dataSource]="virtualDataSource()"
+          class="w-full custom-table virtual-table"
+        >
+          <!-- Virtual scroll table columns will be implemented -->
+          <tr
+            mat-header-row
+            *matHeaderRowDef="displayedColumns(); trackBy: trackByColumn"
+          ></tr>
+          <tr
+            mat-row
+            *matRowDef="
+              let row;
+              columns: displayedColumns();
+              let i = index;
+              trackBy: getTrackByFunction()
+            "
+            [class]="getRowClass(row)"
+            [attr.data-index]="i"
+          ></tr>
+        </table>
       </cdk-virtual-scroll-viewport>
     </div>
 
@@ -105,8 +125,10 @@
       (matSortChange)="onSortChange($event)"
       class="w-full custom-table"
     >
-
-      <ng-container matColumnDef="select" *ngIf="config()?.selection?.enabled && config()?.selection?.multiple">
+      <ng-container
+        matColumnDef="select"
+        *ngIf="config()?.selection?.enabled && config()?.selection?.multiple"
+      >
         <th mat-header-cell *matHeaderCellDef class="w-12">
           <mat-checkbox
             [checked]="isAllSelected()"
@@ -126,8 +148,10 @@
         </td>
       </ng-container>
 
-
-      <ng-container matColumnDef="radio" *ngIf="config()?.selection?.enabled && !config()?.selection?.multiple">
+      <ng-container
+        matColumnDef="radio"
+        *ngIf="config()?.selection?.enabled && !config()?.selection?.multiple"
+      >
         <th mat-header-cell *matHeaderCellDef class="w-12">
           <span class="sr-only">Seleção</span>
         </th>
@@ -141,11 +165,8 @@
         </td>
       </ng-container>
 
-
       <ng-container matColumnDef="rowNumber">
-        <th mat-header-cell *matHeaderCellDef class="w-16 text-center">
-          #
-        </th>
+        <th mat-header-cell *matHeaderCellDef class="w-16 text-center">#</th>
         <td
           mat-cell
           *matCellDef="let row; let i = index"
@@ -155,12 +176,8 @@
         </td>
       </ng-container>
 
-
       <ng-container
-        *ngFor="
-          let column of config()?.columns || [];
-          trackBy: trackByColumn
-        "
+        *ngFor="let column of config()?.columns || []; trackBy: trackByColumn"
         [matColumnDef]="column.key.toString()"
       >
         <th
@@ -181,56 +198,45 @@
           [class]="getCellClass(column)"
           (click)="onRowClick(row)"
         >
-
           <ng-container [ngSwitch]="column.type">
-
             <span *ngSwitchDefault>
               {{ getCellValue(row, column) }}
             </span>
-
 
             <span *ngSwitchCase="'number'" class="font-mono">
               {{ getCellValue(row, column) | number }}
             </span>
 
-
             <span *ngSwitchCase="'date'">
-              {{ getCellValue(row, column) | date : 'dd/MM/yyyy' }}
+              {{ getCellValue(row, column) | date: "dd/MM/yyyy" }}
             </span>
-
 
             <span *ngSwitchCase="'currency'" class="font-mono">
               {{
-                getCellValue(row, column)
-                  | currency : 'BRL' : 'symbol' : '1.2-2'
+                getCellValue(row, column) | currency: "BRL" : "symbol" : "1.2-2"
               }}
             </span>
-
 
             <span *ngSwitchCase="'boolean'">
               <mat-icon
                 [class]="
-                  getCellValue(row, column)
-                    ? 'text-green-600'
-                    : 'text-red-600'
+                  getCellValue(row, column) ? 'text-green-600' : 'text-red-600'
                 "
                 [attr.aria-label]="
                   getCellValue(row, column) ? 'Ativo' : 'Inativo'
                 "
               >
-                {{ getCellValue(row, column) ? 'check_circle' : 'cancel' }}
+                {{ getCellValue(row, column) ? "check_circle" : "cancel" }}
               </mat-icon>
             </span>
           </ng-container>
         </td>
       </ng-container>
 
-
       <tr
         mat-header-row
         *matHeaderRowDef="displayedColumns(); sticky: true"
       ></tr>
-
 
       <tr
         mat-row
@@ -243,22 +249,17 @@
       ></tr>
     </table>
 
-
     <div
       *ngIf="
         !data()?.loading && (!data()?.items || data()?.items?.length === 0)
       "
       class="flex flex-col items-center justify-center p-12 text-center"
     >
-      <mat-icon class="text-6xl text-on-surface/50 mb-4"
-        >inbox</mat-icon
-      >
+      <mat-icon class="text-6xl text-on-surface/50 mb-4">inbox</mat-icon>
       <h3 class="text-lg font-medium text-on-surface mb-2">
         Nenhum dado encontrado
       </h3>
-      <p class="text-sm text-on-surface">
-        Não há dados para exibir.
-      </p>
+      <p class="text-sm text-on-surface">Não há dados para exibir.</p>
     </div>
   </div>
 </div>

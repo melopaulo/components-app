@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal, ViewEncapsulation } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnInit,
+  signal,
+  ViewEncapsulation,
+} from '@angular/core';
 
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,7 +15,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { Observable, map } from 'rxjs';
 
 import { MockApiService } from '../../services/mock-api.service';
-import { ApiResponse, CustomMatSelect4Component, SearchParams } from './custom-mat-select4.component';
+import {
+  ApiResponse,
+  CustomMatSelect4Component,
+  SearchParams,
+} from './custom-mat-select4.component';
 
 @Component({
   selector: 'app-custom-mat-select4-demo',
@@ -19,8 +30,8 @@ import { ApiResponse, CustomMatSelect4Component, SearchParams } from './custom-m
     MatButtonModule,
     MatIconModule,
     MatDividerModule,
-    CustomMatSelect4Component
-],
+    CustomMatSelect4Component,
+  ],
   // Estratégia de detecção de mudança otimizada para performance
   changeDetection: ChangeDetectionStrategy.OnPush,
   // Encapsulamento de view desabilitado para permitir estilos globais
@@ -33,28 +44,39 @@ import { ApiResponse, CustomMatSelect4Component, SearchParams } from './custom-m
           Custom Mat Select 4 - Busca Nativa
         </h1>
         <p class="text-gray-600 dark:text-gray-400 text-lg">
-          Componente de seleção avançado com busca e scroll infinito usando apenas Angular Material (sem ngx-mat-select-search)
+          Componente de seleção avançado com busca e scroll infinito usando
+          apenas Angular Material (sem ngx-mat-select-search)
         </p>
-        
+
         <!-- Badges de funcionalidades -->
         <div class="flex flex-wrap gap-2 mt-4">
-          <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm font-medium">
+          <span
+            class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm font-medium"
+          >
             <mat-icon class="inline-block w-4 h-4 mr-1">search</mat-icon>
             Busca Nativa
           </span>
-          <span class="px-3 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full text-sm font-medium">
+          <span
+            class="px-3 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full text-sm font-medium"
+          >
             <mat-icon class="inline-block w-4 h-4 mr-1">all_inclusive</mat-icon>
             Scroll Infinito
           </span>
-          <span class="px-3 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded-full text-sm font-medium">
+          <span
+            class="px-3 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded-full text-sm font-medium"
+          >
             <mat-icon class="inline-block w-4 h-4 mr-1">tune</mat-icon>
             Ícone Customizado
           </span>
-          <span class="px-3 py-1 bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 rounded-full text-sm font-medium">
+          <span
+            class="px-3 py-1 bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 rounded-full text-sm font-medium"
+          >
             <mat-icon class="inline-block w-4 h-4 mr-1">analytics</mat-icon>
             Relatório de Paginação
           </span>
-          <span class="px-3 py-1 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded-full text-sm font-medium">
+          <span
+            class="px-3 py-1 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded-full text-sm font-medium"
+          >
             <mat-icon class="inline-block w-4 h-4 mr-1">block</mat-icon>
             Sem Dependências Externas
           </span>
@@ -63,17 +85,18 @@ import { ApiResponse, CustomMatSelect4Component, SearchParams } from './custom-m
 
       <!-- Formulário de demonstração -->
       <form [formGroup]="demoForm" class="space-y-8">
-        
         <!-- Grid de selects -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          
           <!-- Select de Países -->
           <mat-card class="p-6">
             <div>
-              <h3 class="text-lg font-medium mb-3 text-gray-900 dark:text-white">
+              <h3
+                class="text-lg font-medium mb-3 text-gray-900 dark:text-white"
+              >
                 Países (Busca Nativa Básica)
               </h3>
-              <app-custom-mat-select4 formControlName="country"
+              <app-custom-mat-select4
+                formControlName="country"
                 label="Selecione um país"
                 placeholder="Digite para buscar países..."
                 [searchFunction]="searchCountriesFunction"
@@ -83,17 +106,21 @@ import { ApiResponse, CustomMatSelect4Component, SearchParams } from './custom-m
                 [showPaginationInfo]="true"
                 paginationInfoTemplate="{first} - {last} de {totalRecords} países"
                 (selectionChanged)="onCountryChange($event)"
-                (searchChanged)="onCountrySearch($event)" />
+                (searchChanged)="onCountrySearch($event)"
+              />
             </div>
           </mat-card>
 
           <!-- Select Múltiplo de Cidades -->
           <mat-card class="p-6">
             <div>
-              <h3 class="text-lg font-medium mb-3 text-gray-900 dark:text-white">
+              <h3
+                class="text-lg font-medium mb-3 text-gray-900 dark:text-white"
+              >
                 Cidades Brasileiras (Paginação Customizada)
               </h3>
-              <app-custom-mat-select4 formControlName="cities"
+              <app-custom-mat-select4
+                formControlName="cities"
                 label="Selecione cidades"
                 placeholder="Digite para buscar cidades..."
                 [multiple]="true"
@@ -106,17 +133,21 @@ import { ApiResponse, CustomMatSelect4Component, SearchParams } from './custom-m
                 noEntriesFoundLabel="Nenhuma cidade encontrada"
                 loadingMoreLabel="Carregando mais cidades..."
                 (selectionChanged)="onCitiesChange($event)"
-                (searchChanged)="onCitiesSearch($event)" />
+                (searchChanged)="onCitiesSearch($event)"
+              />
             </div>
           </mat-card>
 
           <!-- Select de Empresas de Tecnologia -->
           <mat-card class="p-6">
             <div>
-              <h3 class="text-lg font-medium mb-3 text-gray-900 dark:text-white">
+              <h3
+                class="text-lg font-medium mb-3 text-gray-900 dark:text-white"
+              >
                 Empresas de Tecnologia (Ícone Personalizado)
               </h3>
-              <app-custom-mat-select4 formControlName="techCompany"
+              <app-custom-mat-select4
+                formControlName="techCompany"
                 label="Selecione uma empresa"
                 placeholder="Digite para buscar empresas..."
                 [searchFunction]="searchTechCompaniesFunction"
@@ -128,17 +159,21 @@ import { ApiResponse, CustomMatSelect4Component, SearchParams } from './custom-m
                 paginationInfoTemplate="{first} a {last} (Total: {totalRecords})"
                 [clearSearchOnClose]="false"
                 (selectionChanged)="onTechCompanyChange($event)"
-                (searchChanged)="onTechCompanySearch($event)" />
+                (searchChanged)="onTechCompanySearch($event)"
+              />
             </div>
           </mat-card>
 
           <!-- Select Geral com Todos os Dados -->
           <mat-card class="p-6">
             <div>
-              <h3 class="text-lg font-medium mb-3 text-gray-900 dark:text-white">
+              <h3
+                class="text-lg font-medium mb-3 text-gray-900 dark:text-white"
+              >
                 Busca Geral (Paginação Avançada)
               </h3>
-              <app-custom-mat-select4 formControlName="generalSearch"
+              <app-custom-mat-select4
+                formControlName="generalSearch"
                 label="Busca geral"
                 placeholder="Digite para buscar em todos os dados..."
                 [searchFunction]="searchAllDataFunction"
@@ -151,10 +186,10 @@ import { ApiResponse, CustomMatSelect4Component, SearchParams } from './custom-m
                 noMoreItemsLabel="Todos os resultados foram carregados"
                 (selectionChanged)="onGeneralSearchChange($event)"
                 (searchChanged)="onGeneralSearch($event)"
-                (loadMore)="onLoadMore($event)" />
+                (loadMore)="onLoadMore($event)"
+              />
             </div>
           </mat-card>
-          
         </div>
 
         <!-- Informações de seleção -->
@@ -163,11 +198,13 @@ import { ApiResponse, CustomMatSelect4Component, SearchParams } from './custom-m
             <mat-icon class="inline-block mr-2">info</mat-icon>
             Informações das Seleções
           </h3>
-          
+
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <!-- País selecionado -->
             <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-              <h4 class="font-medium text-blue-900 dark:text-blue-100 mb-2">País Selecionado</h4>
+              <h4 class="font-medium text-blue-900 dark:text-blue-100 mb-2">
+                País Selecionado
+              </h4>
               <p class="text-sm text-blue-700 dark:text-blue-300">
                 {{ selectedCountry() || 'Nenhum país selecionado' }}
               </p>
@@ -178,7 +215,9 @@ import { ApiResponse, CustomMatSelect4Component, SearchParams } from './custom-m
 
             <!-- Cidades selecionadas -->
             <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
-              <h4 class="font-medium text-green-900 dark:text-green-100 mb-2">Cidades Selecionadas</h4>
+              <h4 class="font-medium text-green-900 dark:text-green-100 mb-2">
+                Cidades Selecionadas
+              </h4>
               <p class="text-sm text-green-700 dark:text-green-300">
                 {{ selectedCities().length }} cidade(s) selecionada(s)
               </p>
@@ -189,7 +228,9 @@ import { ApiResponse, CustomMatSelect4Component, SearchParams } from './custom-m
 
             <!-- Empresa selecionada -->
             <div class="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
-              <h4 class="font-medium text-purple-900 dark:text-purple-100 mb-2">Empresa Selecionada</h4>
+              <h4 class="font-medium text-purple-900 dark:text-purple-100 mb-2">
+                Empresa Selecionada
+              </h4>
               <p class="text-sm text-purple-700 dark:text-purple-300">
                 {{ selectedTechCompany() || 'Nenhuma empresa selecionada' }}
               </p>
@@ -200,7 +241,9 @@ import { ApiResponse, CustomMatSelect4Component, SearchParams } from './custom-m
 
             <!-- Busca geral -->
             <div class="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg">
-              <h4 class="font-medium text-orange-900 dark:text-orange-100 mb-2">Busca Geral</h4>
+              <h4 class="font-medium text-orange-900 dark:text-orange-100 mb-2">
+                Busca Geral
+              </h4>
               <p class="text-sm text-orange-700 dark:text-orange-300">
                 {{ selectedGeneralSearch() || 'Nenhum item selecionado' }}
               </p>
@@ -214,114 +257,139 @@ import { ApiResponse, CustomMatSelect4Component, SearchParams } from './custom-m
         <!-- Ações -->
         <mat-card class="p-6">
           <div class="flex flex-wrap gap-4">
-            <button 
-              mat-raised-button 
-              color="primary" 
+            <button
+              mat-raised-button
+              color="primary"
               (click)="resetForm()"
-              class="flex items-center gap-2">
+              class="flex items-center gap-2"
+            >
               <mat-icon>refresh</mat-icon>
               Limpar Formulário
             </button>
-            
-            <button 
-              mat-raised-button 
-              color="accent" 
+
+            <button
+              mat-raised-button
+              color="accent"
               (click)="logFormValue()"
-              class="flex items-center gap-2">
+              class="flex items-center gap-2"
+            >
               <mat-icon>code</mat-icon>
               Log Valores
             </button>
           </div>
         </mat-card>
-
       </form>
     </div>
   `,
-  styles: [`
-    .demo-container {
-      min-height: 100vh;
-    }
-  `]
+  styles: [
+    `
+      .demo-container {
+        min-height: 100vh;
+      }
+    `,
+  ],
 })
 export class CustomMatSelect4DemoComponent implements OnInit {
   private fb = inject(FormBuilder);
   private mockApiService = inject(MockApiService);
 
   demoForm: FormGroup;
-  
+
   // Signals para controlar as seleções e buscas
   selectedCountry = signal<string>('');
   selectedCities = signal<string[]>([]);
   selectedTechCompany = signal<string>('');
   selectedGeneralSearch = signal<string>('');
-  
+
   lastCountrySearch = signal<string>('');
   lastCitiesSearch = signal<string>('');
   lastTechCompanySearch = signal<string>('');
   lastGeneralSearch = signal<string>('');
-  
+
   // Funções de busca para cada select
   searchCountriesFunction = (params: SearchParams): Observable<ApiResponse> => {
     // Adicionar propriedades obrigatórias ao params
     const fullParams = {
       ...params,
       limit: params.pageSize || 10,
-      offset: ((params.page || 1) - 1) * (params.pageSize || 10)
+      offset: ((params.page || 1) - 1) * (params.pageSize || 10),
     };
     return this.mockApiService.searchCountries(fullParams).pipe(
       // Converter ApiResponse<any> para ApiResponse
       map((response: any) => ({
         items: response.entities || response.items || [],
-        pagination: response.pagination || { page: 1, pageSize: 10, totalItems: 0, hasMore: false }
-      }))
+        pagination: response.pagination || {
+          page: 1,
+          pageSize: 10,
+          totalItems: 0,
+          hasMore: false,
+        },
+      })),
     );
   };
-  
+
   searchCitiesFunction = (params: SearchParams): Observable<ApiResponse> => {
     // Adicionar propriedades obrigatórias ao params
     const fullParams = {
       ...params,
       limit: params.pageSize || 10,
-      offset: ((params.page || 1) - 1) * (params.pageSize || 10)
+      offset: ((params.page || 1) - 1) * (params.pageSize || 10),
     };
     return this.mockApiService.searchBrazilianCities(fullParams).pipe(
       // Converter ApiResponse<any> para ApiResponse
       map((response: any) => ({
         items: response.entities || response.items || [],
-        pagination: response.pagination || { page: 1, pageSize: 10, totalItems: 0, hasMore: false }
-      }))
+        pagination: response.pagination || {
+          page: 1,
+          pageSize: 10,
+          totalItems: 0,
+          hasMore: false,
+        },
+      })),
     );
   };
-  
-  searchTechCompaniesFunction = (params: SearchParams): Observable<ApiResponse> => {
+
+  searchTechCompaniesFunction = (
+    params: SearchParams,
+  ): Observable<ApiResponse> => {
     // Adicionar propriedades obrigatórias ao params
     const fullParams = {
       ...params,
       limit: params.pageSize || 10,
-      offset: ((params.page || 1) - 1) * (params.pageSize || 10)
+      offset: ((params.page || 1) - 1) * (params.pageSize || 10),
     };
     return this.mockApiService.searchTechCompanies(fullParams).pipe(
       // Converter ApiResponse<any> para ApiResponse
       map((response: any) => ({
         items: response.entities || response.items || [],
-        pagination: response.pagination || { page: 1, pageSize: 10, totalItems: 0, hasMore: false }
-      }))
+        pagination: response.pagination || {
+          page: 1,
+          pageSize: 10,
+          totalItems: 0,
+          hasMore: false,
+        },
+      })),
     );
   };
-  
+
   searchAllDataFunction = (params: SearchParams): Observable<ApiResponse> => {
     // Adicionar propriedades obrigatórias ao params
     const fullParams = {
       ...params,
       limit: params.pageSize || 10,
-      offset: ((params.page || 1) - 1) * (params.pageSize || 10)
+      offset: ((params.page || 1) - 1) * (params.pageSize || 10),
     };
     return this.mockApiService.searchItems(fullParams).pipe(
       // Converter ApiResponse<any> para ApiResponse
       map((response: any) => ({
         items: response.entities || response.items || [],
-        pagination: response.pagination || { page: 1, pageSize: 10, totalItems: 0, hasMore: false }
-      }))
+        pagination: response.pagination || {
+          page: 1,
+          pageSize: 10,
+          totalItems: 0,
+          hasMore: false,
+        },
+      })),
     );
   };
 
@@ -331,13 +399,13 @@ export class CustomMatSelect4DemoComponent implements OnInit {
       country: [''],
       cities: [[]],
       techCompany: [''],
-      generalSearch: ['']
+      generalSearch: [''],
     });
   }
 
   ngOnInit() {
     // Monitorar mudanças no formulário
-    this.demoForm.valueChanges.subscribe(values => {
+    this.demoForm.valueChanges.subscribe((values) => {
       console.log('Valores do formulário atualizados:', values);
     });
   }
@@ -350,7 +418,7 @@ export class CustomMatSelect4DemoComponent implements OnInit {
 
   onCitiesChange(values: any[]) {
     console.log('Cidades selecionadas:', values);
-    const cityLabels = values?.map(v => v.label) || [];
+    const cityLabels = values?.map((v) => v.label) || [];
     this.selectedCities.set(cityLabels);
   }
 
@@ -410,7 +478,7 @@ export class CustomMatSelect4DemoComponent implements OnInit {
       country: this.selectedCountry(),
       cities: this.selectedCities(),
       techCompany: this.selectedTechCompany(),
-      generalSearch: this.selectedGeneralSearch()
+      generalSearch: this.selectedGeneralSearch(),
     });
   }
 }

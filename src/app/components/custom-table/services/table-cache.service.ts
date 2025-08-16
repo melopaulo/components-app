@@ -2,7 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { CacheConfig, CacheEntry } from '../interfaces/table.interfaces';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TableCacheService {
   private cache = new Map<string, CacheEntry>();
@@ -11,15 +11,21 @@ export class TableCacheService {
     enabled: true,
     maxSize: 50,
     ttl: 5 * 60 * 1000, // 5 minutos
-    strategy: 'lru'
+    strategy: 'lru',
   };
 
   /**
    * Armazena dados no cache com base na configuração fornecida
    */
-  set<T>(key: string, data: T[], page: number, totalItems: number, config?: CacheConfig): void {
+  set<T>(
+    key: string,
+    data: T[],
+    page: number,
+    totalItems: number,
+    config?: CacheConfig,
+  ): void {
     const cacheConfig = { ...this.defaultConfig, ...config };
-    
+
     if (!cacheConfig.enabled) {
       return;
     }
@@ -28,7 +34,7 @@ export class TableCacheService {
       data,
       timestamp: Date.now(),
       page,
-      totalItems
+      totalItems,
     };
 
     // Remove entrada mais antiga se exceder o tamanho máximo
@@ -45,20 +51,22 @@ export class TableCacheService {
    */
   get<T>(key: string, config?: CacheConfig): CacheEntry<T> | null {
     const cacheConfig = { ...this.defaultConfig, ...config };
-    
+
     if (!cacheConfig.enabled) {
       return null;
     }
 
     const entry = this.cache.get(key) as CacheEntry<T>;
-    
+
     if (!entry) {
       return null;
     }
 
     // Verifica se a entrada ainda é válida (TTL)
-    const isExpired = Date.now() - entry.timestamp > (cacheConfig.ttl || this.defaultConfig.ttl!);
-    
+    const isExpired =
+      Date.now() - entry.timestamp >
+      (cacheConfig.ttl || this.defaultConfig.ttl!);
+
     if (isExpired) {
       this.cache.delete(key);
       this.updateCacheKeys();
@@ -172,7 +180,8 @@ export class TableCacheService {
     let removedCount = 0;
 
     for (const [key, entry] of this.cache.entries()) {
-      const isExpired = now - entry.timestamp > (cacheConfig.ttl || this.defaultConfig.ttl!);
+      const isExpired =
+        now - entry.timestamp > (cacheConfig.ttl || this.defaultConfig.ttl!);
       if (isExpired) {
         this.cache.delete(key);
         removedCount++;

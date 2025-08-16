@@ -1,16 +1,16 @@
 <div [class]="spinnerClasses">
   <!-- Spinner SVG -->
   <svg class="spinner-icon" viewBox="0 0 50 50">
-    <circle 
-      class="spinner-path" 
-      cx="25" 
-      cy="25" 
-      r="20" 
-      fill="none" 
-      stroke-width="4">
-    </circle>
+    <circle
+      class="spinner-path"
+      cx="25"
+      cy="25"
+      r="20"
+      fill="none"
+      stroke-width="4"
+    ></circle>
   </svg>
-  
+
   <!-- Texto de carregamento -->
   <div *ngIf="text" class="spinner-text">
     {{ text }}

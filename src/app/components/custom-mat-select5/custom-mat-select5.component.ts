@@ -1,6 +1,25 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, computed, ElementRef, forwardRef, input, OnDestroy, OnInit, output, signal, viewChild, ViewEncapsulation } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  ElementRef,
+  forwardRef,
+  input,
+  OnDestroy,
+  OnInit,
+  output,
+  signal,
+  viewChild,
+  ViewEncapsulation,
+} from '@angular/core';
 
-import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
+import {
+  ControlValueAccessor,
+  FormControl,
+  NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatOptionModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -8,7 +27,17 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { catchError, debounceTime, distinctUntilChanged, Observable, of, Subject, switchMap, takeUntil, tap } from 'rxjs';
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  Observable,
+  of,
+  Subject,
+  switchMap,
+  takeUntil,
+  tap,
+} from 'rxjs';
 
 // Interface genérica para definir a estrutura dos itens do select
 export interface SelectOption<T = any> {
@@ -92,26 +121,29 @@ export interface ApiResponse<T = any> {
     MatProgressSpinnerModule,
     MatIconModule,
     MatOptionModule,
-    MatButtonModule
-],
+    MatButtonModule,
+  ],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => CustomMatSelect5Component),
-      multi: true
-    }
+      multi: true,
+    },
   ],
   // Estratégia de detecção de mudança otimizada para performance
   changeDetection: ChangeDetectionStrategy.OnPush,
   // Encapsulamento de view desabilitado para permitir estilos globais
   encapsulation: ViewEncapsulation.None,
   templateUrl: './custom-mat-select5.component.html',
-  styleUrl: './custom-mat-select5.component.scss'
+  styleUrl: './custom-mat-select5.component.scss',
 })
-export class CustomMatSelect5Component<T = any> implements OnInit, OnDestroy, AfterViewInit, ControlValueAccessor {
+export class CustomMatSelect5Component<T = any>
+  implements OnInit, OnDestroy, AfterViewInit, ControlValueAccessor
+{
   // ViewChild para acessar o input de busca
-  readonly searchInput = viewChild.required<ElementRef<HTMLInputElement>>('searchInput');
-  
+  readonly searchInput =
+    viewChild.required<ElementRef<HTMLInputElement>>('searchInput');
+
   // Inputs do componente
   readonly label = input<string>('');
   readonly placeholder = input<string>('');
@@ -121,47 +153,50 @@ export class CustomMatSelect5Component<T = any> implements OnInit, OnDestroy, Af
   readonly appearance = input<'fill' | 'outline'>('fill');
   readonly errorMessages = input<{
     [key: string]: string;
-}>({});
-  
+  }>({});
+
   // Configurações de busca
   readonly searchPlaceholder = input<string>('Buscar...');
   readonly noEntriesFoundLabel = input<string>('Nenhum resultado encontrado');
   readonly clearSearchOnClose = input<boolean>(true);
   readonly searchDebounceTime = input<number>(300);
   readonly customClearIcon = input<string>('highlight_off'); // Ícone customizado para limpar busca
-  
+
   // Configurações de paginação
   readonly showPaginationInfo = input<boolean>(true); // Mostrar informações de paginação
-  readonly paginationInfoTemplate = input<string>('{first} - {last} de {totalRecords}'); // Template do report
-  
+  readonly paginationInfoTemplate = input<string>(
+    '{first} - {last} de {totalRecords}',
+  ); // Template do report
+
   // Configurações de paginação
   readonly pageSize = input<number>(20);
   readonly loadingMoreLabel = input<string>('Carregando mais...');
   readonly noMoreItemsLabel = input<string>('Todos os itens foram carregados');
   readonly noResultsLabel = input<string>('Nenhum resultado encontrado');
-  
+
   // Função para buscar dados da API - agora tipada genericamente
-  readonly searchFunction = input.required<(params: SearchParams<T>) => Observable<ApiResponse<T>>>();
-  
+  readonly searchFunction =
+    input.required<(params: SearchParams<T>) => Observable<ApiResponse<T>>>();
+
   // Input para configurar filtros adicionais específicos do tipo T
   readonly additionalFilters = input<SearchFilters<T>>({});
-  
+
   // Input para configurar ordenação padrão
   readonly defaultOrder = input<SearchOrder>({ label: 'ASC' });
-  
+
   // Input para configurar campos a serem populados
   readonly populateFields = input<string[]>([]);
-  
+
   // Outputs do componente - agora tipados
   readonly selectionChanged = output<T | T[] | null>();
   readonly searchChanged = output<string>();
   readonly loadMore = output<SearchParams<T>>();
   readonly paramsChanged = output<SearchParams<T>>(); // Novo output para monitorar mudanças nos parâmetros
-  
+
   // Controles de formulário
   control = new FormControl();
   searchControl = new FormControl('');
-  
+
   // Signals para gerenciamento de estado - agora tipados
   private allOptionsSignal = signal<SelectOption<T>[]>([]);
   private isSearchingSignal = signal<boolean>(false);
@@ -170,31 +205,31 @@ export class CustomMatSelect5Component<T = any> implements OnInit, OnDestroy, Af
   private currentPageSignal = signal<number>(1);
   private currentSearchSignal = signal<string>('');
   private totalRecordsSignal = signal<number>(0); // Total de registros disponíveis na API
-  
+
   // Computed signals
   allOptions = computed(() => this.allOptionsSignal());
   isSearching = computed(() => this.isSearchingSignal());
   isLoadingMore = computed(() => this.isLoadingMoreSignal());
   hasMoreItems = computed(() => this.hasMoreItemsSignal());
-  
+
   // Computed signal para informações de paginação
   paginationInfo = computed((): PaginationInfo => {
     const currentOptions = this.allOptions().length;
     const totalRecords = this.totalRecordsSignal();
     const currentPage = this.currentPageSignal();
     const pageSize = this.pageSize();
-    
+
     // Calcular primeiro e último item da página atual
     const first = currentOptions > 0 ? 1 : 0;
     const last = currentOptions;
     const totalPages = Math.ceil(totalRecords / pageSize);
-    
+
     return {
       first,
       last,
       totalRecords,
       currentPage,
-      totalPages
+      totalPages,
     };
   });
 
@@ -206,19 +241,19 @@ export class CustomMatSelect5Component<T = any> implements OnInit, OnDestroy, Af
     const additionalFilters = this.additionalFilters();
     const defaultOrder = this.defaultOrder();
     const populateFields = this.populateFields();
-    
+
     // Construir filtros combinando busca de texto com filtros adicionais
     const filters: SearchFilters<T> = {
-      ...additionalFilters
+      ...additionalFilters,
     };
-    
+
     // Adicionar filtro de busca se houver termo de busca
     if (searchTerm && searchTerm.trim()) {
       filters['label'] = {
-        $contains: searchTerm.trim()
+        $contains: searchTerm.trim(),
       };
     }
-    
+
     return {
       filters,
       limit: pageSize,
@@ -226,18 +261,18 @@ export class CustomMatSelect5Component<T = any> implements OnInit, OnDestroy, Af
       order: defaultOrder,
       populate: populateFields,
       search: searchTerm,
-      preload: currentPage === 1 // Preload apenas na primeira página
+      preload: currentPage === 1, // Preload apenas na primeira página
     };
   });
-  
+
   // Computed signal para o texto formatado da paginação
   paginationText = computed((): string => {
     const info = this.paginationInfo();
-    
+
     if (info.totalRecords === 0) {
       return 'Nenhum registro encontrado';
     }
-    
+
     return this.paginationInfoTemplate()
       .replace('{first}', info.first.toString())
       .replace('{last}', info.last.toString())
@@ -245,142 +280,153 @@ export class CustomMatSelect5Component<T = any> implements OnInit, OnDestroy, Af
       .replace('{currentPage}', info.currentPage.toString())
       .replace('{totalPages}', info.totalPages.toString());
   });
-  
+
   // Opções filtradas baseadas na busca local
   filteredOptions = computed(() => {
     const searchTerm = this.currentSearchSignal().toLowerCase();
     const options = this.allOptions();
-    
+
     if (!searchTerm) {
       return options;
     }
-    
+
     // Filtrar nas opções já carregadas
-    return options.filter(option => 
-      option.label.toLowerCase().includes(searchTerm)
+    return options.filter((option) =>
+      option.label.toLowerCase().includes(searchTerm),
     );
   });
-  
+
   // Subject para destruição de observables
   private destroy$ = new Subject<void>();
-  
+
   // ControlValueAccessor
   private onChange = (value: any) => {};
   private onTouched = () => {};
-  
+
   ngOnInit() {
     this.setupSearchSubscription();
     this.loadInitialData();
   }
-  
+
   ngAfterViewInit() {
     // Configurar detecção de scroll no painel do select
     setTimeout(() => {
       this.setupScrollDetection();
     }, 100);
   }
-  
+
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
   }
-  
+
   // Configurar subscription para busca usando apenas a computed params
   private setupSearchSubscription() {
-    this.searchControl.valueChanges.pipe(
-      debounceTime(this.searchDebounceTime()),
-      distinctUntilChanged(),
-      tap(searchTerm => {
-        this.currentSearchSignal.set(searchTerm || '');
-        this.currentPageSignal.set(1); // Reset para primeira página na busca
-        this.searchChanged.emit(searchTerm || '');
-      }),
-      switchMap(() => {
-        // Usar a computed params centralizada
-        const params = this.params();
-        this.paramsChanged.emit(params);
-        
-        this.isSearchingSignal.set(true);
-        return this.searchFunction()(params);
-      }),
-      takeUntil(this.destroy$)
-    ).subscribe({
-      next: (response) => {
-        this.isSearchingSignal.set(false);
-        this.processApiResponse(response, false); // false = substituir dados
-      },
-      error: (error) => {
-        this.isSearchingSignal.set(false);
-        console.error('Erro na busca:', error);
-      }
-    });
+    this.searchControl.valueChanges
+      .pipe(
+        debounceTime(this.searchDebounceTime()),
+        distinctUntilChanged(),
+        tap((searchTerm) => {
+          this.currentSearchSignal.set(searchTerm || '');
+          this.currentPageSignal.set(1); // Reset para primeira página na busca
+          this.searchChanged.emit(searchTerm || '');
+        }),
+        switchMap(() => {
+          // Usar a computed params centralizada
+          const params = this.params();
+          this.paramsChanged.emit(params);
+
+          this.isSearchingSignal.set(true);
+          return this.searchFunction()(params);
+        }),
+        takeUntil(this.destroy$),
+      )
+      .subscribe({
+        next: (response) => {
+          this.isSearchingSignal.set(false);
+          this.processApiResponse(response, false); // false = substituir dados
+        },
+        error: (error) => {
+          this.isSearchingSignal.set(false);
+          console.error('Erro na busca:', error);
+        },
+      });
   }
-  
+
   // Carregar dados iniciais usando a computed params
   private loadInitialData() {
     const searchFunction = this.searchFunction();
     if (!searchFunction) {
-      console.warn('searchFunction não foi fornecida para CustomMatSelect5Component');
+      console.warn(
+        'searchFunction não foi fornecida para CustomMatSelect5Component',
+      );
       return;
     }
-  
+
     this.isLoadingMoreSignal.set(true);
-    
+
     // Usar a computed params centralizada
     const params = this.params();
     this.paramsChanged.emit(params);
-  
-    searchFunction(params).pipe(
-      takeUntil(this.destroy$),
-      catchError(error => {
-        console.error('Erro ao carregar dados iniciais:', error);
-        return of({ entities: [], total: 0, hasMore: false });
-      })
-    ).subscribe(response => {
-      this.processApiResponse(response, false); // false = substituir dados
-      this.isLoadingMoreSignal.set(false);
-    });
+
+    searchFunction(params)
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError((error) => {
+          console.error('Erro ao carregar dados iniciais:', error);
+          return of({ entities: [], total: 0, hasMore: false });
+        }),
+      )
+      .subscribe((response) => {
+        this.processApiResponse(response, false); // false = substituir dados
+        this.isLoadingMoreSignal.set(false);
+      });
   }
-  
+
   // Carregar mais itens (scroll infinito) usando a computed params
   loadMoreItems() {
     if (this.isLoadingMore() || !this.hasMoreItems()) {
       return;
     }
-  
+
     this.isLoadingMoreSignal.set(true);
-    
+
     // Incrementar página e usar a computed params
     const nextPage = this.currentPageSignal() + 1;
     this.currentPageSignal.set(nextPage);
-    
+
     const params = this.params();
     this.paramsChanged.emit(params);
-  
-    this.searchFunction()(params).pipe(
-      takeUntil(this.destroy$),
-      catchError(error => {
-        console.error('Erro ao carregar mais itens:', error);
-        // Reverter página em caso de erro
-        this.currentPageSignal.set(nextPage - 1);
-        return of({ entities: [], total: 0, hasMore: false });
-      })
-    ).subscribe(response => {
-      this.processApiResponse(response, true); // true = adicionar aos dados existentes
-      this.isLoadingMoreSignal.set(false);
-      this.loadMore.emit(params);
-    });
+
+    this.searchFunction()(params)
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError((error) => {
+          console.error('Erro ao carregar mais itens:', error);
+          // Reverter página em caso de erro
+          this.currentPageSignal.set(nextPage - 1);
+          return of({ entities: [], total: 0, hasMore: false });
+        }),
+      )
+      .subscribe((response) => {
+        this.processApiResponse(response, true); // true = adicionar aos dados existentes
+        this.isLoadingMoreSignal.set(false);
+        this.loadMore.emit(params);
+      });
   }
-  
+
   // Método centralizado para processar resposta da API
-  private processApiResponse(response: ApiResponse<T>, append: boolean = false) {
+  private processApiResponse(
+    response: ApiResponse<T>,
+    append: boolean = false,
+  ) {
     // Converter entidades para SelectOption
-    const newOptions: SelectOption<T>[] = response.entities.map(entity => ({
+    const newOptions: SelectOption<T>[] = response.entities.map((entity) => ({
       value: entity,
       label: this.getEntityLabel(entity),
-      data: entity
+      data: entity,
     }));
-  
+
     if (append) {
       // Adicionar aos dados existentes (scroll infinito)
       const currentOptions = this.allOptions();
@@ -389,32 +435,34 @@ export class CustomMatSelect5Component<T = any> implements OnInit, OnDestroy, Af
       // Substituir dados (busca nova)
       this.allOptionsSignal.set(newOptions);
     }
-  
+
     // Atualizar informações de paginação
     this.totalRecordsSignal.set(response.total);
-    
+
     // Calcular se há mais itens baseado no total e itens carregados
     const totalLoaded = this.allOptions().length;
     this.hasMoreItemsSignal.set(totalLoaded < response.total);
   }
-  
+
   // Método para extrair o label da entidade (pode ser sobrescrito)
   private getEntityLabel(entity: T): string {
     // Tentar diferentes propriedades comuns para label
     if (typeof entity === 'object' && entity !== null) {
       const obj = entity as any;
-      return obj.label || obj.name || obj.title || obj.description || String(entity);
+      return (
+        obj.label || obj.name || obj.title || obj.description || String(entity)
+      );
     }
     return String(entity);
   }
-  
+
   // Event handlers
   onSelectionChange(event: any) {
     const value = event.value;
     this.onChange(value);
     this.selectionChanged.emit(value);
   }
-  
+
   onOpenedChange(opened: boolean) {
     if (opened) {
       // Configurar detecção de scroll quando o painel abrir
@@ -431,14 +479,18 @@ export class CustomMatSelect5Component<T = any> implements OnInit, OnDestroy, Af
       this.searchControl.setValue('');
     }
   }
-  
+
   // Manipular teclas no campo de busca
   onSearchKeydown(event: KeyboardEvent) {
     // Evitar que certas teclas fechem o select
-    if (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter') {
+    if (
+      event.key === 'ArrowDown' ||
+      event.key === 'ArrowUp' ||
+      event.key === 'Enter'
+    ) {
       event.stopPropagation();
     }
-    
+
     // Permitir que Escape feche o select
     if (event.key === 'Escape') {
       // Limpar busca primeiro, depois fechar
@@ -447,7 +499,7 @@ export class CustomMatSelect5Component<T = any> implements OnInit, OnDestroy, Af
       }
     }
   }
-  
+
   // Limpar busca
   clearSearch(event: Event) {
     event.stopPropagation();
@@ -459,48 +511,48 @@ export class CustomMatSelect5Component<T = any> implements OnInit, OnDestroy, Af
       }, 10);
     }
   }
-  
+
   // Configurar detecção de scroll no painel
   private setupScrollDetection() {
     // Implementar detecção de scroll no painel do select
     // Será ativado quando o select estiver aberto
   }
-  
+
   // Configurar detecção de scroll no painel
   private setupPanelScrollDetection() {
     const panel = document.querySelector('.mat-mdc-select-panel');
     if (!panel) return;
-    
+
     const scrollHandler = () => {
       const scrollTop = panel.scrollTop;
       const scrollHeight = panel.scrollHeight;
       const clientHeight = panel.clientHeight;
-      
+
       // Verificar se está próximo do final (90% do scroll)
       if (scrollTop + clientHeight >= scrollHeight * 0.9) {
         this.loadMoreItems();
       }
     };
-    
+
     panel.addEventListener('scroll', scrollHandler);
-    
+
     // Remover listener quando o componente for destruído
     this.destroy$.subscribe(() => {
       panel.removeEventListener('scroll', scrollHandler);
     });
   }
-  
+
   // Função para trackBy do ngFor
   trackByValue(index: number, option: SelectOption<T>): any {
     return option.value;
   }
-  
+
   // Obter mensagens de erro
   getErrorMessages(): string[] {
     const errors: string[] = [];
-    
+
     if (this.control.errors) {
-      Object.keys(this.control.errors).forEach(key => {
+      Object.keys(this.control.errors).forEach((key) => {
         const errorMessages = this.errorMessages();
         if (errorMessages[key]) {
           errors.push(errorMessages[key]);
@@ -516,23 +568,23 @@ export class CustomMatSelect5Component<T = any> implements OnInit, OnDestroy, Af
         }
       });
     }
-    
+
     return errors;
   }
-  
+
   // ControlValueAccessor implementation
   writeValue(value: any): void {
     this.control.setValue(value, { emitEvent: false });
   }
-  
+
   registerOnChange(fn: any): void {
     this.onChange = fn;
   }
-  
+
   registerOnTouched(fn: any): void {
     this.onTouched = fn;
   }
-  
+
   setDisabledState(isDisabled: boolean): void {
     if (isDisabled) {
       this.control.disable();

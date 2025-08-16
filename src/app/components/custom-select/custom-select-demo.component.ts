@@ -1,11 +1,25 @@
-import { Component, signal, computed, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  signal,
+  computed,
+  ChangeDetectionStrategy,
+  ViewEncapsulation,
+} from '@angular/core';
 
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
-import { CustomSelectComponent, CustomSelectOption } from './custom-select.component';
+import {
+  CustomSelectComponent,
+  CustomSelectOption,
+} from './custom-select.component';
 
 @Component({
   selector: 'custom-select-demo',
@@ -16,8 +30,8 @@ import { CustomSelectComponent, CustomSelectOption } from './custom-select.compo
     MatButtonModule,
     MatCardModule,
     MatDividerModule,
-    CustomSelectComponent
-],
+    CustomSelectComponent,
+  ],
   // Estratégia de detecção de mudança otimizada para performance
   changeDetection: ChangeDetectionStrategy.OnPush,
   // Encapsulamento de view desabilitado para permitir estilos globais
@@ -27,9 +41,12 @@ import { CustomSelectComponent, CustomSelectOption } from './custom-select.compo
       <mat-card class="demo-card">
         <mat-card-header>
           <mat-card-title>Demonstração do Custom Select</mat-card-title>
-          <mat-card-subtitle>Componente baseado em signals com funcionalidades avançadas</mat-card-subtitle>
+          <mat-card-subtitle
+            >Componente baseado em signals com funcionalidades
+            avançadas</mat-card-subtitle
+          >
         </mat-card-header>
-    
+
         <mat-card-content>
           <!-- Exemplo básico -->
           <section class="demo-section">
@@ -37,31 +54,34 @@ import { CustomSelectComponent, CustomSelectOption } from './custom-select.compo
             <form [formGroup]="basicForm" class="demo-form">
               <div class="form-field">
                 <label>Selecione uma fruta</label>
-                <custom-select formControlName="fruit"
+                <custom-select
+                  formControlName="fruit"
                   placeholder="Escolha uma fruta..."
                   [options]="basicOptions()"
                   (selectionChange)="onBasicSelectionChange($event)"
-                   />
+                />
                 <div class="hint">Selecione sua fruta favorita</div>
                 @if (basicForm.get('fruit')?.hasError('required')) {
-                  <div class="error">
-                    Este campo é obrigatório
-                  </div>
+                  <div class="error">Este campo é obrigatório</div>
                 }
               </div>
             </form>
-            <p><strong>Valor selecionado:</strong> {{ basicForm.get('fruit')?.value || 'Nenhum' }}</p>
+            <p>
+              <strong>Valor selecionado:</strong>
+              {{ basicForm.get('fruit')?.value || 'Nenhum' }}
+            </p>
           </section>
-    
+
           <mat-divider />
-    
+
           <!-- Exemplo com busca e carregamento -->
           <section class="demo-section">
             <h3>Exemplo com Busca e Lazy Loading</h3>
             <form [formGroup]="advancedForm" class="demo-form">
               <div class="form-field">
                 <label>Selecione um país</label>
-                <custom-select formControlName="country"
+                <custom-select
+                  formControlName="country"
                   placeholder="Digite para buscar países..."
                   [options]="filteredCountries()"
                   [loading]="isLoadingCountries()"
@@ -70,41 +90,50 @@ import { CustomSelectComponent, CustomSelectOption } from './custom-select.compo
                   (selectionChange)="onCountrySelectionChange($event)"
                   (searchChange)="onCountrySearch($event)"
                   (loadMoreRequested)="loadMoreCountries()"
-                   />
-                <div class="hint">{{ filteredCountries().length }} países disponíveis</div>
+                />
+                <div class="hint">
+                  {{ filteredCountries().length }} países disponíveis
+                </div>
                 @if (advancedForm.get('country')?.hasError('required')) {
-                  <div class="error">
-                    Selecione um país
-                  </div>
+                  <div class="error">Selecione um país</div>
                 }
               </div>
             </form>
-            <p><strong>País selecionado:</strong> {{ selectedCountryName() || 'Nenhum' }}</p>
+            <p>
+              <strong>País selecionado:</strong>
+              {{ selectedCountryName() || 'Nenhum' }}
+            </p>
           </section>
-    
+
           <mat-divider />
-    
+
           <!-- Exemplo com muitas opções -->
           <section class="demo-section">
             <h3>Exemplo com Muitas Opções (Performance)</h3>
             <form [formGroup]="performanceForm" class="demo-form">
               <div class="form-field">
                 <label>Selecione um número</label>
-                <custom-select formControlName="number"
+                <custom-select
+                  formControlName="number"
                   placeholder="Escolha um número..."
                   [options]="largeNumberList()"
                   [searchable]="true"
                   searchPlaceholder="Buscar número..."
                   [itemHeight]="40"
                   (selectionChange)="onNumberSelectionChange($event)"
-                   />
-                <div class="hint">Lista com {{ largeNumberList().length }} números</div>
+                />
+                <div class="hint">
+                  Lista com {{ largeNumberList().length }} números
+                </div>
               </div>
             </form>
-            <p><strong>Número selecionado:</strong> {{ performanceForm.get('number')?.value || 'Nenhum' }}</p>
+            <p>
+              <strong>Número selecionado:</strong>
+              {{ performanceForm.get('number')?.value || 'Nenhum' }}
+            </p>
           </section>
         </mat-card-content>
-    
+
         <mat-card-actions>
           <button mat-raised-button color="primary" (click)="resetForms()">
             Limpar Formulários
@@ -115,66 +144,68 @@ import { CustomSelectComponent, CustomSelectOption } from './custom-select.compo
         </mat-card-actions>
       </mat-card>
     </div>
+  `,
+  styles: [
+    `
+      .demo-container {
+        padding: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .demo-card {
+        margin-bottom: 20px;
+      }
+
+      .demo-section {
+        margin: 24px 0;
+      }
+
+      .demo-section h3 {
+        margin-bottom: 16px;
+        color: #1976d2;
+      }
+
+      .demo-form {
+        margin-bottom: 16px;
+      }
+
+      .form-field {
+        width: 100%;
+        max-width: 400px;
+        margin-bottom: 16px;
+      }
+
+      .form-field label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: rgba(0, 0, 0, 0.87);
+        font-size: 14px;
+      }
+
+      .form-field .hint {
+        font-size: 12px;
+        color: rgba(0, 0, 0, 0.6);
+        margin-top: 4px;
+      }
+
+      .form-field .error {
+        font-size: 12px;
+        color: #f44336;
+        margin-top: 4px;
+      }
+
+      mat-divider {
+        margin: 24px 0;
+      }
+
+      mat-card-actions {
+        display: flex;
+        gap: 12px;
+      }
     `,
-  styles: [`
-    .demo-container {
-      padding: 20px;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    .demo-card {
-      margin-bottom: 20px;
-    }
-
-    .demo-section {
-      margin: 24px 0;
-    }
-
-    .demo-section h3 {
-      margin-bottom: 16px;
-      color: #1976d2;
-    }
-
-    .demo-form {
-      margin-bottom: 16px;
-    }
-
-    .form-field {
-      width: 100%;
-      max-width: 400px;
-      margin-bottom: 16px;
-    }
-
-    .form-field label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 500;
-      color: rgba(0, 0, 0, 0.87);
-      font-size: 14px;
-    }
-
-    .form-field .hint {
-      font-size: 12px;
-      color: rgba(0, 0, 0, 0.6);
-      margin-top: 4px;
-    }
-
-    .form-field .error {
-      font-size: 12px;
-      color: #f44336;
-      margin-top: 4px;
-    }
-
-    mat-divider {
-      margin: 24px 0;
-    }
-
-    mat-card-actions {
-      display: flex;
-      gap: 12px;
-    }
-  `],
+  ],
 })
 export class CustomSelectDemoComponent {
   // Formulários reativos
@@ -286,25 +317,25 @@ export class CustomSelectDemoComponent {
 
   // Computed signals
   isLoadingCountries = computed(() => this._isLoadingCountries());
-  
+
   filteredCountries = computed(() => {
     const searchTerm = this._countrySearchTerm().toLowerCase();
     const countries = this.allCountries();
-    
+
     if (!searchTerm) {
       return countries;
     }
-    
-    return countries.filter(country => 
-      country.label.toLowerCase().includes(searchTerm)
+
+    return countries.filter((country) =>
+      country.label.toLowerCase().includes(searchTerm),
     );
   });
 
   selectedCountryName = computed(() => {
     const selectedValue = this.advancedForm.get('country')?.value;
     if (!selectedValue) return '';
-    
-    const country = this.allCountries().find(c => c.value === selectedValue);
+
+    const country = this.allCountries().find((c) => c.value === selectedValue);
     return country?.label || '';
   });
 
@@ -341,11 +372,11 @@ export class CustomSelectDemoComponent {
   loadMoreCountries(): void {
     console.log('Carregando mais países...');
     this._isLoadingCountries.set(true);
-    
+
     // Simula carregamento de mais dados
     setTimeout(() => {
       this._isLoadingCountries.set(false);
-      this._currentCountryPage.update(page => page + 1);
+      this._currentCountryPage.update((page) => page + 1);
     }, 1000);
   }
 

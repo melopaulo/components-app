@@ -1,26 +1,32 @@
 import { Injectable, signal } from '@angular/core';
-import { ColumnPreferences, ColumnVisibilityConfig, DynamicTableColumn } from '../interfaces/table.interfaces';
+import {
+  ColumnPreferences,
+  ColumnVisibilityConfig,
+  DynamicTableColumn,
+} from '../interfaces/table.interfaces';
 
 /**
  * Serviço responsável por gerenciar as preferências de colunas da tabela
  * Inclui persistência no localStorage, validação e sincronização de estado
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ColumnPreferencesService {
   private readonly DEFAULT_STORAGE_KEY = 'table-column-preferences';
   private readonly DEFAULT_MIN_VISIBLE_COLUMNS = 1;
 
   // Signal para armazenar as preferências atuais
-  private preferences = signal<Record<string, ColumnPreferences>>({}); 
+  private preferences = signal<Record<string, ColumnPreferences>>({});
 
   /**
    * Carrega as preferências de colunas do localStorage
    * @param storageKey Chave personalizada para o localStorage
    * @returns Preferências de colunas ou objeto vazio se não existir
    */
-  loadPreferences(storageKey: string = this.DEFAULT_STORAGE_KEY): ColumnPreferences {
+  loadPreferences(
+    storageKey: string = this.DEFAULT_STORAGE_KEY,
+  ): ColumnPreferences {
     try {
       const stored = localStorage.getItem(storageKey);
       if (stored) {
@@ -40,8 +46,8 @@ export class ColumnPreferencesService {
    * @param storageKey Chave personalizada para o localStorage
    */
   savePreferences(
-    preferences: ColumnPreferences, 
-    storageKey: string = this.DEFAULT_STORAGE_KEY
+    preferences: ColumnPreferences,
+    storageKey: string = this.DEFAULT_STORAGE_KEY,
   ): void {
     try {
       localStorage.setItem(storageKey, JSON.stringify(preferences));
@@ -65,11 +71,13 @@ export class ColumnPreferencesService {
     visible: boolean,
     preferences: ColumnPreferences,
     storageKey: string = this.DEFAULT_STORAGE_KEY,
-    minVisibleColumns: number = this.DEFAULT_MIN_VISIBLE_COLUMNS
+    minVisibleColumns: number = this.DEFAULT_MIN_VISIBLE_COLUMNS,
   ): ColumnPreferences {
     // Verifica se é possível ocultar a coluna (manter mínimo visível)
     if (!visible && !this.canHideColumn(preferences, minVisibleColumns)) {
-      console.warn('Não é possível ocultar a coluna. Mínimo de colunas visíveis atingido.');
+      console.warn(
+        'Não é possível ocultar a coluna. Mínimo de colunas visíveis atingido.',
+      );
       return preferences;
     }
 
@@ -77,8 +85,8 @@ export class ColumnPreferencesService {
       ...preferences,
       [columnId]: {
         ...preferences[columnId],
-        visible
-      }
+        visible,
+      },
     };
 
     this.savePreferences(updatedPreferences, storageKey);
@@ -97,10 +105,10 @@ export class ColumnPreferencesService {
     preferences: ColumnPreferences,
     previousIndex: number,
     currentIndex: number,
-    storageKey: string = this.DEFAULT_STORAGE_KEY
+    storageKey: string = this.DEFAULT_STORAGE_KEY,
   ): ColumnPreferences {
-    const columnIds = Object.keys(preferences).sort((a, b) => 
-      (preferences[a].order || 0) - (preferences[b].order || 0)
+    const columnIds = Object.keys(preferences).sort(
+      (a, b) => (preferences[a].order || 0) - (preferences[b].order || 0),
     );
 
     // Move o item da posição anterior para a nova posição
@@ -112,7 +120,7 @@ export class ColumnPreferencesService {
     columnIds.forEach((columnId, index) => {
       updatedPreferences[columnId] = {
         ...updatedPreferences[columnId],
-        order: index
+        order: index,
       };
     });
 
@@ -128,7 +136,7 @@ export class ColumnPreferencesService {
    */
   initializePreferences<T>(
     columns: DynamicTableColumn<T>[],
-    storageKey: string = this.DEFAULT_STORAGE_KEY
+    storageKey: string = this.DEFAULT_STORAGE_KEY,
   ): ColumnPreferences {
     const existingPreferences = this.loadPreferences(storageKey);
     const preferences: ColumnPreferences = {};
@@ -136,10 +144,11 @@ export class ColumnPreferencesService {
     columns.forEach((column, index) => {
       const columnId = column.id || String(column.key);
       preferences[columnId] = {
-        visible: existingPreferences[columnId]?.visible ?? column.visible ?? true,
+        visible:
+          existingPreferences[columnId]?.visible ?? column.visible ?? true,
         order: existingPreferences[columnId]?.order ?? column.order ?? index,
         width: existingPreferences[columnId]?.width ?? column.width,
-        pinned: existingPreferences[columnId]?.pinned ?? column.pinned ?? null
+        pinned: existingPreferences[columnId]?.pinned ?? column.pinned ?? null,
       };
     });
 
@@ -155,20 +164,20 @@ export class ColumnPreferencesService {
    */
   applyPreferencesToColumns<T>(
     columns: DynamicTableColumn<T>[],
-    preferences: ColumnPreferences
+    preferences: ColumnPreferences,
   ): DynamicTableColumn<T>[] {
     return columns
-      .map(column => {
+      .map((column) => {
         const columnId = column.id || String(column.key);
         const pref = preferences[columnId];
-        
+
         return {
           ...column,
           id: columnId,
           visible: pref?.visible ?? column.visible ?? true,
           order: pref?.order ?? column.order ?? 0,
           width: pref?.width ?? column.width,
-          pinned: pref?.pinned ?? column.pinned ?? null
+          pinned: pref?.pinned ?? column.pinned ?? null,
         };
       })
       .sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -179,8 +188,10 @@ export class ColumnPreferencesService {
    * @param columns Todas as colunas
    * @returns Apenas colunas visíveis
    */
-  getVisibleColumns<T>(columns: DynamicTableColumn<T>[]): DynamicTableColumn<T>[] {
-    return columns.filter(column => column.visible !== false);
+  getVisibleColumns<T>(
+    columns: DynamicTableColumn<T>[],
+  ): DynamicTableColumn<T>[] {
+    return columns.filter((column) => column.visible !== false);
   }
 
   /**
@@ -213,10 +224,11 @@ export class ColumnPreferencesService {
    */
   private canHideColumn(
     preferences: ColumnPreferences,
-    minVisibleColumns: number
+    minVisibleColumns: number,
   ): boolean {
-    const visibleCount = Object.values(preferences)
-      .filter(pref => pref.visible !== false).length;
+    const visibleCount = Object.values(preferences).filter(
+      (pref) => pref.visible !== false,
+    ).length;
     return visibleCount > minVisibleColumns;
   }
 
@@ -227,11 +239,11 @@ export class ColumnPreferencesService {
    */
   private updatePreferencesSignal(
     storageKey: string,
-    preferences: ColumnPreferences
+    preferences: ColumnPreferences,
   ): void {
-    this.preferences.update(current => ({
+    this.preferences.update((current) => ({
       ...current,
-      [storageKey]: preferences
+      [storageKey]: preferences,
     }));
   }
 }
