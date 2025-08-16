@@ -1,41 +1,39 @@
-
 import {
+  ChangeDetectionStrategy,
   Component,
   computed,
   effect,
+  inject,
   input,
+  OnDestroy,
+  OnInit,
   output,
   signal,
-  inject,
-  OnInit,
-  OnDestroy,
-  ChangeDetectionStrategy,
   ViewEncapsulation,
 } from '@angular/core';
 
 import {
+  CacheConfig,
+  ColumnPreferences,
+  ColumnReorderEvent,
+  ColumnSelectorConfig,
+  ColumnVisibilityChangeEvent,
+  DynamicTableColumn,
+  LoadingStatesConfig,
   PageChangeEvent,
   PaginationConfig,
   SelectionChangeEvent,
   SortChangeEvent,
   SortConfig,
-  TableColumn,
   TableConfig,
   TableData,
   VirtualScrollConfig,
-  CacheConfig,
-  LoadingStatesConfig,
-  DynamicTableColumn,
-  ColumnPreferences,
-  ColumnSelectorConfig,
-  ColumnVisibilityChangeEvent,
-  ColumnReorderEvent,
 } from '../interfaces/table.interfaces';
-import { TablePresentationComponent } from './table-presentation.component';
-import { VirtualScrollService } from '../services/virtual-scroll.service';
-import { TableCacheService } from '../services/table-cache.service';
 import { ColumnPreferencesService } from '../services/column-preferences.service';
+import { TableCacheService } from '../services/table-cache.service';
+import { VirtualScrollService } from '../services/virtual-scroll.service';
 import { ColumnSelectorComponent } from './column-selector.component';
+import { TablePresentationComponent } from './table-presentation.component';
 
 @Component({
   selector: 'app-table-container',
@@ -73,7 +71,7 @@ export class TableContainerComponent<T = any> implements OnInit, OnDestroy {
 
   // Configurações de exibição
   fixedHeight = input<boolean>(false);
-  height = input<string>('400px');
+  height = input<string>('');
   pageSizeOptions = input<number[]>([5, 10, 25, 50, 100]);
 
   // Configurações de Virtual Scrolling
@@ -124,18 +122,14 @@ export class TableContainerComponent<T = any> implements OnInit, OnDestroy {
       multiple: this.multipleSelection(),
     };
 
-    const display = {
-      fixedHeight: this.fixedHeight(),
-      height: this.height(),
-    };
-
     return {
       columns: this.visibleColumns(),
       data: this.currentData(),
       pagination,
       sort: this.currentSort(),
       selection,
-      display,
+      fixedHeight: this.fixedHeight(),
+      height: this.height(),
       virtualScrolling: this.virtualScrolling(),
       cache: this.cacheConfig(),
       loadingStates: this.loadingStates(),
@@ -152,7 +146,7 @@ export class TableContainerComponent<T = any> implements OnInit, OnDestroy {
   // Computed signals para colunas
   visibleColumns = computed(() => {
     return this.columnPreferencesService.getVisibleColumns(
-      this.processedColumns(),
+      this.processedColumns()
     );
   });
 
@@ -185,7 +179,7 @@ export class TableContainerComponent<T = any> implements OnInit, OnDestroy {
         // Inicializa as preferências
         const preferences = this.columnPreferencesService.initializePreferences(
           columns,
-          config.storageKey,
+          config.storageKey
         );
 
         this.columnPreferences.set(preferences);
@@ -194,7 +188,7 @@ export class TableContainerComponent<T = any> implements OnInit, OnDestroy {
         const processedCols =
           this.columnPreferencesService.applyPreferencesToColumns(
             columns,
-            preferences,
+            preferences
           );
 
         this.processedColumns.set(processedCols);
@@ -213,7 +207,7 @@ export class TableContainerComponent<T = any> implements OnInit, OnDestroy {
         this.data().pagination?.totalItems || this.data().items?.length || 0;
       this.virtualScrollService.initializeVirtualData(
         totalItems,
-        this.data().items || [],
+        this.data().items || []
       );
     }
   }
@@ -269,7 +263,7 @@ export class TableContainerComponent<T = any> implements OnInit, OnDestroy {
           start,
           end,
           dataLoader,
-          cacheConfig,
+          cacheConfig
         );
       } catch (error) {
         console.error('Erro ao carregar dados virtuais:', error);
@@ -289,7 +283,7 @@ export class TableContainerComponent<T = any> implements OnInit, OnDestroy {
     const processedCols =
       this.columnPreferencesService.applyPreferencesToColumns(
         this.columns(),
-        event.preferences,
+        event.preferences
       );
     this.processedColumns.set(processedCols);
   }
@@ -303,7 +297,7 @@ export class TableContainerComponent<T = any> implements OnInit, OnDestroy {
     const processedCols =
       this.columnPreferencesService.applyPreferencesToColumns(
         this.columns(),
-        currentPreferences,
+        currentPreferences
       );
     this.processedColumns.set(processedCols);
   }
@@ -315,7 +309,7 @@ export class TableContainerComponent<T = any> implements OnInit, OnDestroy {
     const processedCols =
       this.columnPreferencesService.applyPreferencesToColumns(
         this.columns(),
-        preferences,
+        preferences
       );
     this.processedColumns.set(processedCols);
   }

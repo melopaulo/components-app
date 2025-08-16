@@ -35,7 +35,7 @@
 
   <div
     class="table-content overflow-auto bg-surface"
-    [style.height]="config()?.fixedHeight || 'auto'"
+    [style.height]="config()?.fixedHeight ? config()?.height : 'auto'"
     >
     <!-- Loading States -->
     @if (data()?.loading && !config()?.loadingStates?.skeleton) {

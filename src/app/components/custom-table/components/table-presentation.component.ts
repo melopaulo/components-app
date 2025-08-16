@@ -6,29 +6,33 @@ import {
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   computed,
   inject,
   input,
   output,
   signal,
-  ChangeDetectionStrategy,
+  ViewChild,
   ViewEncapsulation,
-  viewChild
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TableCacheService } from '../services/table-cache.service';
 import { VirtualScrollService } from '../services/virtual-scroll.service';
 import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
 import { SkeletonLoaderComponent } from './skeleton-loader/skeleton-loader.component';
 
 import {
+  ColumnSelectorConfig,
+  ColumnVisibilityChangeEvent,
   PageChangeEvent,
   SelectionChangeEvent,
   SortChangeEvent,
@@ -49,6 +53,8 @@ import {
     MatProgressSpinnerModule,
     MatIconModule,
     MatButtonModule,
+    MatMenuModule,
+    MatTooltipModule,
     CurrencyPipe,
     DatePipe,
     ScrollingModule,
@@ -64,13 +70,16 @@ export class TablePresentationComponent<T = any> implements AfterViewInit {
   // Inputs como signals
   config = input<TableConfig<T>>();
   data = input<TableData<T>>();
+  columnSelectorConfig = input<ColumnSelectorConfig>();
+  columnPreferences = input<any>({});
 
   // Serviços injetados
   virtualScrollService = inject(VirtualScrollService);
   private cacheService = inject(TableCacheService);
 
   // ViewChild para virtual scroll
-  readonly virtualScrollViewport = viewChild(CdkVirtualScrollViewport);
+  @ViewChild(CdkVirtualScrollViewport)
+  virtualScrollViewport?: CdkVirtualScrollViewport;
 
   // Outputs
   pageChange = output<PageChangeEvent>();
@@ -78,10 +87,11 @@ export class TablePresentationComponent<T = any> implements AfterViewInit {
   selectionChange = output<SelectionChangeEvent<T>>();
   rowClick = output<T>();
   loadVirtualData = output<{ start: number; end: number }>();
+  columnVisibilityChange = output<ColumnVisibilityChangeEvent>();
 
   // ViewChild para controles
-  readonly paginator = viewChild.required(MatPaginator);
-  readonly sort = viewChild.required(MatSort);
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
   // Estado interno
   private selection = new SelectionModel<T>(true, []);
@@ -97,7 +107,7 @@ export class TablePresentationComponent<T = any> implements AfterViewInit {
   virtualDataSource = computed(() => {
     const virtualData = this.virtualScrollService.getVirtualData()();
     return new MatTableDataSource(
-      virtualData.items.filter((item) => item !== null),
+      virtualData.items.filter((item) => item !== null)
     );
   });
 
@@ -133,13 +143,11 @@ export class TablePresentationComponent<T = any> implements AfterViewInit {
 
   ngAfterViewInit(): void {
     // Configurar paginator e sort após a view ser inicializada
-    const paginator = this.paginator();
-    if (paginator) {
-      this.dataSource().paginator = paginator;
+    if (this.paginator) {
+      this.dataSource().paginator = this.paginator;
     }
-    const sort = this.sort();
-    if (sort) {
-      this.dataSource().sort = sort;
+    if (this.sort) {
+      this.dataSource().sort = this.sort;
     }
   }
 
@@ -352,7 +360,7 @@ export class TablePresentationComponent<T = any> implements AfterViewInit {
 
     return Math.max(
       config.minBufferSize,
-      Math.min(config.maxBufferSize, bufferSize),
+      Math.min(config.maxBufferSize, bufferSize)
     );
   }
 
@@ -415,7 +423,7 @@ export class TablePresentationComponent<T = any> implements AfterViewInit {
     const config = this.config();
     if (!config?.virtualScrolling?.enabled) return;
 
-    const viewport = this.virtualScrollViewport();
+    const viewport = this.virtualScrollViewport;
     if (!viewport) return;
 
     // Atualiza métricas de performance
@@ -458,9 +466,8 @@ export class TablePresentationComponent<T = any> implements AfterViewInit {
       this.requestVirtualData(start, end);
 
       // Scroll para o início da página virtual
-      const virtualScrollViewport = this.virtualScrollViewport();
-      if (virtualScrollViewport) {
-        virtualScrollViewport.scrollToIndex(start);
+      if (this.virtualScrollViewport) {
+        this.virtualScrollViewport.scrollToIndex(start);
       }
     }
 

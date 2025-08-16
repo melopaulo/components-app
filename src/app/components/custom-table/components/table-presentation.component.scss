@@ -6,7 +6,7 @@
   @apply bg-surface rounded-lg shadow-sm border border-outline;
 
   .table-header {
-    @apply bg-surface/10;
+    @apply bg-surface/50 backdrop-blur-3xl;
   }
 
   .table-content {
@@ -15,10 +15,6 @@
 
   .custom-table {
     @apply bg-surface;
-
-    .mat-mdc-header-row {
-      @apply bg-surface/5;
-    }
 
     .mat-mdc-row {
       @apply hover:bg-surface/10 transition-colors cursor-pointer;
@@ -30,7 +26,7 @@
 
     .mat-mdc-cell,
     .mat-mdc-header-cell {
-      @apply border-b border-outline/20 px-4 py-3;
+      @apply border-b border-outline px-4 py-3;
     }
 
     .mat-mdc-header-cell {
@@ -138,44 +134,45 @@
   .loading-spinner {
     @apply flex items-center gap-3 text-on-surface;
   }
+
+  .custom-table {
+    @apply border-separate border-spacing-0;
+  }
+  
+  .custom-table th {
+    @apply bg-gray-50 text-on-surface font-medium border-b border-gray-200;
+  }
+  
+  .custom-table td {
+    @apply border-b border-gray-100 text-on-surface;
+  }
+  
+  .custom-table tr:hover td {
+    @apply bg-surface/10;
+  }
+  
+  .custom-table tr[aria-selected="true"] td {
+    @apply bg-primary/10;
+  }
+  
+  .custom-paginator {
+    @apply border-0 bg-transparent;
+  }
+  
+  .table-header {
+    @apply sticky top-0 z-10;
+  }
+  
+  .text-align-left {
+    @apply text-left;
+  }
+  
+  .text-align-center {
+    @apply text-center;
+  }
+  
+  .text-align-right {
+    @apply text-right;
+  }
 }
 
-.custom-table {
-  @apply border-separate border-spacing-0;
-}
-
-.custom-table th {
-  @apply bg-gray-50 text-on-surface font-medium border-b border-gray-200;
-}
-
-.custom-table td {
-  @apply border-b border-gray-100 text-on-surface;
-}
-
-.custom-table tr:hover td {
-  @apply bg-surface/10;
-}
-
-.custom-table tr[aria-selected="true"] td {
-  @apply bg-primary/10;
-}
-
-.custom-paginator {
-  @apply border-0 bg-transparent;
-}
-
-.table-header {
-  @apply sticky top-0 z-10;
-}
-
-.text-align-left {
-  @apply text-left;
-}
-
-.text-align-center {
-  @apply text-center;
-}
-
-.text-align-right {
-  @apply text-right;
-}
