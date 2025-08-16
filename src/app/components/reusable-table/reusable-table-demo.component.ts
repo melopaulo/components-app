@@ -59,14 +59,12 @@ interface User {
       </div>
 
       <!-- Informações da demonstração -->
-      <mat-card class="bg-surface-variant/20">
+      <mat-card class="bg-surface/20">
         <mat-card-content class="p-4">
           <h3 class="text-lg font-medium mb-2 text-on-surface">
             Funcionalidades Demonstradas:
           </h3>
-          <ul
-            class="list-disc list-inside space-y-1 text-sm text-on-surface-variant"
-          >
+          <ul class="list-disc list-inside space-y-1 text-sm text-on-surface">
             <li>Paginação no topo estilo Gmail com controles de navegação</li>
             <li>Ordenação por colunas (clique no cabeçalho)</li>
             <li>Seleção múltipla e única de linhas</li>
@@ -78,32 +76,30 @@ interface User {
       </mat-card>
 
       <!-- Controles de demonstração -->
-      <div class="flex flex-wrap gap-4 p-4 bg-surface-variant/10 rounded-lg">
+      <div class="flex flex-wrap gap-4 p-4 bg-surface/10 rounded-lg">
         <div class="flex items-center gap-2">
           <span class="text-sm font-medium text-on-surface"
             >Total de itens:</span
           >
-          <span class="text-sm text-on-surface-variant">{{
+          <span class="text-sm text-on-surface">{{
             tableData().pagination.totalItems
           }}</span>
         </div>
         <div class="flex items-center gap-2">
           <span class="text-sm font-medium text-on-surface">Página atual:</span>
-          <span class="text-sm text-on-surface-variant">{{
-            currentPage()
-          }}</span>
+          <span class="text-sm text-on-surface">{{ currentPage() }}</span>
         </div>
         <div class="flex items-center gap-2">
           <span class="text-sm font-medium text-on-surface"
             >Itens selecionados:</span
           >
-          <span class="text-sm text-on-surface-variant">{{
+          <span class="text-sm text-on-surface">{{
             selectedItems().length
           }}</span>
         </div>
         <div class="flex items-center gap-2">
           <span class="text-sm font-medium text-on-surface">Ordenação:</span>
-          <span class="text-sm text-on-surface-variant">
+          <span class="text-sm text-on-surface">
             {{ currentSort().active || 'Nenhuma' }}
             {{
               currentSort().direction ? '(' + currentSort().direction + ')' : ''
@@ -137,7 +133,7 @@ interface User {
         <mat-card-content class="max-h-48 overflow-y-auto">
           <div
             *ngIf="eventLog().length === 0"
-            class="text-center py-4 text-on-surface-variant"
+            class="text-center py-4 text-on-surface"
           >
             Nenhum evento registrado
           </div>
@@ -145,7 +141,7 @@ interface User {
             *ngFor="let event of eventLog(); trackBy: trackByIndex"
             class="text-xs font-mono p-2 border-b border-gray-100 last:border-b-0"
           >
-            <span class="text-on-surface-variant">{{ event.timestamp }}</span>
+            <span class="text-on-surface">{{ event.timestamp }}</span>
             <span class="ml-2 text-on-surface">{{ event.message }}</span>
           </div>
         </mat-card-content>

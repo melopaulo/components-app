@@ -12,10 +12,14 @@ import {
   SelectionChangeEvent,
   SortChangeEvent,
   TableColumn,
+  DynamicTableColumn,
   TableData,
   VirtualScrollConfig,
   CacheConfig,
   LoadingStatesConfig,
+  ColumnSelectorConfig,
+  ColumnVisibilityChangeEvent,
+  ColumnReorderEvent,
 } from './interfaces/table.interfaces';
 
 interface Product {
@@ -45,8 +49,9 @@ interface Product {
   styleUrl: './custom-table-demo.component.scss',
 })
 export class CustomTableDemoComponent {
-  columns = signal<TableColumn<Product>[]>([
+  columns = signal<DynamicTableColumn<Product>[]>([
     {
+      id: 'id',
       key: 'id',
       title: 'ID',
       type: 'number',
@@ -55,6 +60,7 @@ export class CustomTableDemoComponent {
       align: 'center',
     },
     {
+      id: 'name',
       key: 'name',
       title: 'Nome do Produto',
       type: 'text',
@@ -62,6 +68,7 @@ export class CustomTableDemoComponent {
       width: '250px',
     },
     {
+      id: 'category',
       key: 'category',
       title: 'Categoria',
       type: 'text',
@@ -69,6 +76,7 @@ export class CustomTableDemoComponent {
       width: '150px',
     },
     {
+      id: 'price',
       key: 'price',
       title: 'Preço',
       type: 'currency',
@@ -77,6 +85,7 @@ export class CustomTableDemoComponent {
       align: 'right',
     },
     {
+      id: 'stock',
       key: 'stock',
       title: 'Estoque',
       type: 'number',
@@ -85,6 +94,7 @@ export class CustomTableDemoComponent {
       align: 'center',
     },
     {
+      id: 'active',
       key: 'active',
       title: 'Ativo',
       type: 'boolean',
@@ -93,6 +103,7 @@ export class CustomTableDemoComponent {
       align: 'center',
     },
     {
+      id: 'createdAt',
       key: 'createdAt',
       title: 'Criado em',
       type: 'date',
@@ -112,6 +123,7 @@ export class CustomTableDemoComponent {
   showRowNumbers = signal(true);
   fixedHeightEnabled = signal(false);
   virtualScrollEnabled = signal(false);
+  columnSelectorEnabled = signal(true);
   pageSizeOptions = signal([5, 10, 25, 50, 100]);
 
   eventLog = signal<
@@ -184,6 +196,23 @@ export class CustomTableDemoComponent {
       skeletonRows: 10,
       spinner: true,
       shimmer: false
+    };
+  });
+
+  // Configuração do seletor de colunas
+  columnSelectorConfig = computed<ColumnSelectorConfig | undefined>(() => {
+    if (!this.columnSelectorEnabled()) {
+      return undefined;
+    }
+
+    return {
+      enabled: true,
+      buttonText: 'Gerenciar Colunas',
+      showSearch: true,
+      disabled: false,
+      storageKey: 'custom-table-demo-columns',
+      minVisibleColumns: 2, // ID e Nome sempre visíveis
+      requiredColumns: ['id', 'name'], // Colunas obrigatórias
     };
   });
 
@@ -328,6 +357,24 @@ export class CustomTableDemoComponent {
     );
   }
 
+  // Manipuladores de eventos para colunas dinâmicas
+  onColumnVisibilityChange(event: ColumnVisibilityChangeEvent): void {
+    const visibleCount = Object.values(event.preferences).filter(config => config.visible).length;
+    this.addEventLog(
+      'column-visibility',
+      `Coluna ${event.columnId}: ${event.visible ? 'mostrada' : 'ocultada'} (${visibleCount} visíveis)`,
+      'visibility'
+    );
+  }
+
+  onColumnReorderChange(event: ColumnReorderEvent): void {
+    this.addEventLog(
+      'column-reorder',
+      `Coluna ${String(event.column.key)} reordenada: posição ${event.previousIndex} → ${event.currentIndex}`,
+      'swap_horiz'
+    );
+  }
+
   // Métodos de controle
   toggleMultiSelect(enabled: boolean): void {
     this.multiSelectEnabled.set(enabled);
@@ -361,6 +408,15 @@ export class CustomTableDemoComponent {
       'Configuração',
       `Altura fixa ${enabled ? 'ativada (400px)' : 'desativada'}`,
       'settings'
+    );
+  }
+
+  toggleColumnSelector(enabled: boolean): void {
+    this.columnSelectorEnabled.set(enabled);
+    this.addEventLog(
+      'column-selector',
+      `Seletor de colunas ${enabled ? 'ativado' : 'desativado'}`,
+      'view_column'
     );
   }
 

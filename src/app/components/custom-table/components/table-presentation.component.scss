@@ -3,10 +3,10 @@
 }
 
 .custom-table-container {
-  @apply bg-surface rounded-lg shadow-sm border border-outline-variant;
+  @apply bg-surface rounded-lg shadow-sm border border-outline;
 
   .table-header {
-    @apply bg-surface-variant/10;
+    @apply bg-surface/10;
   }
 
   .table-content {
@@ -17,11 +17,11 @@
     @apply bg-surface;
 
     .mat-mdc-header-row {
-      @apply bg-surface-variant/5;
+      @apply bg-surface/5;
     }
 
     .mat-mdc-row {
-      @apply hover:bg-surface-variant/10 transition-colors cursor-pointer;
+      @apply hover:bg-surface/10 transition-colors cursor-pointer;
 
       &.selected {
         @apply bg-primary/10;
@@ -30,7 +30,7 @@
 
     .mat-mdc-cell,
     .mat-mdc-header-cell {
-      @apply border-b border-outline-variant/20 px-4 py-3;
+      @apply border-b border-outline/20 px-4 py-3;
     }
 
     .mat-mdc-header-cell {
@@ -43,10 +43,10 @@
   }
 
   .custom-paginator {
-    @apply bg-surface border-t border-outline-variant/20;
+    @apply bg-surface border-t border-outline/20;
 
     .mat-mdc-paginator-range-label {
-      @apply text-on-surface-variant;
+      @apply text-on-surface;
     }
   }
 
@@ -82,26 +82,26 @@
       @apply w-full;
 
       .skeleton-header {
-        @apply flex border-b border-outline-variant/20 pb-3 mb-3;
+        @apply flex border-b border-outline/20 pb-3 mb-3;
 
         .skeleton-header-cell {
           @apply px-4 py-2 flex-1;
 
           .skeleton-text {
-            @apply h-4 bg-surface-variant/30 rounded;
+            @apply h-4 bg-surface/30 rounded;
           }
         }
       }
 
       .skeleton-body {
         .skeleton-row {
-          @apply flex border-b border-outline-variant/10 py-3;
+          @apply flex border-b border-outline/10 py-3;
 
           .skeleton-cell {
             @apply px-4 flex-1;
 
             .skeleton-text {
-              @apply h-4 bg-surface-variant/20 rounded;
+              @apply h-4 bg-surface/20 rounded;
             }
           }
         }
@@ -115,7 +115,7 @@
 
     &::before {
       content: '';
-      @apply absolute inset-0 bg-gradient-to-r from-transparent via-surface-variant/40 to-transparent;
+      @apply absolute inset-0 bg-gradient-to-r from-transparent via-surface/40 to-transparent;
       animation: shimmer 1.5s infinite;
       transform: translateX(-100%);
     }
@@ -136,7 +136,7 @@
   }
 
   .loading-spinner {
-    @apply flex items-center gap-3 text-on-surface-variant;
+    @apply flex items-center gap-3 text-on-surface;
   }
 }
 

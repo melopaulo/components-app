@@ -23,16 +23,23 @@ import {
   VirtualScrollConfig,
   CacheConfig,
   LoadingStatesConfig,
+  DynamicTableColumn,
+  ColumnPreferences,
+  ColumnSelectorConfig,
+  ColumnVisibilityChangeEvent,
+  ColumnReorderEvent,
 } from '../interfaces/table.interfaces';
 import { TablePresentationComponent } from './table-presentation.component';
 import { VirtualScrollService } from '../services/virtual-scroll.service';
 import { TableCacheService } from '../services/table-cache.service';
+import { ColumnPreferencesService } from '../services/column-preferences.service';
+import { ColumnSelectorComponent } from './column-selector.component';
 
 
 @Component({
   selector: 'app-table-container',
   standalone: true,
-  imports: [CommonModule, TablePresentationComponent],
+  imports: [CommonModule, TablePresentationComponent, ColumnSelectorComponent],
   templateUrl: './table-container.component.html',
   styleUrl: './table-container.component.scss',
 })
@@ -40,11 +47,22 @@ export class TableContainerComponent<T = any> implements OnInit, OnDestroy {
   // Serviços injetados
   private virtualScrollService = inject(VirtualScrollService);
   private cacheService = inject(TableCacheService);
+  private columnPreferencesService = inject(ColumnPreferencesService);
 
   // Inputs básicos
-  columns = input.required<TableColumn<T>[]>();
+  columns = input.required<DynamicTableColumn<T>[]>();
   data = input.required<TableData<T>>();
   loading = input<boolean>(false);
+  
+  // Configurações de colunas dinâmicas
+  columnSelector = input<ColumnSelectorConfig>({
+    enabled: true,
+    searchEnabled: true,
+    dragDropEnabled: true,
+    persistPreferences: true,
+    storageKey: 'table-columns',
+    minVisibleColumns: 1
+  });
   
   // Configurações de seleção
   selectionEnabled = input<boolean>(false);
@@ -67,12 +85,14 @@ export class TableContainerComponent<T = any> implements OnInit, OnDestroy {
   // Função de carregamento de dados para virtual scrolling
   dataLoader = input<((start: number, end: number) => Promise<T[]>) | undefined>(undefined);
 
-// Outputs
+  // Outputs
   pageChange = output<PageChangeEvent>();
   sortChange = output<SortChangeEvent>();
   selectionChange = output<SelectionChangeEvent<T>>();
   rowClick = output<T>();
   virtualDataRequest = output<{ start: number; end: number }>();
+  columnVisibilityChange = output<ColumnVisibilityChangeEvent>();
+  columnReorderChange = output<ColumnReorderEvent>();
 
 
   private currentPageIndex = signal(0);
@@ -80,6 +100,10 @@ export class TableContainerComponent<T = any> implements OnInit, OnDestroy {
   private currentSort = signal<SortConfig>({ active: '', direction: '' });
   private selectedItems = signal<T[]>([]);
   private isVirtualScrollEnabled = signal(false);
+  
+  // Estado das colunas dinâmicas
+  columnPreferences = signal<ColumnPreferences>({});
+  processedColumns = signal<DynamicTableColumn<T>[]>([]);
 
 
   tableConfig = computed<TableConfig<T>>(() => {
@@ -103,7 +127,7 @@ export class TableContainerComponent<T = any> implements OnInit, OnDestroy {
     };
 
     return {
-      columns: this.columns(),
+      columns: this.visibleColumns(),
       data: this.currentData(),
       pagination,
       sort: this.currentSort(),
@@ -120,6 +144,11 @@ export class TableContainerComponent<T = any> implements OnInit, OnDestroy {
       ...this.data(),
       loading: this.loading(),
     };
+  });
+
+  // Computed signals para colunas
+  visibleColumns = computed(() => {
+    return this.columnPreferencesService.getVisibleColumns(this.processedColumns());
   });
 
   constructor() {
@@ -139,6 +168,33 @@ export class TableContainerComponent<T = any> implements OnInit, OnDestroy {
       if (virtualConfig) {
         this.isVirtualScrollEnabled.set(true);
         this.virtualScrollService.updateConfig(virtualConfig);
+      }
+    });
+
+    // Effect para processar colunas e aplicar preferências
+    effect(() => {
+      const columns = this.columns();
+      const config = this.columnSelector();
+      
+      if (config.enabled) {
+        // Inicializa as preferências
+        const preferences = this.columnPreferencesService.initializePreferences(
+          columns,
+          config.storageKey
+        );
+        
+        this.columnPreferences.set(preferences);
+        
+        // Aplica as preferências às colunas
+        const processedCols = this.columnPreferencesService.applyPreferencesToColumns(
+          columns,
+          preferences
+        );
+        
+        this.processedColumns.set(processedCols);
+      } else {
+        // Se o seletor está desabilitado, usa as colunas originais
+        this.processedColumns.set(columns);
       }
     });
   }
@@ -214,5 +270,52 @@ export class TableContainerComponent<T = any> implements OnInit, OnDestroy {
       // Emitir evento para o componente pai carregar os dados
       this.virtualDataRequest.emit({ start, end });
     }
+  }
+
+  // Métodos para manipular eventos de colunas dinâmicas
+  handleColumnVisibilityChange(event: ColumnVisibilityChangeEvent): void {
+    this.columnPreferences.set(event.preferences);
+    this.columnVisibilityChange.emit(event);
+    
+    // Reaplica as preferências às colunas
+    const processedCols = this.columnPreferencesService.applyPreferencesToColumns(
+      this.columns(),
+      event.preferences
+    );
+    this.processedColumns.set(processedCols);
+  }
+
+  handleColumnReorderChange(event: ColumnReorderEvent): void {
+    this.columnReorderChange.emit(event);
+    
+    // As preferências já foram atualizadas pelo ColumnSelectorComponent
+    // Apenas reaplica as preferências às colunas
+    const currentPreferences = this.columnPreferences();
+    const processedCols = this.columnPreferencesService.applyPreferencesToColumns(
+      this.columns(),
+      currentPreferences
+    );
+    this.processedColumns.set(processedCols);
+  }
+
+  handleColumnPreferencesChange(preferences: ColumnPreferences): void {
+    this.columnPreferences.set(preferences);
+    
+    // Reaplica as preferências às colunas
+    const processedCols = this.columnPreferencesService.applyPreferencesToColumns(
+      this.columns(),
+      preferences
+    );
+    this.processedColumns.set(processedCols);
+  }
+
+  // Método para obter as preferências atuais (para uso no template)
+  getCurrentPreferences(): ColumnPreferences {
+    return this.columnPreferences();
+  }
+
+  // Método para obter as colunas processadas (para uso no template)
+  getProcessedColumns(): DynamicTableColumn<T>[] {
+    return this.processedColumns();
   }
 }

@@ -132,3 +132,51 @@ export interface VirtualScrollData<T = any> {
   totalSize: number;
   loadedRanges: { start: number; end: number }[];
 }
+
+// Column Visibility Configuration
+export interface ColumnVisibilityConfig {
+  visible: boolean;
+  order: number;
+  width?: string;
+  pinned?: 'left' | 'right' | null;
+}
+
+// Column Preferences for persistence
+export interface ColumnPreferences<T = any> {
+  [columnKey: string]: ColumnVisibilityConfig;
+}
+
+// Column Selector Configuration
+export interface ColumnSelectorConfig {
+  enabled: boolean;
+  searchEnabled?: boolean;
+  dragDropEnabled?: boolean;
+  persistPreferences?: boolean;
+  storageKey?: string;
+  minVisibleColumns?: number;
+}
+
+// Extended Table Column with dynamic properties
+export interface DynamicTableColumn<T = any> extends TableColumn<T> {
+  id: string;
+  visible?: boolean;
+  order?: number;
+  pinned?: 'left' | 'right' | null;
+  resizable?: boolean;
+  minWidth?: string;
+  maxWidth?: string;
+}
+
+// Column Drag and Drop Event
+export interface ColumnReorderEvent {
+  previousIndex: number;
+  currentIndex: number;
+  column: DynamicTableColumn;
+}
+
+// Column Visibility Change Event
+export interface ColumnVisibilityChangeEvent {
+  columnId: string;
+  visible: boolean;
+  preferences: ColumnPreferences;
+}

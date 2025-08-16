@@ -1,0 +1,132 @@
+// Estilos para o seletor de colunas
+.column-selector {
+  @apply inline-block;
+
+  .column-selector-trigger {
+    @apply flex items-center gap-2 px-4 py-2;
+    @apply bg-white border border-gray-300 rounded-md;
+    @apply hover:bg-gray-50 transition-colors;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+
+    mat-icon {
+      @apply text-gray-600;
+    }
+
+    span {
+      @apply text-sm font-medium text-gray-700;
+    }
+  }
+}
+
+// Estilos para o menu dropdown
+::ng-deep .column-selector-menu {
+  .mat-mdc-menu-panel {
+    @apply min-w-80 max-w-96;
+  }
+
+  .column-menu-content {
+    @apply p-4 max-h-96 overflow-hidden flex flex-col;
+
+    .search-container {
+      @apply mb-4;
+
+      .search-field {
+        @apply w-full;
+
+        .mat-mdc-form-field-wrapper {
+          @apply pb-0;
+        }
+      }
+    }
+
+    .columns-list {
+      @apply flex-1 overflow-y-auto;
+
+      .column-drop-list {
+        @apply space-y-2;
+      }
+
+      .column-item {
+        @apply flex items-center gap-3 p-2 rounded-md;
+        @apply border border-gray-200 bg-white;
+        @apply hover:bg-gray-50 transition-colors;
+        @apply cursor-move;
+
+        &.column-item--disabled {
+          @apply opacity-60 cursor-not-allowed;
+        }
+
+        &.cdk-drag-preview {
+          @apply shadow-lg border-blue-300 bg-blue-50;
+        }
+
+        &.cdk-drag-placeholder {
+          @apply opacity-30;
+        }
+
+        .drag-handle {
+          @apply cursor-move text-gray-400;
+          @apply hover:text-gray-600 transition-colors;
+
+          mat-icon {
+            @apply text-lg;
+          }
+        }
+
+        .column-checkbox {
+          @apply flex-1;
+
+          ::ng-deep .mdc-form-field {
+            @apply text-sm;
+          }
+        }
+
+        .required-indicator {
+          @apply text-amber-500 text-lg;
+        }
+      }
+
+      .no-columns-message {
+        @apply flex flex-col items-center justify-center;
+        @apply py-8 text-gray-500;
+
+        mat-icon {
+          @apply text-3xl mb-2;
+        }
+
+        span {
+          @apply text-sm;
+        }
+      }
+    }
+
+    .menu-actions {
+      @apply flex justify-between gap-2 mt-4 pt-4;
+      @apply border-t border-gray-200;
+
+      .reset-button,
+      .show-all-button {
+        @apply flex items-center gap-2 px-3 py-2;
+        @apply text-sm text-gray-600;
+        @apply hover:bg-gray-100 transition-colors;
+
+        mat-icon {
+          @apply text-lg;
+        }
+      }
+    }
+  }
+}
+
+// Estilos para o drag & drop
+.cdk-drop-list {
+  &.cdk-drop-list-dragging {
+    .column-item:not(.cdk-drag-placeholder) {
+      @apply transition-transform duration-250;
+    }
+  }
+}
+
+.cdk-drag-animating {
+  @apply transition-transform duration-250 ease-out;
+}

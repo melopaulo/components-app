@@ -1,4 +1,19 @@
 <div class="table-container">
+  <!-- Seletor de colunas dinâmicas -->
+  @if (columnSelector()) {
+    <div class="column-selector-wrapper mb-4">
+      <app-column-selector
+        [columns]="processedColumns()"
+        [preferences]="columnPreferences()"
+        [config]="columnSelector()!"
+        (visibilityChange)="handleColumnVisibilityChange($event)"
+        (reorderChange)="handleColumnReorderChange($event)"
+        (preferencesChange)="handleColumnPreferencesChange($event)"
+      ></app-column-selector>
+    </div>
+  }
+
+  <!-- Tabela principal -->
   <app-table-presentation
     [config]="tableConfig()"
     [data]="currentData()"

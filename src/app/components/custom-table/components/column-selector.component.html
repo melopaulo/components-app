@@ -1,0 +1,105 @@
+<div class="column-selector">
+  <!-- Botão para abrir o seletor -->
+  <button
+    mat-raised-button
+    [matMenuTriggerFor]="columnMenu"
+    class="column-selector-trigger"
+    [disabled]="config().disabled"
+  >
+    <mat-icon>view_column</mat-icon>
+    <span>{{ config().buttonText || 'Colunas' }}</span>
+    <mat-icon>arrow_drop_down</mat-icon>
+  </button>
+
+  <!-- Menu dropdown com as opções de colunas -->
+  <mat-menu #columnMenu="matMenu" class="column-selector-menu">
+    <div class="column-menu-content" (click)="$event.stopPropagation()">
+      <!-- Campo de busca -->
+      @if (config().showSearch) {
+        <div class="search-container">
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label>Buscar colunas</mat-label>
+            <input
+              matInput
+              [(ngModel)]="searchTerm"
+              (input)="onSearchChange($event)"
+              placeholder="Digite para buscar..."
+            >
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+        </div>
+      }
+
+      <!-- Lista de colunas com drag & drop -->
+      <div class="columns-list">
+        <div
+          cdkDropList
+          (cdkDropListDropped)="onColumnDrop($event)"
+          class="column-drop-list"
+        >
+          @for (column of filteredColumns(); track column.key) {
+            <div
+              cdkDrag
+              class="column-item"
+              [class.column-item--disabled]="!canToggleColumn(column)"
+            >
+              <!-- Handle para drag -->
+              <div cdkDragHandle class="drag-handle">
+                <mat-icon>drag_indicator</mat-icon>
+              </div>
+
+              <!-- Checkbox para visibilidade -->
+              <mat-checkbox
+                [checked]="isColumnVisible(column)"
+                [disabled]="!canToggleColumn(column)"
+                (change)="onColumnToggle(column, $event.checked)"
+                class="column-checkbox"
+              >
+                {{ column.header }}
+              </mat-checkbox>
+
+              <!-- Indicador de coluna obrigatória -->
+              @if (!canToggleColumn(column)) {
+                <mat-icon
+                  class="required-indicator"
+                  matTooltip="Esta coluna é obrigatória"
+                >
+                  lock
+                </mat-icon>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Mensagem quando não há colunas filtradas -->
+        @if (filteredColumns().length === 0) {
+          <div class="no-columns-message">
+            <mat-icon>search_off</mat-icon>
+            <span>Nenhuma coluna encontrada</span>
+          </div>
+        }
+      </div>
+
+      <!-- Ações do menu -->
+      <div class="menu-actions">
+        <button
+          mat-button
+          (click)="resetToDefault()"
+          class="reset-button"
+        >
+          <mat-icon>refresh</mat-icon>
+          Restaurar padrão
+        </button>
+
+        <button
+          mat-button
+          (click)="showAllColumns()"
+          class="show-all-button"
+        >
+          <mat-icon>visibility</mat-icon>
+          Mostrar todas
+        </button>
+      </div>
+    </div>
+  </mat-menu>
+</div>

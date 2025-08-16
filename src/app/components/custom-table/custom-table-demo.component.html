@@ -3,7 +3,7 @@
   <div class="flex items-center justify-between">
     <div>
       <h1 class="text-3xl font-bold text-on-surface mb-2">Tabela Customizada - Demonstração</h1>
-      <p class="text-on-surface-variant">ETAPA 1: Estrutura Base e Paginação no Topo (Estilo Gmail)</p>
+      <p class="text-on-surface">ETAPA 1: Estrutura Base e Paginação no Topo (Estilo Gmail)</p>
     </div>
     <div class="flex gap-3">
       <button 
@@ -24,7 +24,7 @@
   </div>
 
 
-  <mat-card class="bg-surface-variant/20">
+  <mat-card class="bg-surface/20">
     <mat-card-header>
       <mat-card-title class="text-lg">Controles de Demonstração</mat-card-title>
     </mat-card-header>
@@ -69,6 +69,12 @@
             color="primary">
             Virtual Scrolling (ETAPA 2)
           </mat-slide-toggle>
+          <mat-slide-toggle
+            [checked]="columnSelectorEnabled()"
+            (change)="toggleColumnSelector($event.checked)"
+            color="primary">
+            Seletor de Colunas (ETAPA 3)
+          </mat-slide-toggle>
         </div>
 
         <!-- Informações de Estado -->
@@ -76,19 +82,19 @@
           <h4 class="font-medium text-on-surface">Estado Atual</h4>
           <div class="text-sm space-y-1">
             <div class="flex justify-between">
-              <span class="text-on-surface-variant">Total de itens:</span>
+              <span class="text-on-surface">Total de itens:</span>
               <span class="font-medium">{{ tableData().pagination.totalItems }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-on-surface-variant">Página atual:</span>
+              <span class="text-on-surface">Página atual:</span>
               <span class="font-medium">{{ currentPage() }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-on-surface-variant">Itens por página:</span>
+              <span class="text-on-surface">Itens por página:</span>
               <span class="font-medium">{{ currentPageSize() }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-on-surface-variant">Selecionados:</span>
+              <span class="text-on-surface">Selecionados:</span>
               <span class="font-medium text-primary">{{ selectedCount() }}</span>
             </div>
           </div>
@@ -106,7 +112,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
         <div class="space-y-2">
           <h4 class="font-medium text-on-surface">Estrutura e Arquitetura:</h4>
-          <ul class="space-y-1 text-on-surface-variant">
+          <ul class="space-y-1 text-on-surface">
             <li>✓ Smart/Dumb Components separados</li>
             <li>✓ Gerenciamento de estado com Angular Signals</li>
             <li>✓ Interfaces genéricas TypeScript</li>
@@ -115,7 +121,7 @@
         </div>
         <div class="space-y-2">
           <h4 class="font-medium text-on-surface">Paginação Estilo Gmail:</h4>
-          <ul class="space-y-1 text-on-surface-variant">
+          <ul class="space-y-1 text-on-surface">
             <li>✓ Paginação no topo da tabela</li>
             <li>✓ Controles de navegação (primeira, anterior, próxima, última)</li>
             <li>✓ Seletor de itens por página</li>
@@ -124,7 +130,7 @@
         </div>
         <div class="space-y-2">
           <h4 class="font-medium text-on-surface">Funcionalidades Básicas:</h4>
-          <ul class="space-y-1 text-on-surface-variant">
+          <ul class="space-y-1 text-on-surface">
             <li>✓ Ordenação por colunas</li>
             <li>✓ Seleção múltipla e única</li>
             <li>✓ Formatação automática de dados</li>
@@ -133,7 +139,7 @@
         </div>
         <div class="space-y-2">
           <h4 class="font-medium text-on-surface">Estilização e Acessibilidade:</h4>
-          <ul class="space-y-1 text-on-surface-variant">
+          <ul class="space-y-1 text-on-surface">
             <li>✓ Tailwind CSS + SCSS</li>
             <li>✓ Suporte a temas Material Design</li>
             <li>✓ Navegação por teclado (Enter/Space)</li>
@@ -153,23 +159,46 @@
       </mat-card-subtitle>
     </mat-card-header>
     <mat-card-content class="p-0">
-      <app-table-container
-        [columns]="columns()"
-        [data]="tableData()"
-        [loading]="loading()"
-        [multipleSelection]="multiSelectEnabled()"
-        [selectionEnabled]="singleSelectEnabled() || multiSelectEnabled()"
-        [fixedHeight]="fixedHeightEnabled()"
-        [pageSizeOptions]="pageSizeOptions()"
-        [virtualScrolling]="virtualScrollConfig()"
-        [cacheConfig]="cacheConfig()"
-        [loadingStates]="loadingStatesConfig()"
-        (pageChange)="onPageChange($event)"
-        (sortChange)="onSortChange($event)"
-        (selectionChange)="onSelectionChange($event)"
-        (rowClick)="onRowClick($event)"
-        (virtualDataRequest)="onVirtualDataRequest($event)"
-      ></app-table-container>
+      @if (columnSelectorConfig()) {
+        <app-table-container
+          [columns]="columns()"
+          [data]="tableData()"
+          [loading]="loading()"
+          [multipleSelection]="multiSelectEnabled()"
+          [selectionEnabled]="singleSelectEnabled() || multiSelectEnabled()"
+          [fixedHeight]="fixedHeightEnabled()"
+          [pageSizeOptions]="pageSizeOptions()"
+          [virtualScrolling]="virtualScrollConfig()"
+          [cacheConfig]="cacheConfig()"
+          [loadingStates]="loadingStatesConfig()"
+          [columnSelector]="columnSelectorConfig()!"
+          (pageChange)="onPageChange($event)"
+          (sortChange)="onSortChange($event)"
+          (selectionChange)="onSelectionChange($event)"
+          (rowClick)="onRowClick($event)"
+          (virtualDataRequest)="onVirtualDataRequest($event)"
+          (columnVisibilityChange)="onColumnVisibilityChange($event)"
+          (columnReorderChange)="onColumnReorderChange($event)"
+        ></app-table-container>
+      } @else {
+        <app-table-container
+          [columns]="columns()"
+          [data]="tableData()"
+          [loading]="loading()"
+          [multipleSelection]="multiSelectEnabled()"
+          [selectionEnabled]="singleSelectEnabled() || multiSelectEnabled()"
+          [fixedHeight]="fixedHeightEnabled()"
+          [pageSizeOptions]="pageSizeOptions()"
+          [virtualScrolling]="virtualScrollConfig()"
+          [cacheConfig]="cacheConfig()"
+          [loadingStates]="loadingStatesConfig()"
+          (pageChange)="onPageChange($event)"
+          (sortChange)="onSortChange($event)"
+          (selectionChange)="onSelectionChange($event)"
+          (rowClick)="onRowClick($event)"
+          (virtualDataRequest)="onVirtualDataRequest($event)"
+        ></app-table-container>
+      }
     </mat-card-content>
   </mat-card>
 
@@ -187,7 +216,7 @@
       </div>
     </mat-card-header>
     <mat-card-content class="max-h-64 overflow-y-auto">
-      <div *ngIf="eventLog().length === 0" class="text-center py-8 text-on-surface-variant">
+      <div *ngIf="eventLog().length === 0" class="text-center py-8 text-on-surface">
         <mat-icon class="text-4xl mb-2 opacity-50">event_note</mat-icon>
         <p>Nenhum evento registrado ainda</p>
         <p class="text-xs">Interaja com a tabela para ver os eventos</p>
@@ -199,9 +228,9 @@
         <div class="flex-1 min-w-0">
           <div class="flex items-center justify-between">
             <span class="text-sm font-medium text-on-surface">{{ event.type }}</span>
-            <span class="text-xs text-on-surface-variant">{{ event.timestamp }}</span>
+            <span class="text-xs text-on-surface">{{ event.timestamp }}</span>
           </div>
-          <p class="text-xs text-on-surface-variant mt-1">{{ event.message }}</p>
+          <p class="text-xs text-on-surface mt-1">{{ event.message }}</p>
         </div>
       </div>
     </mat-card-content>
