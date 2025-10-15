@@ -132,7 +132,7 @@ export class TextServiceExampleComponent {
   /**
    * Estatísticas do cache
    */
-  readonly cacheStats = computed(() => this.textService.cacheStats());
+  readonly cacheStats = computed(() => this.textService.getCacheStats());
 
   /**
    * Verifica se o texto precisa de normalização

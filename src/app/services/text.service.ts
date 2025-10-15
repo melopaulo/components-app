@@ -1,4 +1,4 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable } from '@angular/core';
 
 /**
  * Interface para configurações de normalização de texto
@@ -32,32 +32,24 @@ export class TextService {
   private readonly normalizationCache: NormalizationCache = {};
 
   /**
-   * Signal para notificar mudanças no cache (para estatísticas)
-   */
-  private readonly _cacheUpdateSignal = signal<number>(0);
-
-  /**
    * Configuração padrão para normalização
    */
-  private readonly defaultConfig = signal<TextNormalizationConfig>({
+  private readonly defaultConfig: TextNormalizationConfig = {
     preserveAcronyms: true,
     applyCapitalization: true,
     removeExtraSpaces: true,
     addAccents: true,
-  });
+  };
 
   /**
-   * Estatísticas de uso do cache (para monitoramento de performance)
+   * Obtém estatísticas de uso do cache (para monitoramento de performance)
    */
-  readonly cacheStats = computed(() => {
-    // Força a reatividade quando o cache é atualizado
-    this._cacheUpdateSignal();
-    
+  getCacheStats(): { totalEntries: number; memoryUsage: number } {
     return {
       totalEntries: Object.keys(this.normalizationCache).length,
       memoryUsage: JSON.stringify(this.normalizationCache).length,
     };
-  });
+  }
 
   /**
    * Mapa de palavras comuns sem acentos para palavras com acentos
@@ -517,7 +509,7 @@ export class TextService {
       return cached;
     }
 
-    const finalConfig = { ...this.defaultConfig(), ...config };
+    const finalConfig = { ...this.defaultConfig, ...config };
     let normalizedText = text;
 
     // Remove espaços extras
@@ -683,9 +675,6 @@ export class TextService {
 
     // Adiciona o novo item ao cache
     this.normalizationCache[key] = value;
-    
-    // Notifica mudança no cache para atualizar estatísticas
-    this._cacheUpdateSignal.update((count: number) => count + 1);
   }
 
   /**
@@ -696,19 +685,13 @@ export class TextService {
     Object.keys(this.normalizationCache).forEach(key => {
       delete this.normalizationCache[key];
     });
-    
-    // Notifica mudança no cache para atualizar estatísticas
-    this._cacheUpdateSignal.update((count: number) => count + 1);
   }
 
   /**
    * Atualiza a configuração padrão
    */
   updateDefaultConfig(config: Partial<TextNormalizationConfig>): void {
-    this.defaultConfig.set({
-      ...this.defaultConfig(),
-      ...config,
-    });
+    Object.assign(this.defaultConfig, config);
   }
 
   /**
