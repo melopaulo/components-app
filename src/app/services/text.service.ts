@@ -29,7 +29,12 @@ export class TextService {
   /**
    * Cache para armazenar textos já normalizados (melhora performance)
    */
-  private readonly _normalizationCache = signal<NormalizationCache>({});
+  private readonly normalizationCache: NormalizationCache = {};
+
+  /**
+   * Signal para notificar mudanças no cache (para estatísticas)
+   */
+  private readonly _cacheUpdateSignal = signal<number>(0);
 
   /**
    * Configuração padrão para normalização
@@ -42,20 +47,15 @@ export class TextService {
   });
 
   /**
-   * Getter para acessar o cache de normalização
-   */
-  private get normalizationCache(): NormalizationCache {
-    return this._normalizationCache();
-  }
-
-  /**
    * Estatísticas de uso do cache (para monitoramento de performance)
    */
   readonly cacheStats = computed(() => {
-    const cache = this._normalizationCache();
+    // Força a reatividade quando o cache é atualizado
+    this._cacheUpdateSignal();
+    
     return {
-      totalEntries: Object.keys(cache).length,
-      memoryUsage: JSON.stringify(cache).length,
+      totalEntries: Object.keys(this.normalizationCache).length,
+      memoryUsage: JSON.stringify(this.normalizationCache).length,
     };
   });
 
@@ -676,24 +676,29 @@ export class TextService {
    * Atualiza o cache de normalização
    */
   private updateCache(key: string, value: string): void {
-    const currentCache = this.normalizationCache;
-
     // Limita o tamanho do cache para evitar vazamentos de memória
-    if (Object.keys(currentCache).length > 1000) {
+    if (Object.keys(this.normalizationCache).length > 1000) {
       this.clearCache();
     }
 
-    this._normalizationCache.set({
-      ...currentCache,
-      [key]: value,
-    });
+    // Adiciona o novo item ao cache
+    this.normalizationCache[key] = value;
+    
+    // Notifica mudança no cache para atualizar estatísticas
+    this._cacheUpdateSignal.update((count: number) => count + 1);
   }
 
   /**
    * Limpa o cache de normalização
    */
   clearCache(): void {
-    this._normalizationCache.set({});
+    // Limpa todas as entradas do cache
+    Object.keys(this.normalizationCache).forEach(key => {
+      delete this.normalizationCache[key];
+    });
+    
+    // Notifica mudança no cache para atualizar estatísticas
+    this._cacheUpdateSignal.update((count: number) => count + 1);
   }
 
   /**
