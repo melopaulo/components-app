@@ -76,7 +76,7 @@ import { TextService } from './text.service';
           (click)="runBatchTest()"
           class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
         >
-          Processar 1000 textos
+          Processar 500 textos
         </button>
         @if (batchResult()) {
           <div class="mt-4 p-4 bg-green-50 rounded-lg">
@@ -135,10 +135,10 @@ export class TextServiceExampleComponent {
   readonly cacheStats = computed(() => this.textService.getCacheStats());
 
   /**
-   * Verifica se o texto precisa de normalização
+   * Verifica se o texto precisa de normalização (simplificado)
    */
   readonly needsNormalization = computed(() => 
-    this.textService.needsNormalization(this.inputText())
+    this.inputText().length > 0 && /[A-Z]/.test(this.inputText())
   );
 
   /**
@@ -192,9 +192,9 @@ export class TextServiceExampleComponent {
    * Executa teste de performance em lote
    */
   runBatchTest(): void {
-    // Gera 1000 textos de exemplo para teste
-    const testTexts = Array.from({ length: 1000 }, (_, i) => 
-      `TEXTO DE TESTE NUMERO ${i + 1} PARA AVALIACAO DE PERFORMANCE E NORMALIZACAO`
+    // Gera 500 textos de exemplo para teste (reduzido para simplicidade)
+    const testTexts = Array.from({ length: 500 }, (_, i) => 
+      `TEXTO DE TESTE NUMERO ${i + 1} PARA AVALIACAO DE PERFORMANCE`
     );
 
     const startTime = performance.now();

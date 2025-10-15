@@ -5,726 +5,231 @@ import { Injectable } from '@angular/core';
  */
 export interface TextNormalizationConfig {
   preserveAcronyms: boolean;
-  applyCapitalization: boolean;
-  removeExtraSpaces: boolean;
   addAccents: boolean;
 }
 
 /**
- * Interface para cache de normalização
- */
-interface NormalizationCache {
-  [key: string]: string;
-}
-
-/**
- * Serviço para manipulação e normalização de textos
- * Otimizado para performance com cache e memoização
- * Especializado em normalizar textos do português brasileiro
+ * Serviço simplificado para normalização de textos do setor público brasileiro
+ * Foca na funcionalidade essencial: normalizar textos vindos de APIs
  */
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class TextService {
   /**
-   * Cache para armazenar textos já normalizados (melhora performance)
+   * Cache simples para textos já normalizados
    */
-  private readonly normalizationCache: NormalizationCache = {};
+  private cache = new Map<string, string>();
 
   /**
-   * Configuração padrão para normalização
+   * Configuração padrão
    */
-  private readonly defaultConfig: TextNormalizationConfig = {
+  private readonly config: TextNormalizationConfig = {
     preserveAcronyms: true,
-    applyCapitalization: true,
-    removeExtraSpaces: true,
-    addAccents: true,
+    addAccents: true
   };
 
   /**
-   * Obtém estatísticas de uso do cache (para monitoramento de performance)
+   * Palavras do setor público que precisam de acentos
    */
-  getCacheStats(): { totalEntries: number; memoryUsage: number } {
-    return {
-      totalEntries: Object.keys(this.normalizationCache).length,
-      memoryUsage: JSON.stringify(this.normalizationCache).length,
-    };
-  }
-
-  /**
-   * Mapa de palavras comuns sem acentos para palavras com acentos
-   * Focado no setor público brasileiro
-   */
-  private readonly accentMap: Record<string, string> = {
-    // Termos administrativos do setor público
-    ADMINISTRACAO: 'ADMINISTRAÇÃO',
-    ADMINISTRACOES: 'ADMINISTRAÇÕES',
-    ADVOCACIA: 'ADVOCACIA',
-    AGENCIA: 'AGÊNCIA',
-    AGENCIAS: 'AGÊNCIAS',
-    ANALISE: 'ANÁLISE',
-    ANALISES: 'ANÁLISES',
-    APLICACAO: 'APLICAÇÃO',
-    APLICACOES: 'APLICAÇÕES',
-    AREA: 'ÁREA',
-    AREAS: 'ÁREAS',
-    ASSESSORIA: 'ASSESSORIA',
-    ASSESSORIAS: 'ASSESSORIAS',
-    ATENCAO: 'ATENÇÃO',
-    AUDITORIA: 'AUDITORIA',
-    AUDITORIAS: 'AUDITORIAS',
-    AUTARQUIA: 'AUTARQUIA',
-    AUTARQUIAS: 'AUTARQUIAS',
-    AUTORIDADE: 'AUTORIDADE',
-    AUTORIDADES: 'AUTORIDADES',
-    AVALIACAO: 'AVALIAÇÃO',
-    AVALIACOES: 'AVALIAÇÕES',
-
-    // Termos jurídicos e legais
-    ACAO: 'AÇÃO',
-    ACOES: 'AÇÕES',
-    ACUSACAO: 'ACUSAÇÃO',
-    ACUSACOES: 'ACUSAÇÕES',
-    ALEGACAO: 'ALEGAÇÃO',
-    ALEGACOES: 'ALEGAÇÕES',
-    APELACAO: 'APELAÇÃO',
-    APELACOES: 'APELAÇÕES',
-    ARGUICAO: 'ARGUIÇÃO',
-    ARGUICOES: 'ARGUIÇÕES',
-    CITACAO: 'CITAÇÃO',
-    CITACOES: 'CITAÇÕES',
-    CONSTITUICAO: 'CONSTITUIÇÃO',
-    CONSTITUICOES: 'CONSTITUIÇÕES',
-    DECISAO: 'DECISÃO',
-    DECISOES: 'DECISÕES',
-    DEFESA: 'DEFESA',
-    DEFESAS: 'DEFESAS',
-    EXECUCAO: 'EXECUÇÃO',
-    EXECUCOES: 'EXECUÇÕES',
-    JURISDICAO: 'JURISDIÇÃO',
-    JURISDICOES: 'JURISDIÇÕES',
-    LEGISLACAO: 'LEGISLAÇÃO',
-    LEGISLACOES: 'LEGISLAÇÕES',
-    PETICAO: 'PETIÇÃO',
-    PETICOES: 'PETIÇÕES',
-    PROCURACAO: 'PROCURAÇÃO',
-    PROCURACOES: 'PROCURAÇÕES',
-    PROMOCAO: 'PROMOÇÃO',
-    PROMOCOES: 'PROMOÇÕES',
-    PROTECAO: 'PROTEÇÃO',
-    PROTECOES: 'PROTEÇÕES',
-    PUBLICACAO: 'PUBLICAÇÃO',
-    PUBLICACOES: 'PUBLICAÇÕES',
-    RECURSO: 'RECURSO',
-    RECURSOS: 'RECURSOS',
-    REGULAMENTACAO: 'REGULAMENTAÇÃO',
-    REGULAMENTACOES: 'REGULAMENTAÇÕES',
-    REPRESENTACAO: 'REPRESENTAÇÃO',
-    REPRESENTACOES: 'REPRESENTAÇÕES',
-    RESOLUCAO: 'RESOLUÇÃO',
-    RESOLUCOES: 'RESOLUÇÕES',
-    REVISAO: 'REVISÃO',
-    REVISOES: 'REVISÕES',
-
-    // Termos de segurança e inteligência
-    INTELIGENCIA: 'INTELIGÊNCIA',
-    SEGURANCA: 'SEGURANÇA',
-    VIGILANCIA: 'VIGILÂNCIA',
-
-    // Termos de gestão pública
-    COORDENACAO: 'COORDENAÇÃO',
-    COORDENACOES: 'COORDENAÇÕES',
-    DIRECAO: 'DIREÇÃO',
-    DIRECOES: 'DIREÇÕES',
-    DIVISAO: 'DIVISÃO',
-    DIVISOES: 'DIVISÕES',
-    FUNCAO: 'FUNÇÃO',
-    FUNCOES: 'FUNÇÕES',
-    GESTAO: 'GESTÃO',
-    GESTOES: 'GESTÕES',
-    ORGANIZACAO: 'ORGANIZAÇÃO',
-    ORGANIZACOES: 'ORGANIZAÇÕES',
-    PLANEJAMENTO: 'PLANEJAMENTO',
-    PRESIDENCIA: 'PRESIDÊNCIA',
-    SECRETARIA: 'SECRETARIA',
-    SECRETARIAS: 'SECRETARIAS',
-    SUPERVISAO: 'SUPERVISÃO',
-    SUPERVISOES: 'SUPERVISÕES',
-
-    // Termos de controle e fiscalização
-    CONTROLE: 'CONTROLE',
-    CONTROLES: 'CONTROLES',
-    CORREGEDORIA: 'CORREGEDORIA',
-    CORREGEDORIAS: 'CORREGEDORIAS',
-    FISCALIZACAO: 'FISCALIZAÇÃO',
-    FISCALIZACOES: 'FISCALIZAÇÕES',
-    INSPECAO: 'INSPEÇÃO',
-    INSPECOES: 'INSPEÇÕES',
-    MONITORAMENTO: 'MONITORAMENTO',
-    OUVIDORIA: 'OUVIDORIA',
-    OUVIDORIAS: 'OUVIDORIAS',
-    PRESTACAO: 'PRESTAÇÃO',
-    PRESTACOES: 'PRESTAÇÕES',
-    TRANSPARENCIA: 'TRANSPARÊNCIA',
-    VERIFICACAO: 'VERIFICAÇÃO',
-    VERIFICACOES: 'VERIFICAÇÕES',
-
-    // Termos de recursos humanos públicos
-    CAPACITACAO: 'CAPACITAÇÃO',
-    CAPACITACOES: 'CAPACITAÇÕES',
-    CARREIRA: 'CARREIRA',
-    CARREIRAS: 'CARREIRAS',
-    CONCURSO: 'CONCURSO',
-    CONCURSOS: 'CONCURSOS',
-    FUNCIONALISMO: 'FUNCIONALISMO',
-    NOMEACAO: 'NOMEAÇÃO',
-    NOMEACOES: 'NOMEAÇÕES',
-    SERVIDOR: 'SERVIDOR',
-    SERVIDORES: 'SERVIDORES',
-
-    // Termos orçamentários e financeiros
-    ALOCACAO: 'ALOCAÇÃO',
-    ALOCACOES: 'ALOCAÇÕES',
-    DOTACAO: 'DOTAÇÃO',
-    DOTACOES: 'DOTAÇÕES',
-    ORCAMENTO: 'ORÇAMENTO',
-    ORCAMENTOS: 'ORÇAMENTOS',
-    PREVISAO: 'PREVISÃO',
-    PREVISOES: 'PREVISÕES',
-
-    // Termos de políticas públicas
-    POLITICA: 'POLÍTICA',
-    POLITICAS: 'POLÍTICAS',
-    PROGRAMA: 'PROGRAMA',
-    PROGRAMAS: 'PROGRAMAS',
-    PROJETO: 'PROJETO',
-    PROJETOS: 'PROJETOS',
-
-    // Termos geográficos e administrativos
-    BRASILIA: 'BRASÍLIA',
-    FEDERACAO: 'FEDERAÇÃO',
-    FEDERACOES: 'FEDERAÇÕES',
-    MUNICIPIO: 'MUNICÍPIO',
-    MUNICIPIOS: 'MUNICÍPIOS',
-    REGIAO: 'REGIÃO',
-    REGIOES: 'REGIÕES',
-    TERRITORIO: 'TERRITÓRIO',
-    TERRITORIOS: 'TERRITÓRIOS',
-    UNIAO: 'UNIÃO',
-
-    // Termos de documentação e processos
-    ARQUIVO: 'ARQUIVO',
-    ARQUIVOS: 'ARQUIVOS',
-    CERTIDAO: 'CERTIDÃO',
-    CERTIDOES: 'CERTIDÕES',
-    DOCUMENTACAO: 'DOCUMENTAÇÃO',
-    DOCUMENTACOES: 'DOCUMENTAÇÕES',
-    PROTOCOLO: 'PROTOCOLO',
-    PROTOCOLOS: 'PROTOCOLOS',
-    TRAMITACAO: 'TRAMITAÇÃO',
-    TRAMITACOES: 'TRAMITAÇÕES',
+  private readonly accentWords: Record<string, string> = {
+    // Termos administrativos essenciais
+    'ADMINISTRACAO': 'Administração',
+    'AGENCIA': 'Agência',
+    'ANALISE': 'Análise',
+    'AREA': 'Área',
+    'ATENCAO': 'Atenção',
+    'AUDITORIA': 'Auditoria',
+    'AVALIACAO': 'Avaliação',
+    
+    // Termos jurídicos essenciais
+    'ACAO': 'Ação',
+    'CONSTITUICAO': 'Constituição',
+    'DECISAO': 'Decisão',
+    'EXECUCAO': 'Execução',
+    'JURISDICAO': 'Jurisdição',
+    'LEGISLACAO': 'Legislação',
+    'PETICAO': 'Petição',
+    'PROMOCAO': 'Promoção',
+    'PROTECAO': 'Proteção',
+    'PUBLICACAO': 'Publicação',
+    'REGULAMENTACAO': 'Regulamentação',
+    'REPRESENTACAO': 'Representação',
+    'RESOLUCAO': 'Resolução',
+    
+    // Termos de gestão pública essenciais
+    'COORDENACAO': 'Coordenação',
+    'DIRECAO': 'Direção',
+    'DIVISAO': 'Divisão',
+    'FUNCAO': 'Função',
+    'GESTAO': 'Gestão',
+    'ORGANIZACAO': 'Organização',
+    'PRESIDENCIA': 'Presidência',
+    'SECRETARIA': 'Secretaria',
+    'SUPERVISAO': 'Supervisão',
+    
+    // Termos de controle essenciais
+    'FISCALIZACAO': 'Fiscalização',
+    'INSPECAO': 'Inspeção',
+    'OUVIDORIA': 'Ouvidoria',
+    'PRESTACAO': 'Prestação',
+    'TRANSPARENCIA': 'Transparência',
+    'VERIFICACAO': 'Verificação',
+    
+    // Termos de RH essenciais
+    'CAPACITACAO': 'Capacitação',
+    'NOMEACAO': 'Nomeação',
+    
+    // Termos orçamentários essenciais
+    'ALOCACAO': 'Alocação',
+    'DOTACAO': 'Dotação',
+    'ORCAMENTO': 'Orçamento',
+    'PREVISAO': 'Previsão',
+    
+    // Termos de políticas essenciais
+    'POLITICA': 'Política',
+    
+    // Termos geográficos essenciais
+    'BRASILIA': 'Brasília',
+    'REGIAO': 'Região',
+    'UNIAO': 'União',
+    
+    // Termos de documentação essenciais
+    'CERTIDAO': 'Certidão',
+    'DOCUMENTACAO': 'Documentação',
+    'TRAMITACAO': 'Tramitação',
+    
+    // Termos de segurança essenciais
+    'INFORMACAO': 'Informação',
+    'INTELIGENCIA': 'Inteligência',
+    'INVESTIGACAO': 'Investigação',
+    'OPERACAO': 'Operação',
+    'SEGURANCA': 'Segurança'
   };
 
   /**
-   * Lista de siglas do setor público brasileiro que devem ser preservadas em maiúsculo
+   * Siglas do setor público que devem permanecer em maiúsculo
    */
-  private readonly commonAcronyms: Set<string> = new Set([
-    // Órgãos do Poder Executivo Federal
-    'AGU',
-    'ABIN',
-    'CASA',
-    'CGU',
-    'GSI',
-    'SECOM',
-    'SEGOV',
-    'SG',
-
+  private readonly acronyms = new Set([
+    // Órgãos principais
+    'AGU', 'ABIN', 'CGU', 'TCU', 'STF', 'STJ', 'MPF', 'PF', 'PRF',
+    
     // Ministérios
-    'MEC',
-    'MS',
-    'MJ',
-    'MF',
-    'MDIC',
-    'MME',
-    'MAPA',
-    'MMA',
-    'MCTI',
-    'MTPA',
-    'MDS',
-    'MCIDADES',
-    'MTUR',
-    'MD',
-    'MRE',
-    'MPOG',
-
-    // Autarquias e Agências Reguladoras
-    'IBGE',
-    'BACEN',
-    'CVM',
-    'SUSEP',
-    'ANVISA',
-    'ANATEL',
-    'ANEEL',
-    'ANP',
-    'ANTAQ',
-    'ANTT',
-    'ANA',
-    'ANCINE',
-    'ANAC',
-    'ANS',
-    'ANPD',
-
-    // Órgãos de Controle
-    'TCU',
-    'CADE',
-    'COAF',
-    'RFB',
-    'PGFN',
-
-    // Poder Judiciário
-    'STF',
-    'STJ',
-    'TST',
-    'TSE',
-    'STM',
-    'CNJ',
-    'CNMP',
-    'TRF',
-    'TRT',
-    'TRE',
-    'TJSP',
-    'TJRJ',
-    'TJMG',
-    'TJRS',
-    'TJPR',
-
-    // Ministério Público
-    'MPF',
-    'MPU',
-    'MPDFT',
-    'CNMP',
-
-    // Defensoria Pública
-    'DPU',
-    'DPESP',
-    'DPERJ',
-
-    // Polícias e Segurança
-    'PF',
-    'PRF',
-    'PM',
-    'PC',
-    'CBMDF',
-    'SUSP',
-    'SENASP',
-
-    // Forças Armadas
-    'EB',
-    'MB',
-    'FAB',
-    'EMD',
-    'EMFA',
-
-    // Conselhos Profissionais
-    'OAB',
-    'CRC',
-    'CRM',
-    'CRO',
-    'CREA',
-    'CAU',
-    'CRF',
-    'CRN',
-    'CRP',
-    'CRQ',
-    'CFESS',
-    'CFP',
-    'COFEN',
-    'CONFEA',
-
-    // Órgãos Estaduais e Municipais
-    'ALESP',
-    'ALERJ',
-    'ALMG',
-    'ALRS',
-    'CMSP',
-    'CMRJ',
-    'DETRAN',
-    'PROCON',
-    'CETESB',
-    'SABESP',
-    'COPASA',
-
-    // Fundações e Institutos
-    'FUNAI',
-    'INCRA',
-    'IPHAN',
-    'IBAMA',
-    'ICMBio',
-    'INPE',
-    'INMETRO',
-    'INCA',
-    'FIOCRUZ',
-    'FUNASA',
-    'CAPES',
-    'CNPQ',
-    'FINEP',
-
-    // Empresas Públicas
-    'BB',
-    'CEF',
-    'BNDES',
-    'PETROBRAS',
-    'CORREIOS',
-    'INFRAERO',
-    'VALEC',
-    'EPL',
-    'PPSA',
-
-    // Previdência e Trabalho
-    'INSS',
-    'FGTS',
-    'PIS',
-    'PASEP',
-    'CNIS',
-    'CAGED',
-
-    // Documentos e Registros
-    'CPF',
-    'CNPJ',
-    'RG',
-    'CEP',
-    'RENAVAM',
-    'CNH',
-    'CTPS',
-    'CBO',
-    'CNAE',
-    'SIAFI',
-    'SIAPE',
-    'SIASG',
-    'COMPRASNET',
-
-    // Sistemas Governamentais
-    'SICONV',
-    'SIGPLAN',
-    'SIDOR',
-    'SIORG',
-    'DATAPREV',
-    'PRODASEN',
-
-    // Leis e Normas
-    'CF',
-    'CLT',
-    'CC',
-    'CPC',
-    'CPP',
-    'CTN',
-    'CDC',
-    'ECA',
-    'LRF',
-    'LAI',
-    'LGPD',
-    'LDO',
-    'LOA',
-    'PPA',
-
-    // Tecnologia (mantendo algumas essenciais)
-    'API',
-    'HTTP',
-    'HTTPS',
-    'PDF',
-    'XML',
-    'JSON',
-    'CSV',
-    'CPD',
-    'TI',
-    'GOVBR',
-    'SERPRO',
-  ]);
-
-  /**
-   * Palavras que devem sempre ficar em minúsculo (exceto no início da frase)
-   */
-  private readonly lowercaseWords: Set<string> = new Set([
-    'a',
-    'da',
-    'de',
-    'do',
-    'das',
-    'dos',
-    'e',
-    'em',
-    'na',
-    'no',
-    'nas',
-    'nos',
-    'ou',
-    'para',
-    'por',
-    'com',
-    'sem',
-    'sob',
-    'sobre',
-    'entre',
-    'contra',
-    'desde',
-    'até',
-    'através',
-    'mediante',
-    'conforme',
-    'segundo',
-    'durante',
-    'perante',
-    'ante',
-    'após',
-    'dentro',
-    'fora',
-    'acima',
-    'abaixo',
-    'atrás',
-    'diante',
-    'perto',
-    'longe',
+    'MEC', 'MS', 'MJ', 'MF', 'MMA',
+    
+    // Agências
+    'ANVISA', 'ANATEL', 'ANEEL', 'ANP', 'IBGE', 'BACEN',
+    
+    // Documentos
+    'CPF', 'CNPJ', 'RG', 'CEP', 'FGTS', 'PIS', 'INSS',
+    
+    // Sistemas
+    'SIAFI', 'SIAPE', 'API', 'PDF', 'JSON'
   ]);
 
   /**
    * Normaliza texto seguindo regras do português brasileiro
-   * Otimizado para performance com cache
-   *
-   * @param text - Texto a ser normalizado (geralmente em UPPERCASE sem acentos)
-   * @param config - Configurações opcionais de normalização
-   * @returns Texto normalizado seguindo regras gramaticais do português brasileiro
+   * Método principal e simplificado
    */
-  normalizeText(
-    text: string,
-    config?: Partial<TextNormalizationConfig>
-  ): string {
+  normalizeText(text: string): string {
     if (!text || typeof text !== 'string') {
       return '';
     }
 
-    // Verifica cache primeiro para melhor performance
-    const cacheKey = `${text}|${JSON.stringify(config || {})}`;
-    const cached = this.normalizationCache[cacheKey];
-    if (cached) {
-      return cached;
+    // Verifica cache primeiro
+    if (this.cache.has(text)) {
+      return this.cache.get(text)!;
     }
 
-    const finalConfig = { ...this.defaultConfig, ...config };
-    let normalizedText = text;
-
-    // Remove espaços extras
-    if (finalConfig.removeExtraSpaces) {
-      normalizedText = this.removeExtraSpaces(normalizedText);
-    }
+    let result = text.trim().replace(/\s+/g, ' '); // Remove espaços extras
 
     // Adiciona acentos
-    if (finalConfig.addAccents) {
-      normalizedText = this.addAccents(normalizedText);
+    if (this.config.addAccents) {
+      result = this.addAccents(result);
     }
 
     // Aplica capitalização
-    if (finalConfig.applyCapitalization) {
-      normalizedText = this.applyCapitalization(
-        normalizedText,
-        finalConfig.preserveAcronyms
-      );
+    result = this.applyCapitalization(result);
+
+    // Armazena no cache (limitado a 500 entradas)
+    if (this.cache.size >= 500) {
+      this.cache.clear();
     }
+    this.cache.set(text, result);
 
-    // Armazena no cache para futuras consultas
-    this.updateCache(cacheKey, normalizedText);
-
-    return normalizedText;
+    return result;
   }
 
   /**
-   * Remove espaços extras do texto
-   */
-  private removeExtraSpaces(text: string): string {
-    return text.trim().replace(/\s+/g, ' ');
-  }
-
-  /**
-   * Adiciona acentos às palavras usando o mapa de acentos
+   * Adiciona acentos às palavras conhecidas
    */
   private addAccents(text: string): string {
-    const words = text.split(/(\s+)/);
-
-    return words
-      .map((word) => {
-        if (/^\s+$/.test(word)) {
-          return word; // Preserva espaços
-        }
-
-        const upperWord = word.toUpperCase();
-        const cleanWord = upperWord.replace(/[^\w]/g, ''); // Remove pontuação para busca
-
-        if (this.accentMap[cleanWord]) {
-          // Preserva a pontuação original
-          return word.replace(cleanWord, this.accentMap[cleanWord]);
-        }
-
-        return word;
-      })
-      .join('');
-  }
-
-  /**
-   * Aplica regras de capitalização do português brasileiro
-   */
-  private applyCapitalization(text: string, preserveAcronyms: boolean): string {
-    // Divide o texto em sentenças
-    const sentences = text.split(/([.!?]+\s*)/);
-
-    return sentences
-      .map((sentence) => {
-        if (/^[.!?]+\s*$/.test(sentence)) {
-          return sentence; // Preserva pontuação
-        }
-
-        return this.capitalizeSentence(sentence, preserveAcronyms);
-      })
-      .join('');
-  }
-
-  /**
-   * Capitaliza uma sentença seguindo regras gramaticais
-   */
-  private capitalizeSentence(
-    sentence: string,
-    preserveAcronyms: boolean
-  ): string {
-    const words = sentence.split(/(\s+)/);
-    let isFirstWord = true;
-
-    return words
-      .map((word) => {
-        if (/^\s+$/.test(word)) {
-          return word; // Preserva espaços
-        }
-
-        const cleanWord = word.replace(/[^\w]/g, '');
-
-        // Preserva siglas se configurado
-        if (preserveAcronyms && this.isAcronym(cleanWord)) {
-          isFirstWord = false;
-          return word.toUpperCase();
-        }
-
-        // Primeira palavra da sentença sempre maiúscula
-        if (isFirstWord) {
-          isFirstWord = false;
-          return this.capitalizeFirstLetter(word);
-        }
-
-        // Palavras que devem ficar em minúsculo
-        if (this.lowercaseWords.has(cleanWord.toLowerCase())) {
-          return word.toLowerCase();
-        }
-
-        // Capitaliza primeira letra das outras palavras
-        return this.capitalizeFirstLetter(word);
-      })
-      .join('');
-  }
-
-  /**
-   * Verifica se uma palavra é uma sigla
-   */
-  private isAcronym(word: string): boolean {
-    const upperWord = word.toUpperCase();
-
-    // Verifica se está na lista de siglas conhecidas
-    if (this.commonAcronyms.has(upperWord)) {
-      return true;
-    }
-
-    // Heurística: palavras de 2-5 letras todas maiúsculas podem ser siglas
-    if (word.length >= 2 && word.length <= 5 && word === word.toUpperCase()) {
-      return true;
-    }
-
-    return false;
-  }
-
-  /**
-   * Capitaliza a primeira letra de uma palavra
-   */
-  private capitalizeFirstLetter(word: string): string {
-    if (!word) return word;
-
-    // Encontra a primeira letra
-    const match = word.match(/^(\W*)(\w)/);
-    if (!match) return word;
-
-    const [, prefix, firstLetter] = match;
-    return (
-      prefix +
-      firstLetter.toUpperCase() +
-      word.slice(prefix.length + 1).toLowerCase()
-    );
-  }
-
-  /**
-   * Atualiza o cache de normalização
-   */
-  private updateCache(key: string, value: string): void {
-    // Limita o tamanho do cache para evitar vazamentos de memória
-    if (Object.keys(this.normalizationCache).length > 1000) {
-      this.clearCache();
-    }
-
-    // Adiciona o novo item ao cache
-    this.normalizationCache[key] = value;
-  }
-
-  /**
-   * Limpa o cache de normalização
-   */
-  clearCache(): void {
-    // Limpa todas as entradas do cache
-    Object.keys(this.normalizationCache).forEach(key => {
-      delete this.normalizationCache[key];
+    return text.replace(/\b[A-Z]+\b/g, (word) => {
+      return this.accentWords[word] || word;
     });
   }
 
   /**
-   * Atualiza a configuração padrão
+   * Aplica regras de capitalização
    */
-  updateDefaultConfig(config: Partial<TextNormalizationConfig>): void {
-    Object.assign(this.defaultConfig, config);
+  private applyCapitalization(text: string): string {
+    return text.replace(/\b\w+\b/g, (word, index) => {
+      // Preserva siglas
+      if (this.config.preserveAcronyms && this.acronyms.has(word.toUpperCase())) {
+        return word.toUpperCase();
+      }
+
+      // Primeira palavra sempre maiúscula
+      if (index === 0) {
+        return this.capitalizeWord(word);
+      }
+
+      // Palavras pequenas ficam em minúsculo (exceto siglas)
+      if (this.isSmallWord(word)) {
+        return word.toLowerCase();
+      }
+
+      // Outras palavras são capitalizadas
+      return this.capitalizeWord(word);
+    });
   }
 
   /**
-   * Normaliza múltiplos textos de forma eficiente
-   * Útil para processar listas grandes de dados
+   * Capitaliza uma palavra
    */
-  normalizeTextBatch(
-    texts: string[],
-    config?: Partial<TextNormalizationConfig>
-  ): string[] {
-    return texts.map((text) => this.normalizeText(text, config));
+  private capitalizeWord(word: string): string {
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
   }
 
   /**
-   * Verifica se um texto precisa de normalização
-   * Útil para evitar processamento desnecessário
+   * Verifica se é uma palavra pequena que deve ficar em minúsculo
    */
-  needsNormalization(text: string): boolean {
-    if (!text || typeof text !== 'string') {
-      return false;
-    }
+  private isSmallWord(word: string): boolean {
+    const smallWords = ['da', 'de', 'do', 'das', 'dos', 'e', 'em', 'na', 'no', 'ou', 'para', 'por', 'com'];
+    return smallWords.includes(word.toLowerCase());
+  }
 
-    // Verifica se tem texto em maiúsculo
-    const hasUppercase = /[A-Z]/.test(text);
+  /**
+   * Normaliza múltiplos textos
+   */
+  normalizeTextBatch(texts: string[]): string[] {
+    return texts.map(text => this.normalizeText(text));
+  }
 
-    // Verifica se tem palavras sem acentos que deveriam ter
-    const hasWordsNeedingAccents = Object.keys(this.accentMap).some((word) =>
-      text.toUpperCase().includes(word)
-    );
+  /**
+   * Limpa o cache
+   */
+  clearCache(): void {
+    this.cache.clear();
+  }
 
-    // Verifica se tem espaços extras
-    const hasExtraSpaces = /\s{2,}/.test(text) || text !== text.trim();
-
-    return hasUppercase || hasWordsNeedingAccents || hasExtraSpaces;
+  /**
+   * Obtém estatísticas do cache
+   */
+  getCacheStats(): { totalEntries: number; memoryUsage: number } {
+    return {
+      totalEntries: this.cache.size,
+      memoryUsage: JSON.stringify([...this.cache.entries()]).length
+    };
   }
 }
